@@ -17,6 +17,7 @@
     },
     "files": [
         "src/index.ts",
+        "src/socket.ts",
         "typings/backbone/backbone-global.d.ts",
         "typings/backbone/backbone.d.ts",
         "typings/jquery/jquery.d.ts",
