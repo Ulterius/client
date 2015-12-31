@@ -1,0 +1,25 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": true
+    },
+    "filesGlob": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "!src/node_modules/old/**",
+        "typings/**/*.ts",
+        "!node_modules/**"
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    },
+    "files": [
+        "src/index.ts",
+        "typings/backbone/backbone-global.d.ts",
+        "typings/backbone/backbone.d.ts",
+        "typings/jquery/jquery.d.ts",
+        "typings/underscore/underscore.d.ts"
+    ]
+}

@@ -1,0 +1,5 @@
+todo.md
+node_modules/**
+!src/node_modules
+!src/node_modules/**
+.DS_Store
