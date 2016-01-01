@@ -3,7 +3,8 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "sourceMap": true
+        "sourceMap": true,
+        "jsx": "react"
     },
     "filesGlob": [
         "src/**/*.ts",
@@ -16,11 +17,22 @@
         "rewriteTsconfig": true
     },
     "files": [
-        "src/index.ts",
+        "src/action/abstract-actions.ts",
+        "src/action/task-actions.ts",
+        "src/alt.ts",
+        "src/config.ts",
+        "src/dispatcher.ts",
         "src/socket.ts",
-        "typings/backbone/backbone-global.d.ts",
-        "typings/backbone/backbone.d.ts",
+        "src/store/abstract-store.ts",
+        "src/store/task-store.ts",
+        "src/component/components.tsx",
+        "src/index.tsx",
+        "typings/alt/alt.d.ts",
+        "typings/es6-promise/es6-promise.d.ts",
+        "typings/flux/flux.d.ts",
         "typings/jquery/jquery.d.ts",
-        "typings/underscore/underscore.d.ts"
+        "typings/lodash/lodash.d.ts",
+        "typings/react/react-dom.d.ts",
+        "typings/react/react.d.ts"
     ]
 }

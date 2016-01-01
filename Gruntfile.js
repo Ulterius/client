@@ -7,7 +7,7 @@ module.exports = function(grunt) {
     }
 
     let wpops = {
-        entry: "./src/index.ts",
+        entry: "./src/index.tsx",
         devtool: "#source-map",
         output: {
             path: __dirname + "/public",

@@ -9,7 +9,12 @@
   "author": "Frob the Builder",
   "license": "ISC",
   "dependencies": {
-    "backbone": "^1.2.3"
+    "alt": "^0.18.1",
+    "backbone": "^1.2.3",
+    "flux": "^2.1.1",
+    "lodash": "^3.10.1",
+    "react": "^0.14.5",
+    "react-dom": "^0.14.5"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
