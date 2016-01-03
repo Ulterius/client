@@ -1,40 +1,28 @@
 import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
-import TaskActions from "../action/task-actions"
+import taskActions from "../action/task-actions"
 
 //{"id":0,"path":"null","icon":"null","name":"_Total","cpuUsage":100,"ramUsage":3877462016,"threads":2428,"handles":91196,"ioWriteOperationsPerSec":191,"ioReadOperationsPerSec":5731}
-export interface Task {
-    id: number,
-    path: string,
-    icon: string,
-    name: string,
-    cpuUsage: number,
-    ramUsage: number,
-    threads: number,
-    handles: number,
-    ioWriteOperationsPerSec: number,
-    ioReadOperationsPerSec: number
-}
 
 interface State {
-    tasks: Task[]
+    tasks: TaskInfo[]
 }
 
 class TaskStore extends AbstractStoreModel<State> {
 
-    tasks: Task[]
+    tasks: TaskInfo[]
 
     constructor() {
-        super()
         this.bindListeners({
-            handleUpdateTasks: TaskActions.updateTasks
+            handleUpdateTasks: taskActions.updateTasks
         })
+        super()
     }
 
-    handleUpdateTasks(tasks: Task[]) {
+    handleUpdateTasks(tasks: TaskInfo[]) {
         this.tasks = tasks
-        console.log(tasks)
+        console.log("TaskStore is updating tasks.")
     }
 }
 
-export default alt.createStore<State>(TaskStore)
+export default alt.createStore<State>(TaskStore, "TaskStore")

@@ -1,5 +1,6 @@
 import config from "./config"
 import * as _ from "lodash"
+import taskActions from "./action/task-actions"
 
 let socket = new WebSocket(config.server)
 
@@ -14,6 +15,11 @@ function sendCommand(action, args?) {
     } catch (exception) {
         console.log(exception);
     }
+}
+
+interface ApiMessage {
+    endpoint: string,
+    results: any
 }
 
 export function connect() {
@@ -36,11 +42,18 @@ export function connect() {
                 //console.log("String get: " + e.data)
                 let dataObject = JSON.parse(e.data)
                 console.log(dataObject)
+
                 let _dataObject = _(dataObject)
-                if (_dataObject.isArray()) {
+                let message = (dataObject as ApiMessage)
+                if ( message.endpoint == "requestProcessInformation" ) {
+                    /*
                     if ( _dataObject.any(o => _(o).chain().keys().contains("icon")) ) {
                         console.log("Tasks get")
+                        taskActions.updateTasks(dataObject as any as Task[])
                     }
+                    */
+                    console.log("Tasks get!")
+                    taskActions.updateTasks(message.results as TaskInfo[])
                 }
 
             }

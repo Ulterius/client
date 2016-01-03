@@ -21,7 +21,7 @@
         "src/action/task-actions.ts",
         "src/alt.ts",
         "src/config.ts",
-        "src/dispatcher.ts",
+        "src/globals.d.ts",
         "src/socket.ts",
         "src/store/abstract-store.ts",
         "src/store/task-store.ts",
@@ -32,6 +32,8 @@
         "typings/flux/flux.d.ts",
         "typings/jquery/jquery.d.ts",
         "typings/lodash/lodash.d.ts",
+        "typings/react-router/history.d.ts",
+        "typings/react-router/react-router.d.ts",
         "typings/react/react-dom.d.ts",
         "typings/react/react.d.ts"
     ]
