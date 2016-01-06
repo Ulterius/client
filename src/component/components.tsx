@@ -2,6 +2,7 @@
 //just testing things right now
 import React = require("react")
 import taskStore from "../store/task-store"
+import {createSortOnProperty} from "../util"
 
 /*
 export let Task = React.createClass<{ayy: string}, any>({
@@ -15,10 +16,10 @@ export let Task = React.createClass<{ayy: string}, any>({
 })
 */
 
-export class TaskList extends React.Component<{}, {tasks: Array<TaskInfo>}> {
+export class TaskList extends React.Component<{}, {tasks: Array<TaskInfo>, sortProperty: string}> {
     constructor(props) {
         super(props)
-        this.state = {tasks: []}
+        this.state = {tasks: [], sortProperty: "id"}
         this.onChange = this.onChange.bind(this)
     }
     componentDidMount() {
@@ -33,8 +34,23 @@ export class TaskList extends React.Component<{}, {tasks: Array<TaskInfo>}> {
         console.log(this.state)
     }
     render() {
+        if (this.state.tasks.length == 0) {
+            return (
+                <p>Loading task list; hang on pleaaase...</p>
+            )
+        }
+        if (this.state.sortProperty.length > 0) {
+            this.state.tasks.sort(createSortOnProperty<TaskInfo>(this.state.sortProperty))
+        }
         return (
             <table className="table">
+                <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th onClick={() => this.state.sortProperty = "id"}>ID</th>
+                        <th onClick={() => this.state.sortProperty = "name"}>Name</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {
                         this.state.tasks.map(task => {

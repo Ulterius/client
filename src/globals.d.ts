@@ -12,3 +12,8 @@ declare interface TaskInfo {
     ioWriteOperationsPerSec: number,
     ioReadOperationsPerSec: number
 }
+
+declare interface ApiMessage {
+    endpoint: string,
+    results: any
+}
