@@ -11,12 +11,17 @@
   "dependencies": {
     "alt": "^0.18.1",
     "backbone": "^1.2.3",
+    "css-loader": "^0.23.1",
     "flux": "^2.1.1",
     "history": "^1.17.0",
     "lodash": "^3.10.1",
+    "node-sass": "^3.4.2",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
-    "react-router": "^1.0.3"
+    "react-router": "^1.0.3",
+    "resolve-url-loader": "^1.4.3",
+    "sass-loader": "^3.1.2",
+    "style-loader": "^0.13.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

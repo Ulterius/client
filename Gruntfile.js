@@ -22,6 +22,10 @@ module.exports = function(grunt) {
                 {
                     test: /\.tsx?$/,
                     loader: 'ts-loader'
+                },
+                {
+                    test: /\.scss$/,
+                    loaders: ["style", "css", "resolve-url", "sass?sourceMap"]
                 }
             ]
         }
