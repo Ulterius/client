@@ -2,7 +2,7 @@
 //just testing things right now
 import React = require("react")
 import taskStore from "../store/task-store"
-import {createSortOnProperty} from "../util"
+import {createSortOnProperty, bytesToSize} from "../util"
 
 /*
 export let Task = React.createClass<{ayy: string}, any>({
@@ -16,7 +16,7 @@ export let Task = React.createClass<{ayy: string}, any>({
 })
 */
 
-export class TaskList extends React.Component<{}, {tasks: Array<TaskInfo>, sortProperty: string}> {
+export class TaskList extends React.Component<{}, {tasks?: Array<TaskInfo>, sortProperty?: string}> {
     constructor(props) {
         super(props)
         this.state = {tasks: [], sortProperty: "id"}
@@ -47,8 +47,10 @@ export class TaskList extends React.Component<{}, {tasks: Array<TaskInfo>, sortP
                 <thead>
                     <tr>
                         <th>Icon</th>
-                        <th onClick={() => this.state.sortProperty = "id"}>ID</th>
-                        <th onClick={() => this.state.sortProperty = "name"}>Name</th>
+                        <th onClick={() => this.setState({sortProperty: "id"})}>ID</th>
+                        <th onClick={() => this.setState({sortProperty: "cpuUsage"})}>CPU</th>
+                        <th onClick={() => this.setState({sortProperty: "ramUsage"})}>Memory</th>
+                        <th onClick={() => this.setState({sortProperty: "name"})}>Name</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,6 +72,8 @@ export class Task extends React.Component<{key: number, info: TaskInfo}, {}> {
             <tr>
                 <td><img src={"data:image/png;base64," + this.props.info.icon} /></td>
                 <td>{this.props.info.id}</td>
+                <td>{this.props.info.cpuUsage + "%"}</td>
+                <td>{bytesToSize(this.props.info.ramUsage)}</td>
                 <td>{this.props.info.name}</td>
             </tr>
         )

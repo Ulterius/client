@@ -6,6 +6,11 @@ import TaskStore from "./store/task-store"
 
 $(document).ready(function() {
     socket.connect()
-    ReactDOM.render(<TaskList />, window.document.getElementById("ayy"))
+    ReactDOM.render(
+        <div className="container">
+            <TaskList />
+        </div>,
+        window.document.getElementById("app")
+    )
     console.log(TaskStore)
 })
