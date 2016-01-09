@@ -1,6 +1,6 @@
 
 declare let require: (string) => any
-require("../style/style.scss")
+require("../style/style.sass")
 
 import React = require("react")
 import ReactDOM = require("react-dom")

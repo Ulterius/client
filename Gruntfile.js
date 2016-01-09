@@ -24,8 +24,8 @@ module.exports = function(grunt) {
                     loader: 'ts-loader'
                 },
                 {
-                    test: /\.scss$/,
-                    loaders: ["style", "css", "resolve-url", "sass?sourceMap"]
+                    test: /\.s(c|a)ss$/,
+                    loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
                 }
             ]
         }
