@@ -5,7 +5,10 @@ import React = require("react")
 import taskStore from "../store/task-store"
 import {createSortOnProperty, bytesToSize} from "../util"
 
-export class TaskList extends React.Component<{}, {tasks?: Array<TaskInfo>, sortProperty?: string, sortType?: string}> {
+export class TaskList extends React.Component<
+    {}, 
+    {tasks?: Array<TaskInfo>, sortProperty?: string, sortType?: string}
+> {
     constructor(props) {
         super(props)
         this.state = {tasks: [], sortProperty: "id", sortType: "asc"}
@@ -72,6 +75,40 @@ export class Task extends React.Component<{key: number, info: TaskInfo}, {}> {
                 <td>{this.props.info.cpuUsage + "%"}</td>
                 <td>{bytesToSize(this.props.info.ramUsage)}</td>
             </tr>
+        )
+    }
+}
+
+export class Bars extends React.Component<{ values: [string, number][] }, {}> {
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        return (
+            <table className="table">
+                <tbody>{
+                    this.props.values.map(value => {
+                        let [name, percent] = value
+                        return (
+                            <tr>
+                                <td>{name}</td>
+                                <td>
+                                    <div className="progress">
+                                        <div
+                                        className="progress-bar"
+                                        aria-valuenow={percent.toString()}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        style={{width: `${percent}%`}}>
+                                            {percent + "%"}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        )
+                    })
+                }</tbody>
+            </table>
         )
     }
 }

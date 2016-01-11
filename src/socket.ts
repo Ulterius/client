@@ -5,14 +5,14 @@ import * as apiLayer from "./api-layer"
 
 let socket = new WebSocket(config.server)
 
-function sendCommand(action, args?) {
+export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
         action: action,
         apiKey: config.key
     }
     if (args) packet.args = args
     try {
-        socket.send(JSON.stringify(packet));
+        sock.send(JSON.stringify(packet));
     } catch (exception) {
         console.log(exception);
     }
@@ -24,10 +24,10 @@ export function connect() {
 
         socket.onopen = function() {
             console.log('Socket Status: ' + socket.readyState + ' (open)')
-            sendCommand("requestprocessinformation")
+            sendCommand(socket, "requestprocessinformation")
 
             setInterval(
-                (() => sendCommand("requestprocessinformation")),
+                (() => sendCommand(socket, "requestprocessinformation")),
                 5000
             )
 
@@ -56,6 +56,6 @@ export function connect() {
         console.log(err)
     }
     finally {
-
+        return socket
     }
 }

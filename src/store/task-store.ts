@@ -2,8 +2,6 @@ import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
 import taskActions from "../action/task-actions"
 
-//{"id":0,"path":"null","icon":"null","name":"_Total","cpuUsage":100,"ramUsage":3877462016,"threads":2428,"handles":91196,"ioWriteOperationsPerSec":191,"ioReadOperationsPerSec":5731}
-
 interface State {
     tasks: TaskInfo[]
 }
