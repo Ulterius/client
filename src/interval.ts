@@ -1,18 +1,23 @@
 import {sendCommand} from "./socket"
 
+interface Command {
+    endPoint: string,
+    time: number,
+    args?: any
+}
+
+//retardo-constructor
+function command(endPoint: string, time: number, args?): Command {
+    return {endPoint, time, args}
+}
+
 export default function setIntervals(socket: WebSocket) {
     let intervals: {[key: string]: number}
-    intervals = {}
     socket.onopen = function() {
-        ["requestProcessInformation",
-         "requestSystemInformation"].forEach(cmd => {
-            setCommandInterval(
-                intervals,
-                socket,
-                cmd,
-                5000
-            )
-        })
+        intervals = setCommandIntervals(socket, [
+            command("requestProcessInformation", 5000),
+            command("requestSystemInformation", 10000)
+        ])
     }
     return intervals
     //I know it's not async, but I don't think they'll be needed
@@ -20,9 +25,24 @@ export default function setIntervals(socket: WebSocket) {
     //pass by reference right? it should be fine.
 }
 
+function setCommandIntervals(socket: WebSocket, commands: Command[]) {
+    let intervals: {[key: string]: number} = {}
+    for (let command of commands) {
+        setCommandInterval(
+            intervals,
+            socket,
+            command.time,
+            command.endPoint,
+            command.args
+        )
+    }
+    return intervals
+}
+
 function setCommandInterval(graftTo: any,
                             socket: WebSocket,
+                            ms: number,
                             command: string,
-                            ms: number) {
-    graftTo[command] = setInterval( (() => sendCommand(socket, command)), ms )
+                            args?) {
+    graftTo[command] = setInterval( (() => sendCommand(socket, command, args)), ms )
 }
