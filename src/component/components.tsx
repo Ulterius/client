@@ -19,7 +19,6 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
 
     render() {
         if (this.state.stats) {
-            console.log(this.state.stats)
             let cpuUsages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
                 return (["CPU"+i, e] as [string, number])
             })
