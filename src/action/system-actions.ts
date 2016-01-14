@@ -9,6 +9,7 @@ interface Actions {
 class SystemActions extends AbstractActions implements Actions {
 
     updateStats(stats: SystemInfo) {
+        console.log(stats)
         return stats
     }
     updateNet(net: NetworkInfo) {

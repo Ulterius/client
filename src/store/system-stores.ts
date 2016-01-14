@@ -19,8 +19,8 @@ class SystemStore extends AbstractStoreModel<State> {
 
     handleUpdateStats(stats: SystemInfo) {
         this.stats = stats
-        console.log("TaskStore is updating tasks.")
+        console.log("System stats store is updating.")
     }
 }
 
-export default alt.createStore<State>(SystemStore, "SystemStore")
+export let systemStore = alt.createStore<State>(SystemStore, "SystemStore")

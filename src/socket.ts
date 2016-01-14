@@ -3,7 +3,7 @@ import * as _ from "lodash"
 
 import * as apiLayer from "./api-layer"
 
-let socket = new WebSocket(config.server)
+export let socket = new WebSocket(config.server)
 
 export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
@@ -24,13 +24,6 @@ export function connect() {
 
         socket.onopen = function() {
             console.log('Socket Status: ' + socket.readyState + ' (open)')
-            sendCommand(socket, "requestprocessinformation")
-
-            setInterval(
-                (() => sendCommand(socket, "requestprocessinformation")),
-                5000
-            )
-
         }
 
         socket.onmessage = function(e) {
@@ -38,10 +31,15 @@ export function connect() {
                 let dataObject = JSON.parse(e.data)
                 console.log(dataObject)
 
-                let _dataObject = _(dataObject)
                 let message = (dataObject as ApiMessage)
+                if (apiLayer[message.endpoint] && typeof apiLayer[message.endpoint] == "function") {
+                    apiLayer[message.endpoint](message.results)
+                }
+                else {
+                    console.log("Uncaught message! " + message.endpoint)
+                    console.log(message)
+                }
 
-                apiLayer[message.endpoint](message.results)
             }
             else if (e.data instanceof ArrayBuffer) {
                 console.log("ArrayBuffer get (for some reason): " + e.data)

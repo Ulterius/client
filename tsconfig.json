@@ -31,6 +31,7 @@
         "src/store/task-store.ts",
         "src/util.ts",
         "src/component/components.tsx",
+        "src/component/tasks.tsx",
         "src/index.tsx",
         "typings/alt/alt.d.ts",
         "typings/es6-promise/es6-promise.d.ts",

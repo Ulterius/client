@@ -5,7 +5,8 @@ require("../style/style.sass")
 import React = require("react")
 import ReactDOM = require("react-dom")
 import * as socket from "./socket"
-import {TaskList, Bars} from "./component/components"
+import {TaskList} from "./component/tasks"
+import {Bars, Stats} from "./component/components"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 
@@ -16,13 +17,7 @@ $(document).ready(function() {
 
             <div className="sidebar col-md-4 hidden-sm hidden-xs" data-spy="affix">
                 <h1 className="text-center">Ulterius</h1>
-                <Bars values = {
-                    [
-                        ["one", 50],
-                        ["two", 60],
-                        ["three", 70]
-                    ]
-                } />
+                <Stats />
             </div>
 
             <div className="task-list">

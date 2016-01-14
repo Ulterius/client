@@ -1,81 +1,35 @@
-//yeah yeah I'll break this shit up later
-//just testing things right now
 
 import React = require("react")
-import taskStore from "../store/task-store"
-import {createSortOnProperty, bytesToSize} from "../util"
+import {systemStore} from "../store/system-stores"
 
-export class TaskList extends React.Component<
-    {}, 
-    {tasks?: Array<TaskInfo>, sortProperty?: string, sortType?: string}
-> {
-    constructor(props) {
-        super(props)
-        this.state = {tasks: [], sortProperty: "id", sortType: "asc"}
-        this.onChange = this.onChange.bind(this)
-    }
+export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
     componentDidMount() {
-        taskStore.listen(this.onChange)
+        systemStore.listen(this.onChange)
     }
     componentWillUnmount() {
-        taskStore.unlisten(this.onChange)
+        systemStore.unlisten(this.onChange)
     }
-    onChange(tasks) {
-        this.setState(tasks)
-        console.log(this.state)
+    constructor(props) {
+        super(props)
+        this.state = {}
     }
-    setSort(prop: string) {
-        if (this.state.sortProperty == prop) {
-            this.setState({ sortType: (this.state.sortType == "asc" ? "desc" : "asc") })
-        }
-        else {
-            this.setState({sortProperty: prop})
-        }
+    onChange = (stats) => {
+        this.setState(stats)
     }
+
     render() {
-        if (this.state.tasks.length == 0) {
+        if (this.state.stats) {
+            console.log(this.state.stats)
+            let cpuUsages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
+                return (["CPU"+i, e] as [string, number])
+            })
             return (
-                <p>Loading task list; hang on pleaaase...</p>
+                <Bars values={cpuUsages} />
             )
         }
-        if (this.state.sortProperty.length > 0) {
-            this.state.tasks.sort(createSortOnProperty<TaskInfo>(this.state.sortProperty, this.state.sortType))
+        else {
+            return <p>Loading stats...</p>
         }
-        return (
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Icon</th>
-                        <th onClick={() => this.setSort("name")}>Name</th>
-                        <th onClick={() => this.setSort("id")}>ID</th>
-                        <th onClick={() => this.setSort("cpuUsage")}>CPU</th>
-                        <th onClick={() => this.setSort("ramUsage")}>Memory</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        this.state.tasks.map(task => {
-                            return (<Task key={task.id} info={task} />)
-                        })
-                    }
-                </tbody>
-            </table>
-        )
-    }
-}
-
-export class Task extends React.Component<{key: number, info: TaskInfo}, {}> {
-
-    render() {
-        return (
-            <tr>
-                <td><img src={"data:image/png;base64," + this.props.info.icon} /></td>
-                <td>{this.props.info.name}</td>
-                <td>{this.props.info.id}</td>
-                <td>{this.props.info.cpuUsage + "%"}</td>
-                <td>{bytesToSize(this.props.info.ramUsage)}</td>
-            </tr>
-        )
     }
 }
 
@@ -86,28 +40,33 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
     render() {
         return (
             <table className="table">
-                <tbody>{
+                <tbody>
+                {
                     this.props.values.map(value => {
                         let [name, percent] = value
                         return (
                             <tr>
-                                <td>{name}</td>
-                                <td>
+                                <td style={{width: "30%"}}>{name}</td>
+                                <td style={{width: "70%"}}>
                                     <div className="progress">
                                         <div
                                         className="progress-bar"
                                         aria-valuenow={percent.toString()}
                                         aria-valuemin="0"
                                         aria-valuemax="100"
-                                        style={{width: `${percent}%`}}>
-                                            {percent + "%"}
+                                        style={{
+                                            width: `${percent}%`,
+                                            minWidth: "15%"
+                                        }}>
+                                            {percent.toFixed(0) + "%"}
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                         )
                     })
-                }</tbody>
+                }
+                </tbody>
             </table>
         )
     }

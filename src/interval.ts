@@ -44,5 +44,6 @@ function setCommandInterval(graftTo: any,
                             ms: number,
                             command: string,
                             args?) {
+    sendCommand(socket, command, args)
     graftTo[command] = setInterval( (() => sendCommand(socket, command, args)), ms )
 }
