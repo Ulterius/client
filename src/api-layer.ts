@@ -3,6 +3,7 @@ import systemActions from "./action/system-actions"
 import {messageActions} from "./action/misc-actions"
 import {socket} from "./socket"
 import setIntervals from "./interval"
+import appState from "./app-state"
 
 export function requestProcessInformation(tasks: TaskInfo[]) {
     console.log("Tasks get")
@@ -22,5 +23,6 @@ export function killProcess(process: KilledProcessInfo) {
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
         setIntervals(socket)
+        appState.authenticated = true
     }
 }

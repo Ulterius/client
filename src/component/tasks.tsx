@@ -1,7 +1,8 @@
 import React = require("react")
 import taskStore from "../store/task-store"
 import {createSortOnProperty, bytesToSize} from "../util"
-import {socket, sendCommand} from "../socket"
+import {socket, sendCommand, sendCommandToDefault} from "../socket"
+import appState from "../app-state"
 
 export class TaskList extends React.Component<
     {},
@@ -14,6 +15,9 @@ export class TaskList extends React.Component<
     }
     componentDidMount() {
         taskStore.listen(this.onChange)
+        if (appState.authenticated) {
+            sendCommandToDefault("requestProcessInformation")
+        }
     }
     componentWillUnmount() {
         taskStore.unlisten(this.onChange)

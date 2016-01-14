@@ -1,13 +1,13 @@
 import React = require("react")
-import {Router, Route, Link} from 'react-router'
 
 import * as socket from "../socket"
 import {TaskList} from "../component/tasks"
 import {Bars, Stats} from "../component/components"
 import TaskStore from "../store/task-store"
 import setIntervals from "../interval"
+import {Router, Route, Link} from 'react-router'
 
-export default class App extends React.Component<{}, {}> {
+export default class App extends React.Component<{children?: any, location?: any}, {}> {
     render() {
         return (
             <div className="main">
@@ -18,11 +18,19 @@ export default class App extends React.Component<{}, {}> {
                 </div>
 
                 <div className="task-list">
-                    <ul className="nav nav-pills">
-                        <li role="presentation"><a>Task Manager</a></li>
-                        <li><a>System Info</a></li>
+                    <ul className="nav nav-tabs">
+                        <li className={
+                            (this.props.location.pathname == "/tasks" ||
+                            this.props.location.pathname == "/")  ?  "active": ""}>
+                            <Link to="/tasks">Task Manager</Link>
+                        </li>
+                        <li className={this.props.location.pathname == "/info" ?  "active" : ""} >
+                            <Link to="/info">System Info</Link>
+                        </li>
                     </ul>
-                    <TaskList />
+                    <div>
+                    {this.props.children}
+                    </div>
                 </div>
             </div>
         )

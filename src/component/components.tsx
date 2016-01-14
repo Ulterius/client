@@ -71,3 +71,9 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
         )
     }
 }
+
+export class SystemPage extends React.Component<{}, {}> {
+    render() {
+        return <p></p>
+    }
+}
