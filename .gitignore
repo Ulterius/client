@@ -4,3 +4,4 @@ node_modules/**
 !src/node_modules/**
 .DS_Store
 src/config.ts
+npm-debug.log
