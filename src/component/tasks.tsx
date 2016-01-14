@@ -16,7 +16,8 @@ export class TaskList extends React.Component<
     componentDidMount() {
         taskStore.listen(this.onChange)
         if (appState.authenticated) {
-            sendCommandToDefault("requestProcessInformation")
+            //sendCommandToDefault("requestProcessInformation")
+            this.setState(taskStore.getState())
         }
     }
     componentWillUnmount() {
