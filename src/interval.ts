@@ -13,16 +13,13 @@ function command(endPoint: string, time: number, args?): Command {
 
 export default function setIntervals(socket: WebSocket) {
     let intervals: {[key: string]: number}
-    socket.onopen = function() {
-        intervals = setCommandIntervals(socket, [
-            command("requestProcessInformation", 5000),
-            command("requestSystemInformation", 10000)
-        ])
-    }
+    intervals = setCommandIntervals(socket, [
+        command("requestProcessInformation", 5000),
+        command("requestSystemInformation", 10000)
+    ])
     return intervals
-    //I know it's not async, but I don't think they'll be needed
-    //until a good while after the socket is opened
-    //pass by reference right? it should be fine.
+    //this won't ever be called until the socket is guaranteed to be open
+    //since it needs an auth response
 }
 
 function setCommandIntervals(socket: WebSocket, commands: Command[]) {

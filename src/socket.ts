@@ -17,6 +17,10 @@ export function sendCommand(sock: WebSocket, action, args?) {
         console.log(exception);
     }
 }
+//jank ass curry
+export function sendCommandToDefault(action, args?) {
+    sendCommand(socket, action, args)
+}
 
 export function connect() {
     try {

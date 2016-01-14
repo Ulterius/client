@@ -156,3 +156,24 @@ declare interface ApiMessage {
     endpoint: string,
     results: any
 }
+
+declare interface KilledProcessInfo {
+    processId: number,
+    processKilled: boolean,
+    processName: string
+}
+/*
+{
+    "endpoint":"authentication",
+    "results": {
+        "endpoint":"authentication",
+        "authenticated":true,
+        "message":"Login was successfull"
+    }
+}
+*/
+
+declare interface AuthInfo {
+    authenticated: boolean,
+    message: string
+}

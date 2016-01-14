@@ -4,27 +4,23 @@ require("../style/style.sass")
 
 import React = require("react")
 import ReactDOM = require("react-dom")
-import * as socket from "./socket"
+import {connect, socket, sendCommandToDefault} from "./socket"
 import {TaskList} from "./component/tasks"
 import {Bars, Stats} from "./component/components"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
+import App from "./component/app"
+import config from "./config"
+
 
 $(document).ready(function() {
-    setIntervals(socket.connect())
+    connect().onopen = function() {
+        sendCommandToDefault("authenticate", config.auth.password)
+    }
+
+    //setIntervals(socket.connect())
     ReactDOM.render(
-        <div className="main">
-
-            <div className="sidebar col-md-4 hidden-sm hidden-xs" data-spy="affix">
-                <h1 className="text-center">Ulterius</h1>
-                <Stats />
-            </div>
-
-            <div className="task-list">
-                <TaskList />
-            </div>
-
-        </div>,
+        <App />,
         window.document.getElementById("app")
     )
     console.log(TaskStore)
