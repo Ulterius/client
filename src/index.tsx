@@ -17,10 +17,9 @@ import appState from "./app-state"
 
 $(document).ready(function() {
     connect().onopen = function() {
-        sendCommandToDefault("authenticate", config.auth.password)
+        console.log('Socket Status: ' + socket.readyState + ' (open)')
+        //sendCommandToDefault("authenticate", config.auth.password)
     }
-
-    //setIntervals(socket.connect())
     ReactDOM.render((
         <Router>
             <Route path="/" component={App}>
@@ -31,5 +30,4 @@ $(document).ready(function() {
         </Router>),
         window.document.getElementById("app")
     )
-    console.log(TaskStore)
 })

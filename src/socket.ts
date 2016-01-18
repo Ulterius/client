@@ -7,10 +7,18 @@ export let socket = new WebSocket(config.server)
 
 export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
-        action: action,
-        apiKey: config.key
+        endpoint: action,
+        apiKey: config.key,
+        syncKey: "anus"
     }
-    if (args) packet.args = args
+    if (args) {
+        if (args instanceof Array) {
+            packet.args = args
+        }
+        else {
+            packet.args = [args]
+        }
+    }
     try {
         sock.send(JSON.stringify(packet));
     } catch (exception) {
@@ -26,23 +34,36 @@ export function connect() {
     try {
         console.log('Socket Status: ' + socket.readyState)
 
-        socket.onopen = function() {
-            console.log('Socket Status: ' + socket.readyState + ' (open)')
-        }
-
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
                 let dataObject = JSON.parse(e.data)
+
                 console.log(dataObject)
 
                 let message = (dataObject as ApiMessage)
+
+                let caught = false
+                for (let endpoint of Object.keys(apiLayer)) {
+                    if (message.endpoint.toLowerCase() == endpoint.toLowerCase() &&
+                        typeof apiLayer[endpoint] == "function") {
+
+                        apiLayer[endpoint](message.results)
+                        caught = true
+                    }
+                }
+                if (!caught) {
+                    console.log("Uncaught message! " + message.endpoint)
+                }
+
+                /*
                 if (apiLayer[message.endpoint] && typeof apiLayer[message.endpoint] == "function") {
                     apiLayer[message.endpoint](message.results)
                 }
+
                 else {
                     console.log("Uncaught message! " + message.endpoint)
-                    console.log(message)
                 }
+                */
 
             }
             else if (e.data instanceof ArrayBuffer) {
