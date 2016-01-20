@@ -3,4 +3,6 @@ Motherboard,
 Memory Chip,
 Microchip,
 Solid State Drive,
+Routers,
+PC
 All by Oliviu Stoian from the Noun Project

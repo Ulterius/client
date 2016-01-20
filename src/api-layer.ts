@@ -21,6 +21,11 @@ export function requestCpuInformation(cpu: CpuInfo) {
     systemActions.updateCPU(cpu)
 }
 
+export function requestOSInformation(os: OSInfo) {
+    console.log("OS info get")
+    systemActions.updateOS(os)
+}
+
 export function requestNetworkInformation(net: NetworkInfo) {
     console.log("Net information get")
     systemActions.updateNet(net)
@@ -36,6 +41,7 @@ export function authentication(info: AuthInfo) {
         setIntervals(socket)
         sendCommandToDefault("requestCpuInformation")
         sendCommandToDefault("requestNetworkInformation")
+        sendCommandToDefault("requestOSInformation")
         appState.authenticated = true
     }
 }

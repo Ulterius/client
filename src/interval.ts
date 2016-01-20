@@ -15,7 +15,7 @@ export default function setIntervals(socket: WebSocket) {
     let intervals: {[key: string]: number}
     intervals = setCommandIntervals(socket, [
         command("requestProcessInformation", 5000),
-        command("requestSystemInformation", 10000)
+        command("requestSystemInformation", 10000),
     ])
     return intervals
     //this won't ever be called until the socket is guaranteed to be open
