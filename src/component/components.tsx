@@ -1,6 +1,6 @@
 
 import React = require("react")
-import {systemStore} from "../store/system-stores"
+import {systemStore, auxillarySystemStore} from "../store/system-stores"
 
 export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
     componentDidMount() {
@@ -13,6 +13,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
         super(props)
         this.state = {}
     }
+
     onChange = (stats) => {
         this.setState(stats)
     }
@@ -71,7 +72,27 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
     }
 }
 
-export class SystemPage extends React.Component<{}, {}> {
+export class SystemPage extends React.Component<{}, {
+    cpu: CpuInfo,
+    os: OSInfo,
+    network: NetworkInfo
+}> {
+
+    componentDidMount() {
+        auxillarySystemStore.listen(this.onChange)
+        this.setState(auxillarySystemStore.getState())
+    }
+    componentWillUnmount() {
+        auxillarySystemStore.unlisten(this.onChange)
+    }
+
+    constructor(props) {
+        super(props)
+    }
+
+    onChange = () => {
+
+    }
     render() {
         return <p></p>
     }

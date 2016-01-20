@@ -63,7 +63,14 @@ declare interface SystemInfo {
     runningProceses: number,
     upTime: number,
     runningAsAdmin: boolean,
-    drives: DriveInfo[]
+    drives: DriveInfo[],
+    motherBoard: string,
+    cdRom: string,
+    biosInfo: {
+        biosManufacturer: string,
+        biosSerial: string,
+        biosCaption: string
+    }
 }
 
 /*
@@ -96,7 +103,9 @@ declare interface CpuInfo {
     l3Cache: number,
     cores: number,
     threads: number,
-    architecture: string
+    architecture: string,
+    currentClockSpeed: number, //in mhz
+    currentVoltage: number
 }
 
 /*

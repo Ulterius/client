@@ -16,6 +16,16 @@ export function requestsysteminformation(stats: SystemInfo) {
     systemActions.updateStats(stats)
 }
 
+export function requestCpuInformation(cpu: CpuInfo) {
+    console.log("CPU information get")
+    systemActions.updateCPU(cpu)
+}
+
+export function requestNetworkInformation(net: NetworkInfo) {
+    console.log("Net information get")
+    systemActions.updateNet(net)
+}
+
 export function killProcess(process: KilledProcessInfo) {
     console.log("Process killed")
     messageActions.processHasBeenKilled(process)
@@ -24,6 +34,8 @@ export function killProcess(process: KilledProcessInfo) {
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
         setIntervals(socket)
+        sendCommandToDefault("requestCpuInformation")
+        sendCommandToDefault("requestNetworkInformation")
         appState.authenticated = true
     }
 }

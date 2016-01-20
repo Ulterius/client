@@ -9,13 +9,12 @@ import {Bars, Stats, SystemPage} from "./component/components"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 import App from "./component/app"
-import config from "./config"
 import {IndexRoute, Router, Route, Link} from 'react-router'
 import {TaskList} from "./component/tasks"
-import appState from "./app-state"
 
 
 $(document).ready(function() {
+    (window as any).send = sendCommandToDefault
     connect().onopen = function() {
         console.log('Socket Status: ' + socket.readyState + ' (open)')
         //sendCommandToDefault("authenticate", config.auth.password)

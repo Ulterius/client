@@ -19,7 +19,6 @@ class TaskStore extends AbstractStoreModel<State> {
 
     handleUpdateTasks(tasks: TaskInfo[]) {
         this.tasks = tasks
-        console.log("TaskStore is updating tasks.")
     }
 }
 
