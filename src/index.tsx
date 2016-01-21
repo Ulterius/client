@@ -5,7 +5,8 @@ require("../style/style.sass")
 import React = require("react")
 import ReactDOM = require("react-dom")
 import {connect, socket, sendCommandToDefault} from "./socket"
-import {Bars, Stats, SystemPage} from "./component/components"
+import {Bars} from "./component/components"
+import {Stats, SystemPage} from "./component/system"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 import App from "./component/app"

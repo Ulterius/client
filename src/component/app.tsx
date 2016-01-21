@@ -2,7 +2,8 @@ import React = require("react")
 
 import * as socket from "../socket"
 import {TaskList} from "../component/tasks"
-import {Bars, Stats} from "../component/components"
+import {Bars} from "../component/components"
+import {Stats} from "./system";
 import TaskStore from "../store/task-store"
 import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'

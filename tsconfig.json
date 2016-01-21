@@ -35,6 +35,7 @@
         "src/util.ts",
         "src/component/app.tsx",
         "src/component/components.tsx",
+        "src/component/system.tsx",
         "src/component/tasks.tsx",
         "src/index.tsx",
         "typings/alt/alt.d.ts",

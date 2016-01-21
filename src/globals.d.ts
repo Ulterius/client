@@ -52,11 +52,24 @@ declare interface DriveInfo {
     VolumeLabel: string,
     DriveFormat: string,
     DriveType: string,
-    RootDirectory: string
+    RootDirectory: string,
+    Model: string
+}
+
+declare interface NetInterfaceInfo {
+    Id: string,
+    Name: string,
+    Description: string,
+    NetworkInterfaceType: number,
+    OperationalStatus: number,
+    Speed: number,
+    IsReceiveOnly: boolean,
+    SupportsMulticast: boolean
 }
 
 declare interface SystemInfo {
     cpuUsage: number[],
+    cpuTemps: number[],
     totalMemory: number,
     availableMemory: number,
     usedMemory: number,
@@ -70,6 +83,12 @@ declare interface SystemInfo {
         biosManufacturer: string,
         biosSerial: string,
         biosCaption: string
+    },
+    networkInfo: {
+        totalNetworkInterfaces: number,
+        networkInterfaces: NetInterfaceInfo[],
+        totalBytesReceived: number,
+        totalBytesSent: number
     }
 }
 
