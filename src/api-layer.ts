@@ -6,6 +6,15 @@ import setIntervals from "./interval"
 import appState from "./app-state"
 import config from "./config"
 
+export let helpers = {
+    requestAuxillarySystemInformation: function() {
+        sendCommandToDefault("requestCpuInformation")
+        sendCommandToDefault("requestNetworkInformation")
+        sendCommandToDefault("requestOSInformation")
+        sendCommandToDefault("requestgpuinformation")
+    }
+}
+
 export function requestProcessInformation(tasks: TaskInfo[]) {
     console.log("Tasks get")
     taskActions.updateTasks(tasks)
@@ -31,6 +40,11 @@ export function requestNetworkInformation(net: NetworkInfo) {
     systemActions.updateNet(net)
 }
 
+export function requestGpuInformation(gpus: GpusInfo) {
+    console.log("Gpu information get")
+    systemActions.updateGpu(gpus)
+}
+
 export function killProcess(process: KilledProcessInfo) {
     console.log("Process killed")
     messageActions.processHasBeenKilled(process)
@@ -39,9 +53,7 @@ export function killProcess(process: KilledProcessInfo) {
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
         setIntervals(socket)
-        sendCommandToDefault("requestCpuInformation")
-        sendCommandToDefault("requestNetworkInformation")
-        sendCommandToDefault("requestOSInformation")
+        helpers.requestAuxillarySystemInformation()
         appState.authenticated = true
     }
 }

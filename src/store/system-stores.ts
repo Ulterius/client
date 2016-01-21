@@ -26,7 +26,8 @@ class SystemStore extends AbstractStoreModel<SystemState> {
 interface AuxState {
     cpu: CpuInfo,
     network: NetworkInfo,
-    os: OSInfo
+    os: OSInfo,
+    gpu: GpusInfo
 }
 
 //system information that shouldn't need to be updated that often
@@ -34,12 +35,14 @@ class AuxillarySystemStore extends AbstractStoreModel<AuxState> {
     cpu: CpuInfo
     network: NetworkInfo
     os: OSInfo
+    gpu: GpusInfo
 
     constructor() {
         this.bindListeners({
             handleUpdateCpu: systemActions.updateCPU,
             handleUpdateNet: systemActions.updateNet,
-            handleUpdateOS: systemActions.updateOS
+            handleUpdateOS: systemActions.updateOS,
+            handleUpdateGpu: systemActions.updateGpu
         })
         super()
     }
@@ -54,6 +57,10 @@ class AuxillarySystemStore extends AbstractStoreModel<AuxState> {
 
     handleUpdateOS(info: OSInfo) {
         this.os = info
+    }
+
+    handleUpdateGpu(info: GpusInfo) {
+        this.gpu = info
     }
 }
 

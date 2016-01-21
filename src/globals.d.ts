@@ -161,6 +161,24 @@ declare interface NetworkInfo {
     internalIp: string
 }
 
+declare interface GpusInfo {
+    gpus: GpuInfo[]
+}
+
+declare interface GpuInfo {
+    AdapterCompatibility: string,
+    AdapterRam: string,
+    DriverVersion: string,
+    InstalledDisplayDrivers: string[],
+    Name: string,
+    RefreshRate: number,
+    ScreenInfo: string,
+    VideoArchitecture: number,
+    VideoMemoryType: number,
+    Status: string,
+    Availability: number
+}
+
 declare interface ApiMessage {
     endpoint: string,
     results: any

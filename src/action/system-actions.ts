@@ -6,6 +6,7 @@ interface Actions {
     updateNet(net: NetworkInfo): NetworkInfo
     updateCPU(cpu: CpuInfo): CpuInfo
     updateOS(os: OSInfo): OSInfo
+    updateGpu(gpus: GpusInfo): GpusInfo
 }
 
 class SystemActions extends AbstractActions implements Actions {
@@ -14,17 +15,17 @@ class SystemActions extends AbstractActions implements Actions {
         console.log(stats)
         return stats
     }
-
     updateNet(net: NetworkInfo) {
         return net
     }
-
     updateCPU(cpu: CpuInfo) {
         return cpu
     }
-
     updateOS(os: OSInfo) {
         return os
+    }
+    updateGpu(gpus: GpusInfo) {
+        return gpus
     }
 }
 

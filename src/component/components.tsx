@@ -1,5 +1,6 @@
 
 import React = require("react")
+import {GpuAvailability, bytesToSize} from "../util"
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
 
 export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
@@ -20,16 +21,42 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
 
     render() {
         if (this.state.stats) {
-            let cpuUsages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
+            let usages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
                 return (["CPU"+i, e] as [string, number])
             })
+            usages.push(["RAM", (this.state.stats.usedMemory/this.state.stats.totalMemory)*100])
             return (
-                <Bars values={cpuUsages} />
+                <Bars values={usages} />
             )
         }
         else {
             return <p>Loading stats...</p>
         }
+    }
+}
+
+export class Bar extends React.Component<{value: number, style?: any}, {}> {
+    render() {
+        let percent = this.props.value
+        return (
+            <div className="progress" style={this.props.style || {}}>
+                <div
+                className={
+                    "progress-bar progress-bar-" +
+                    (percent < 60 ? "primary":
+                        (percent < 80 ? "warning" : "danger"))
+                }
+                aria-valuenow={percent.toString()}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style={{
+                    width: `${percent}%`,
+                    minWidth: "15%"
+                }}>
+                    {percent.toFixed(0) + "%"}
+                </div>
+            </div>
+        )
     }
 }
 
@@ -50,7 +77,11 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
                                 <td style={{width: "70%"}}>
                                     <div className="progress">
                                         <div
-                                        className="progress-bar"
+                                        className={
+                                            "progress-bar progress-bar-" +
+                                            (percent < 60 ? "primary":
+                                                (percent < 80 ? "warning" : "danger"))
+                                        }
                                         aria-valuenow={percent.toString()}
                                         aria-valuemin="0"
                                         aria-valuemax="100"
@@ -102,7 +133,8 @@ export class SystemPage extends React.Component<{}, {
     cpu?: CpuInfo,
     os?: OSInfo,
     network?: NetworkInfo,
-    stats?: SystemInfo
+    stats?: SystemInfo,
+    gpu?: GpusInfo
 }> {
 
     componentDidMount() {
@@ -127,32 +159,67 @@ export class SystemPage extends React.Component<{}, {
     }
 
     render() {
-        if (this.state.os && this.state.cpu && this.state.network) {
+        let {os, cpu, network, gpu, stats} = this.state
+        if (os && cpu && network && gpu && stats) {
             return (
                 <div style={{marginLeft: 30}}>
                     <IconMedia src="/img/icon/pc.svg" size={[40, 75]} alt="PC">
                         <h4 className="media-heading">Operating System</h4>
-                        {this.state.os.name} {this.state.os.architecture}, version {this.state.os.version}
+                        {os.name} {os.architecture}, version {os.version}
                         <br />
-                        build {this.state.os.build}
+                        build {os.build}
                     </IconMedia>
                     <IconMedia src="/img/icon/microchip.svg" size={[60, 75]} alt="chip">
                         <h4 className="media-heading">CPU</h4>
-                        {this.state.cpu.cpuName} running at {this.state.cpu.speedMhz} Mhz
+                        {cpu.cpuName} running at {cpu.speedMhz} Mhz
                         <br />
-                        {this.state.cpu.cores} cores and {this.state.cpu.threads} threads
+                        {cpu.cores} cores and {cpu.threads} threads
                     </IconMedia>
                     <IconMedia src="/img/icon/motherboard.svg" size={[60, 67]} alt="motherboard">
                         <h4 className="media-heading">Motherboard</h4>
-                        {this.state.stats.motherBoard}
+                        {stats.motherBoard}
                     </IconMedia>
                     <IconMedia src="/img/icon/routers.svg" size={[60, 58]} alt="routers">
                         <h4 className="media-heading">Network</h4>
-                        Public IP address is {this.state.network.publicIp}
+                        Public IP address is {network.publicIp}
                         <br />
-                        Internal IP address is {this.state.network.internalIp}
+                        Internal IP address is {network.internalIp}
                         <br />
-                        MAC address is {this.state.network.macAddress}
+                        MAC address is {network.macAddress}
+                    </IconMedia>
+                    <IconMedia src="/img/icon/videocard.svg" size={[60, 55]} alt="GPU">
+                        <h4 className="media-heading">{gpu.gpus.length > 1 ? "GPUs" : "GPU"}</h4>
+                        {gpu.gpus.map((gpu, i) => {
+                            return (
+                                <p>
+                                    {gpu.Name} <br />
+                                    Driver version {gpu.DriverVersion} <br />
+                                    <span
+                                    className={"label label-" + (gpu.Status == "OK" ? "success" : "danger")}>
+                                        {gpu.Status}
+                                    </span>
+                                    &nbsp;
+                                    <span className="label label-default">
+                                        {GpuAvailability[gpu.Availability]}
+                                    </span>
+                                </p>
+                            )
+                        })}
+                    </IconMedia>
+                    <IconMedia src="/img/icon/sdd.svg" size={[60, 55]} alt="drive">
+                        <h4 className="media-heading">Drives</h4>
+                        {stats.drives.map((drive, i) => {
+                            return (
+                                <div>
+                                    {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"}, {drive.RootDirectory}
+                                    <br />
+                                    <Bar
+                                        value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
+                                        style={{width: 400}} />
+                                    {bytesToSize(drive.FreeSpace)} free of {bytesToSize(drive.TotalSize)} total
+                                </div>
+                            )
+                        })}
                     </IconMedia>
 
                 </div>
