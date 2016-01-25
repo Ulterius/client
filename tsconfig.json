@@ -33,6 +33,7 @@
         "src/store/system-stores.ts",
         "src/store/task-store.ts",
         "src/util.ts",
+        "src/vendor.d.ts",
         "src/component/app.tsx",
         "src/component/components.tsx",
         "src/component/system.tsx",

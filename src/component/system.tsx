@@ -2,8 +2,33 @@ import React = require("react")
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
 import {Bars, Bar, IconMedia, Temperature} from "./components"
 import {GpuAvailability, bytesToSize} from "../util"
+import Graph = require("react-chartist")
+import * as _ from  "lodash"
 
-export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
+let graphOptions = {
+    axisX: {
+        showLabel: false,
+        showGrid: false
+    },
+    axisY: {
+        showLabel: true,
+        showGrid: false
+    },
+    showArea: true,
+    showPoint: false,
+    high: 100,
+    low: 0,
+    height: "50px",
+    width: "100%",
+    chartPadding: {
+        top: 5,
+        bottom: -30,
+        left: 5,
+        right: 5
+    }
+}
+
+export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: SystemInfo[] }> {
     componentDidMount() {
         systemStore.listen(this.onChange)
     }
@@ -13,21 +38,53 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo }> {
     constructor(props) {
         super(props)
         this.state = {}
+        this.state.statStack = []
     }
 
     onChange = (stats) => {
         this.setState(stats)
+        let newStack = _(this.state.statStack).clone()
+        newStack.unshift(stats.stats)
+        if (newStack.length > 10) {
+            newStack = _(newStack).initial().value()
+        }
+        this.setState({statStack: newStack })
+        console.log(this.state.statStack)
     }
 
     render() {
+
         if (this.state.stats) {
+            let cpuSeries = []
+            for (var i=0; i<this.state.stats.cpuUsage.length; i++) {
+                cpuSeries.push(this.state.statStack.map(stats => {
+                    return stats.cpuUsage[i]
+                }))
+            }
+            cpuSeries = cpuSeries.map((cpu) => {
+                return _(cpu as Array<number>).reverse().value()
+            })
             let usages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
                 return (["CPU"+i, e] as [string, number])
             })
             usages.push(["RAM", (this.state.stats.usedMemory/this.state.stats.totalMemory)*100])
+
+            return <div>
+                {cpuSeries.map(cpu => {
+                    return <Graph
+                        data={{
+                            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+                            series: [cpu]
+                        }}
+                        options={graphOptions}
+                        type={"Line"} />
+                })}
+            </div>
+            /*
             return (
                 <Bars values={usages} />
             )
+            */
         }
         else {
             return <p>Loading stats...</p>
