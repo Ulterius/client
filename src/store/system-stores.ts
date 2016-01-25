@@ -3,23 +3,33 @@ import AbstractStoreModel from "./abstract-store"
 import systemActions from "../action/system-actions"
 
 interface SystemState {
-    stats: SystemInfo
+    stats: SystemInfo,
+    statStack: SystemInfo[]
 }
 
 //system information that's hot, needs regular updating
 class SystemStore extends AbstractStoreModel<SystemState> {
 
     stats: SystemInfo
+    statStack: SystemInfo[]
 
     constructor() {
         this.bindListeners({
             handleUpdateStats: systemActions.updateStats
         })
         super()
+        this.statStack = []
     }
 
     handleUpdateStats(stats: SystemInfo) {
         this.stats = stats
+        let newStack = _(this.statStack).clone()
+        newStack.unshift(stats)
+        if (newStack.length > 10) {
+            newStack = _(newStack).initial().value()
+        }
+        this.statStack = newStack
+        console.log(this.statStack)
     }
 }
 

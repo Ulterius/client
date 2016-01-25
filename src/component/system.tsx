@@ -1,6 +1,6 @@
 import React = require("react")
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
-import {Bars, Bar, IconMedia, Temperature} from "./components"
+import {Bars, Bar, IconMedia, Temperature, Modal} from "./components"
 import {GpuAvailability, bytesToSize} from "../util"
 import Graph = require("react-chartist")
 import * as _ from  "lodash"
@@ -12,18 +12,18 @@ let graphOptions = {
     },
     axisY: {
         showLabel: true,
-        showGrid: false
+        showGrid: true
     },
     showArea: true,
     showPoint: false,
     high: 100,
     low: 0,
-    height: "50px",
+    //height: "100px",
     width: "100%",
     chartPadding: {
         top: 5,
-        bottom: -30,
-        left: 5,
+        bottom: 5,
+        left: -10,
         right: 5
     }
 }
@@ -38,22 +38,13 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
     constructor(props) {
         super(props)
         this.state = {}
-        this.state.statStack = []
     }
 
     onChange = (stats) => {
         this.setState(stats)
-        let newStack = _(this.state.statStack).clone()
-        newStack.unshift(stats.stats)
-        if (newStack.length > 10) {
-            newStack = _(newStack).initial().value()
-        }
-        this.setState({statStack: newStack })
-        console.log(this.state.statStack)
     }
 
     render() {
-
         if (this.state.stats) {
             let cpuSeries = []
             for (var i=0; i<this.state.stats.cpuUsage.length; i++) {
@@ -64,11 +55,47 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
             cpuSeries = cpuSeries.map((cpu) => {
                 return _(cpu as Array<number>).reverse().value()
             })
+            console.log(cpuSeries)
+
+            //when you stare into the abyss
+            //the abyss may also stare into you
+            let processors = cpuSeries.length
+            cpuSeries = cpuSeries.reduce((cpu1, cpu2) => {
+                return cpu1.map((v, i) => {
+                    return (v + cpu2[i])
+                })
+            }).map(cpu => {
+                return cpu/processors
+            })
+            let ramSeries = this.state.statStack.map(stats => {
+                return (stats.usedMemory/stats.totalMemory)*100
+            })
+
             let usages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
                 return (["CPU"+i, e] as [string, number])
             })
             usages.push(["RAM", (this.state.stats.usedMemory/this.state.stats.totalMemory)*100])
 
+            return <div>
+                <br />
+                <h4>CPU Usage</h4>
+                <Graph
+                    data={{
+                        labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                        series: [cpuSeries]
+                    }}
+                    options={graphOptions}
+                    type={"Line"} />
+                <h4>RAM Usage</h4>
+                <Graph
+                    data={{
+                        labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                        series: [ramSeries]
+                    }}
+                    options={graphOptions}
+                    type={"Line"} />
+            </div>
+            /*
             return <div>
                 {cpuSeries.map(cpu => {
                     return <Graph
@@ -80,6 +107,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
                         type={"Line"} />
                 })}
             </div>
+            */
             /*
             return (
                 <Bars values={usages} />

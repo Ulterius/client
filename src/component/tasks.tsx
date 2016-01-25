@@ -67,28 +67,45 @@ export class TaskList extends React.Component<
     }
 }
 
-export class Task extends React.Component<{key: number, info: TaskInfo}, {expanded?: boolean}> {
+export class Task extends React.Component<
+    {key: number, info: TaskInfo},
+    {expanded?: boolean, gonnaDie?: boolean}> {
     constructor(props) {
         super(props)
-        this.state = {expanded: false}
+        this.state = {expanded: false, gonnaDie: false}
     }
     killSelf = () => {
         sendCommand(socket, "killProcess", this.props.info.id.toString())
+    }
+    closeButton() {
+        return (this.state.gonnaDie ?
+            <button onClick={this.killSelf}
+                    className="btn btn-danger btn-sm"
+                    style={{position: "absolute", marginLeft: -80, marginTop: -7}}>
+                Confirm
+            </button>
+            : false)
     }
     render() {
         if (!this.state.expanded) {
             return (
                 //onClick={() => this.setState({expanded: true})}
+                //<button className="btn btn-danger">confirm</button>
                 <tr>
                     <td style={{width: "39px"}}>
                         <img src={"data:image/png;base64," + this.props.info.icon} />
                     </td>
                     <td>{this.props.info.name}</td>
-                    <td>{this.props.info.id}</td>
-                    <td>{this.props.info.cpuUsage + "%"}</td>
+                    <td style={{width: 20}}>{this.props.info.id}</td>
+                    <td style={{width: 20}}>{this.props.info.cpuUsage + "%"}</td>
                     <td>{bytesToSize(this.props.info.ramUsage)}</td>
-                    <td className="close-button" onClick={this.killSelf}>
-                        <span className="glyphicon glyphicon-remove"></span>
+                    <td
+                    className="close-button"
+                    onClick={() => this.setState({gonnaDie: !this.state.gonnaDie})}
+                    style={{width: 60, textAlign: "right"}}>
+                        {this.closeButton()}
+                        <span className={"glyphicon " + (this.state.gonnaDie ?
+                            "glyphicon-ban-circle":"glyphicon-remove")}></span>
                     </td>
                 </tr>
             )

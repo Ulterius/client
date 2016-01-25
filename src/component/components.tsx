@@ -83,3 +83,22 @@ export class Temperature extends React.Component<{children?: any}, {}> {
         return <span className={"label label-" + color + " " + extra}>{this.props.children} {"°C"}</span>
     }
 }
+
+export class Modal extends React.Component<{children?: any}, {}> {
+    render() {
+        return <div>
+            <div className='modal-backdrop in' />
+            <div
+            className="modal in"
+            tabIndex={-1}
+            role="dialog"
+            style={{display: "block"}}>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        {this.props.children}
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
