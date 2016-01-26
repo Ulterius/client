@@ -1,0 +1,112 @@
+﻿<div class="page-header" id="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-24">
+                <h1>Layout</h1>
+
+                <ul class="nav nav-pills" data-scroll="smooth">
+                    <li role="presentation">
+                        <a href="#page-header">Page header</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#grid">Grid</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#grid-small-gutters">Small gutters</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#spacers">Spacers</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <section class="section">
+        <header class="section-header row">
+            <h1 class="section-title col-xs-24">
+                <a href="#page-header">Page header</a>
+            </h1>
+        </header>
+
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    The basic structure:
+                </p>
+
+                {{#markdown}}
+```xml
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-24">
+                <h1>This is a page header</h1>
+                <p>With some content</p>
+
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active">
+                        <a href="#nav-item-1">Nav item 1</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#nav-item-2">Nav item 2</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#nav-item-3">Nav item 3</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+```
+                {{/markdown}}
+            </div>
+
+            <div class="col-md-12">
+                <p>
+                    The JavaScript code to enable smooth scrolling:
+                </p>
+
+                {{#markdown}}
+```javascript
+$(function () {
+    $('[data-scroll="smooth"] a[href*=#]:not([href=#])').click(function () {
+        if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') &&
+            location.hostname === this.hostname) {
+
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: target.offset().top
+                }, 1500);
+
+                return false; // prevent default href
+            }
+        }
+    });
+});
+```
+                {{/markdown}}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-24">
+                <div class="guidance guidance-usage m-t-xs">
+                    {{#markdown}}
+{{> page-header-guidance.md}}
+                    {{/markdown}}
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <hr/>
+
+</div>

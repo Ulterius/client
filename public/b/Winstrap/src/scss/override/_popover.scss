@@ -1,0 +1,53 @@
+//
+// Static resources
+//
+$popover-position: spacing(xxxs);
+
+.popover {
+    padding: 0;
+    @include box-shadow(none);
+    @include type(t7, set-line-height);
+
+    &.top       { margin-top: -$popover-position; }
+    &.right     { margin-left: $popover-position; }
+    &.bottom    { margin-top: $popover-position; }
+    &.left      { margin-left: -$popover-position; }
+
+    .arrow,
+    .popover-title {
+        display: none;
+    }
+
+    .popover-content {
+        min-width: 128px;
+        padding: spacing(xxs, -2) spacing(xxs) spacing(xxs);
+
+        .btn {
+            margin: spacing(xxs, 5) 0 spacing(xxs);
+            float: right;
+        }
+    }
+
+    //
+    // Colors
+    //
+
+    // Default theme and on light surface
+    &,
+    &.theme-default,
+    &.theme-light {
+        color: $color-type-primary;
+        background-color: $color-bg-light-vivid-mid;
+        border-color: $color-neutral-mid;
+    }
+
+    // Alt theme and on dark surface
+    &.theme-alt,
+    &.theme-dark,
+    &.theme-on-color,
+    &.theme-on-img-dark {
+        color: $color-type-primary-alt;
+        background-color: $color-bg-dark-vivid-mid;
+        border-color: $color-neutral-mid-alt;
+    }
+}

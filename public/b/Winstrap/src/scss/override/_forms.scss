@@ -1,0 +1,782 @@
+//
+// Text controls
+//
+input.form-control,
+textarea.form-control {
+    -ms-user-select: element;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: $border-radius-base;
+    margin-top: spacing(xxs, -10);
+    margin-bottom: spacing(xs, -4);
+    max-width: 296px;
+    min-width: 88px;
+    min-height: 36px;
+    background-clip: border-box;
+    box-sizing: border-box;
+    padding-left: spacing(xxs, -1);
+    vertical-align: top;
+    outline: 0;
+}
+
+input.form-control::-ms-value {
+    margin: 0;
+    padding: 0;
+}
+
+input.form-control::-ms-clear,
+input.form-control::-ms-reveal {
+    margin-right: -8px;
+    width: 36px;
+    height: 36px;
+    display: block;
+}
+
+textarea.form-control {
+    resize: none;
+    overflow-y: auto;
+}
+
+//
+// Checkbox / Radio
+//
+.form-group {
+    .checkbox:first-of-type,
+    .radio:first-of-type {
+        margin-top: spacing(xs, -2)
+    }
+
+    .checkbox:last-of-type,
+    .radio:last-of-type {
+        margin-bottom: spacing(xs, 3);
+    }
+
+    label,
+    .form-group-label {
+        font-size: 15px;
+        font-weight: 400;
+        margin-bottom: 0;
+        line-height: 1em;
+        vertical-align: top;
+    }
+
+    margin-bottom: spacing(xs, -2);
+
+}
+
+// Common checkbox and radio styles
+.radio + .radio,
+.checkbox + .checkbox {
+    margin-top: initial;
+}
+
+.checkbox,
+.radio {
+    margin: spacing(xs, -2) 0;
+
+    & input[type=checkbox],
+    & input[type=radio] {
+        width: 20px;
+        height: 20px;
+        margin-left: -28px;
+        margin-top: 0;
+    }
+
+    & label {
+        padding-left: 0px;
+        font-weight: 400;
+        margin-left: 28px;
+        min-height: initial;
+        line-height: 20px;
+
+        span::before {
+            border-width: 1px;
+            border-style: solid;
+            content: "";
+            height: 20px;
+            width: 20px;
+            position: absolute;
+            left: 0;
+            cursor: pointer;
+        }
+    }
+}
+
+// Checkbox only
+.checkbox {
+
+    & label {
+        input:checked ~ span::before {
+            @include glyph(checkmark);
+            text-indent: 2px;
+            line-height: 1em;
+            padding-top: 2px;
+        }
+
+        input:indeterminate ~ span::before {
+            text-indent: 2px;
+            line-height: 12px;
+            font-size: 17px;
+            padding-top: 2px;
+        }
+    }
+
+}
+
+// Radio only
+.radio {
+
+    & label {
+        span::before {
+            border-radius: 100%;
+        }
+
+        input:checked ~ span::before {
+            text-indent: 0px;
+            line-height: 6px;
+            padding-top: 2px;
+            font-size: 45px;
+        }
+    }
+}
+
+//
+// Select
+//
+.combobox {
+    position: relative;
+
+    &:after {
+        @include glyph(chevron-down);
+        position: absolute;
+        font-size: 1rem;
+        top: 13px;
+        right: 9px;
+    }
+}
+select {
+    @include type(t7);
+
+    &.form-control {
+        width: 100%;
+        min-width: 67px;
+        max-width: 368px;
+        min-height: 36px;
+
+        // remove browser generated icon on
+        // Chrome, Safari, Opera, and Firefox
+        padding: 4px 42px 4px 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -o-appearance: none;
+
+        //remove default browser icon for IE
+        &::-ms-expand {
+            display: none;
+        }
+
+        &[multiple] {
+            padding: 0;
+
+            option {
+                padding-left: 1em;
+                // top and bottom only works in chrome
+                padding-top: 11px;
+                padding-bottom: 11px;
+            }
+        }
+
+        option {
+            padding-left: 1em;
+        }
+    }
+}
+
+select[multiple].form-control {
+    border: none;
+}
+
+
+/////////////
+/// COLOR ///
+/////////////
+
+// Default (on light surface)
+form {
+    &,
+    &.theme-default,
+    p,
+    label {
+        color: $color-type-primary;
+    }
+}
+
+input.form-control,
+textarea.form-control {
+    @include box-shadow(none);
+    @include transition(none);
+    color: $color-type-primary;
+    background-color: $color-vivid-mid-alt;
+    border-color: $color-vivid-low;
+
+    // Hint text color
+    &:-ms-input-placeholder         {color: $color-type-secondary;}
+    &::-webkit-input-placeholder    {color: $color-type-secondary;}
+    &:-moz-placeholder              {color: $color-type-secondary;}
+    &::-moz-placeholder             {color: $color-type-secondary;}
+
+    &:hover {
+        border-color: $color-vivid-mid;
+    }
+
+    &:focus {
+        color: $color-type-primary;
+        background-color: $color-vivid-high-alt;
+        border-color: $color-accent-vivid-high;
+        @include box-shadow(none);
+    }
+
+    &:disabled,
+    &[disabled], {
+        color: $color-type-disabled;
+        border-color: $color-neutral-low;
+        background-color: $color-neutral-low-alt;
+    }
+}
+
+input.form-control::-ms-clear,
+input.form-control::-ms-reveal {
+    color: $color-vivid-low;
+
+    &:hover {
+        color: $color-accent-vivid-high;
+    }
+    &:active {
+        color: $color-white;
+        background-color: $color-accent-vivid-high;
+    }
+}
+
+.form-group {
+    label.disabled,
+    .form-group-label.disabled {
+        color: $color-type-disabled;
+    }
+}
+
+.checkbox,
+.radio {
+
+    & label {
+        input[type=checkbox],
+        input[type=radio] {
+            opacity: 0;
+        }
+
+        span::before {
+            border-color: $color-vivid-mid;
+        }
+
+        input:disabled {
+            ~ span {
+                color: $color-type-disabled;
+            }
+
+            ~ span::before {
+                border-color: $color-neutral-low;
+                color: $color-type-disabled;
+            }
+        }
+    }
+}
+
+.checkbox {
+
+    & label {
+        input:checked ~ span::before {
+            background-color: $color-accent-vivid-high;
+            border-color: $color-accent-vivid-high;
+            color: $color-vivid-high-alt;
+        }
+
+        input:indeterminate ~ span::before {
+            border-color: $color-accent-vivid-high;
+            color: $color-vivid-mid;
+        }
+    }
+
+    &:hover {
+        span::before,
+        input:checked ~ span::before {
+            border-color: $color-vivid-high;
+        }
+
+        input:indeterminate ~ span::before {
+            color: $color-vivid-high;
+        }
+    }
+}
+
+.radio {
+
+    & label {
+        input:checked ~ span::before {
+            border-color: $color-accent-vivid-high;
+            color: $color-vivid-high;
+        }
+    }
+
+    &:hover {
+        span::before,
+        input:checked ~ span::before {
+            border-color: $color-accent-vivid-high;
+            color: $color-vivid-mid;
+        }
+
+        input:disabled ~ span::before {
+            border-color: $color-neutral-low;
+        }
+    }
+}
+
+// Combo Box Colors
+select {
+
+    &.form-control {
+        color: $color-type-primary;
+        border-color: $color-vivid-low;
+        background-color: $color-vivid-mid-alt;
+
+        &:hover {
+            background-color: $color-dim-mid;
+        }
+
+        &:active {
+            background-color: $color-neutral-low;
+        }
+
+        &:after {
+            color: $color-vivid-low;
+        }
+
+        &:focus {
+            color: $color-type-primary-alt;
+            background-color: $color-accent-vivid-high;
+            @include box-shadow(none);
+
+            option {
+                background-color: $color-bg-light-vivid-mid;
+                color: $color-type-primary;
+            }
+        }
+        option {
+
+            &:checked {
+                color: $color-type-primary-alt;
+                background-color: $color-accent-vivid-high;
+            }
+        }
+    }
+}
+
+// Alt (on dark surface)
+// Currently Alt and on-img-dark are identical
+form.theme-alt,
+form .theme-alt,
+form.theme-on-img-dark,
+form .theme-on-img-dark {
+
+    &,
+    p,
+    label {
+        color: $color-type-primary-alt;
+    }
+
+    label.disabled,
+    .form-group-label.disabled {
+        color: $color-type-disabled-alt;
+    }
+
+    input.form-control,
+    textarea.form-control {
+        border-color: $color-vivid-low-alt;
+        background-color: $color-vivid-mid;
+        color: $color-type-primary-alt;
+
+        &:-ms-input-placeholder         {color: $color-type-secondary-alt;}
+        &::-webkit-input-placeholder    {color: $color-type-secondary-alt;}
+        &:-moz-placeholder              {color: $color-type-secondary-alt;}
+        &::-moz-placeholder             {color: $color-type-secondary-alt;}
+
+        &:hover {
+            border-color: $color-vivid-mid-alt;
+        }
+
+        &:focus {
+            color: $color-type-primary;
+            background-color: $color-vivid-high-alt;
+            border-color: $color-accent-vivid-high;
+            @include box-shadow(none);
+        }
+
+        &:disabled,
+        &[disabled], {
+            border-color: $color-neutral-low-alt;
+            color: $color-type-disabled-alt;
+            background-color: $color-neutral-low;
+        }
+    }
+
+    .form-group {
+        label.disabled,
+        .form-group-label.disabled {
+            color: $color-type-disabled-alt;
+        }
+    }
+
+    .checkbox,
+    .radio {
+
+        & label {
+            span::before {
+                border-color: $color-vivid-mid-alt;
+            }
+
+            input:disabled {
+                ~ span {
+                    color: $color-type-disabled-alt;
+                }
+
+                ~ span::before {
+                    border-color: $color-neutral-low-alt;
+                    color: $color-type-disabled-alt;
+                }
+            }
+        }
+    }
+
+    .checkbox {
+
+        & label {
+            input:checked ~ span::before {
+                background-color: $color-accent-vivid-high;
+                border-color: $color-accent-vivid-high;
+                color: $color-vivid-high-alt;
+            }
+
+            input:indeterminate ~ span::before {
+                border-color: $color-accent-vivid-high;
+                color: $color-vivid-mid-alt;
+            }
+        }
+
+        &:hover {
+            span::before,
+            input:checked ~ span::before {
+                border-color: $color-vivid-high-alt;
+            }
+
+            input:indeterminate ~ span::before {
+                color: $color-vivid-high-alt;
+            }
+        }
+    }
+
+    .radio {
+
+        & label {
+            input:checked ~ span::before {
+                border-color: $color-accent-vivid-high;
+                color: $color-vivid-high-alt;
+            }
+        }
+
+        &:hover {
+            span::before,
+            input:checked ~ span::before {
+                border-color: $color-accent-vivid-high;
+                color: $color-vivid-mid-alt;
+            }
+
+            input:disabled ~ span::before {
+                border-color: $color-neutral-low-alt;
+            }
+        }
+    }
+
+    // Combo Box Alt Colors
+    .combobox {
+        &:after {
+            color: $color-vivid-low-alt;
+        }
+    }
+    select {
+        color: $color-type-primary-alt;
+
+        &.form-control {
+            border-color: $color-vivid-low-alt;
+            background-color: $color-vivid-mid;
+
+            &:hover {
+                border-color: $color-vivid-mid-alt;
+                background-color: $color-bg-dark-vivid-mid;
+            }
+
+            &:active {
+                border-color: $color-vivid-high-alt;
+                background-color: $color-neutral-mid-alt;
+            }
+
+            &:after {
+                color: $color-vivid-low-alt;
+            }
+
+            &:focus {
+                color: $color-type-primary-alt;
+                background-color: $color-accent-vivid-high;
+
+                option {
+                    background-color: $color-bg-dark-vivid-mid;
+                    color: $color-type-primary-alt;
+                }
+            }
+            option {
+
+                &:checked {
+                    color: $color-type-primary-alt;
+                    background-color: $color-accent-vivid-high;
+                }
+            }
+
+            &[multiple] {
+                option {
+                    &:checked {
+                        color: $color-type-primary-alt;
+                        background-color: $color-accent-vivid-high;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ***** REVIEW WITH DESIGN *****
+form.theme-on-color,
+form .theme-on-color,
+form.theme-dark,
+form .theme-dark {
+
+    &,
+    p,
+    label {
+        color: $color-type-primary-alt;
+    }
+
+    label.disabled,
+    .form-group-label.disabled {
+        color: $color-type-disabled-alt;
+    }
+
+    input.form-control,
+    textarea.form-control {
+        border-color: $color-vivid-high-alt;
+        background-color: $color-vivid-low-alt;
+
+        &:-ms-input-placeholder         {color: $color-type-secondary;}
+        &::-webkit-input-placeholder    {color: $color-type-secondary;}
+        &:-moz-placeholder              {color: $color-type-secondary;}
+        &::-moz-placeholder             {color: $color-type-secondary;}
+
+        &:hover {
+            background-color: $color-vivid-mid-alt;
+        }
+
+        &:focus {
+            color: $color-type-primary;
+            background-color: $color-vivid-high-alt;
+            border-color: rgba($color-accent-vivid-high, .6);
+            @include box-shadow(none);
+        }
+
+        &:disabled,
+        &[disabled], {
+            border-color: $color-neutral-low-alt;
+            color: $color-type-disabled-alt;
+            background-color: $color-neutral-low-alt;
+        }
+    }
+
+    .form-group {
+        label.disabled,
+        .form-group-label.disabled {
+            color: $color-type-disabled-alt;
+        }
+    }
+
+    .checkbox,
+    .radio {
+
+        & label {
+            span::before {
+                border-color: $color-vivid-high-alt;
+            }
+
+            input:disabled {
+                ~ span {
+                    color: $color-type-disabled;
+                }
+
+                ~ span::before {
+                    border-color: $color-neutral-low;
+                    color: $color-type-disabled;
+                }
+            }
+        }
+    }
+
+    .checkbox {
+
+        & label {
+            input:checked ~ span::before {
+                background-color: $color-vivid-high-alt;
+                border-color: rgba($color-accent-vivid-high, .4);
+                color: $color-accent-vivid-high;
+            }
+
+            input:indeterminate ~ span::before {
+                border-color: $color-vivid-high-alt;
+                color: $color-type-primary-alt;
+            }
+        }
+
+        &:hover {
+            span::before,
+            input:checked ~ span::before {
+                border-color: $color-vivid-high-alt;
+            }
+
+            input:indeterminate ~ span::before {
+                color: $color-vivid-high-alt;
+            }
+        }
+    }
+
+    .radio {
+
+        & label {
+            input:checked ~ span::before {
+                border-color: $color-vivid-high-alt;
+                color: $color-type-primary-alt;
+            }
+        }
+
+        &:hover {
+            span::before,
+            input:checked ~ span::before {
+                border-color: $color-vivid-mid-alt;
+                color: $color-type-primary-alt;
+            }
+
+            input:disabled ~ span::before {
+                border-color: $color-neutral-low;
+            }
+        }
+    }
+
+    // Combo Box Colored BG Colors
+    select {
+        color: $color-type-primary;
+
+        &.form-control {
+            border-color: $color-vivid-high-alt;
+            background-color: $color-vivid-low-alt;
+
+            &:hover {
+                border-color: $color-vivid-high-alt;
+                background-color: $color-vivid-mid-alt;
+            }
+
+            &:active {
+                border-color: $color-vivid-high-alt;
+                background-color: $color-vivid-high-alt;
+            }
+
+            &:after {
+                color: $color-vivid-low;
+            }
+
+            &:focus {
+                color: $color-vivid-high-alt;
+                background-color: $color-vivid-high;
+
+                option {
+                    background-color: $color-bg-light-vivid-mid;
+                    color: $color-type-primary;
+                }
+            }
+            option {
+
+                &:checked {
+                    color: $color-vivid-high-alt;
+                    background-color: $color-vivid-high;
+                }
+            }
+
+            &[multiple] {
+                option {
+                    &:checked {
+                        color: $color-vivid-high-alt;
+                        background-color: $color-vivid-high;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// On light image
+form.theme-on-img-light,
+form .theme-on-img-light,
+form.theme-light,
+form .theme-light {
+
+    // Combo Box Colors
+    select {
+        color: $color-type-primary;
+
+        &.form-control {
+            border-color: $color-vivid-low;
+            background-color: $color-vivid-mid-alt;
+
+            &:hover {
+                background-color: $color-dim-mid;
+            }
+
+            &:active {
+                background-color: $color-neutral-low;
+            }
+
+            &:after {
+                color: $color-vivid-low;
+            }
+
+            &:focus {
+                color: $color-type-primary-alt;
+                background-color: $color-accent-vivid-high;
+                @include box-shadow(none);
+
+                option {
+                    background-color: $color-bg-light-vivid-mid;
+                    color: $color-type-primary;
+                }
+            }
+            option {
+
+                &:checked {
+                    color: $color-type-primary-alt;
+                    background-color: $color-accent-vivid-high;
+                }
+            }
+        }
+    }
+}

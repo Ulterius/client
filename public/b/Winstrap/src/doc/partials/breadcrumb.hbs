@@ -1,0 +1,37 @@
+﻿<section class="section" id="breadcrumb">
+    <header class="section-header row">
+        <h1 class="section-title col-xs-24">
+            <a href="#breadcrumb">Breadcrumb</a>
+        </h1>
+    </header>
+
+    <div class="row">
+        <div class="col-xs-24">
+            <ol class="breadcrumb">
+                <li><a href="#">Parent page</a></li>
+                <li><a href="#">Child page</a></li>
+                <li><a href="#">Section</a></li>
+                <li class="active">Current</li>          
+            </ol>
+
+            {{#markdown}}
+```xml
+<ol class="breadcrumb">
+    <li><a href="#">Parent page</a></li>
+    <li><a href="#">Child page</a></li>
+    <li><a href="#">Section</a></li>
+    <li class="active">Current</li>
+</ol>
+```
+            {{/markdown}}
+        </div>
+
+        <div class="col-md-24">
+            <div class="guidance guidance-usage m-t-xs">
+                {{#markdown}}
+{{> breadcrumb-guidance.md}}
+                {{/markdown}}
+            </div>
+        </div>
+    </div>
+</section>

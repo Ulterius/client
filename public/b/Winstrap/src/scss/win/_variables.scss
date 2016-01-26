@@ -1,0 +1,275 @@
+// Responsive Type Ramp
+
+// Font Variables
+$font-family-fallbacks:     Tahoma, Verdana, Arial, sans-serif !default;
+$font-family-light:         "Segoe UI Light", "Segoe UI", "Selawik Light", $font-family-fallbacks !default;
+$font-family-semilight:     "Segoe UI Semilight", "Segoe UI", "Selawik Semilight", $font-family-fallbacks !default;
+$font-family-normal:        "Segoe UI", "Selawik", $font-family-fallbacks !default;
+$font-family-semibold:      "Segoe UI Semibold", "Segoe UI", "Selawik Semibold", $font-family-fallbacks !default;
+$font-family-bold:          "Segoe UI Bold", "Segoe UI", "Selawik Bold", $font-family-fallbacks !default;
+$font-family-symbols:       "winjs-symbols";
+
+// Responsive Type Ramp key:value
+$fonts: (
+    t1: (
+        size-sm:                46px,
+        size-md:                62px,
+        size-xxl:               80px,
+        line-height-sm:         56px,
+        line-height-md:         72px,
+        line-height-xxl:        88px,
+        weight-sm:              200,
+        weight-md:              200,
+        weight-xxl:             200,
+        family-sm:              $font-family-light,
+        family-md:              $font-family-light,
+        family-xxl:             $font-family-light,
+        letter-spacing:         -0.01em
+    ),
+    t2: (
+        size-sm:                34px,
+        size-md:                46px,
+        size-xxl:               58px,
+        line-height-sm:         40px,
+        line-height-md:         56px,
+        line-height-xxl:        72px,
+        weight-sm:              200,
+        weight-md:              200,
+        weight-xxl:             200,
+        family-sm:              $font-family-light,
+        family-md:              $font-family-light,
+        family-xxl:             $font-family-light,
+        letter-spacing:         -0.01em
+    ),
+    t3: (
+        size-sm:                26px,
+        size-md:                34px,
+        size-xxl:               46px,
+        line-height-sm:         32px,
+        line-height-md:         40px,
+        line-height-xxl:        56px,
+        weight-sm:              200,
+        weight-md:              200,
+        weight-xxl:             200,
+        family-sm:              $font-family-light,
+        family-md:              $font-family-light,
+        family-xxl:             $font-family-light,
+        letter-spacing:         normal
+    ),
+    t4: (
+        size-sm:                20px,
+        size-md:                24px,
+        size-xxl:               34px,
+        line-height-sm:         24px,
+        line-height-md:         28px,
+        line-height-xxl:        40px,
+        weight-sm:              300,
+        weight-md:              300,
+        weight-xxl:             200,
+        family-sm:              $font-family-semilight,
+        family-md:              $font-family-semilight,
+        family-xxl:             $font-family-light,
+        letter-spacing:         normal
+    ),
+    t5: (
+        size-sm:                18px,
+        size-md:                20px,
+        size-xxl:               24px,
+        line-height-sm:         24px,
+        line-height-md:         24px,
+        line-height-xxl:        28px,
+        weight-sm:              300,
+        weight-md:              300,
+        weight-xxl:             300,
+        family-sm:              $font-family-semilight,
+        family-md:              $font-family-semilight,
+        family-xxl:             $font-family-semilight,
+        letter-spacing:         normal
+    ),
+    t6: (
+        size-sm:                16px,
+        size-md:                18px,
+        size-xxl:               20px,
+        line-height-sm:         20px,
+        line-height-md:         24px,
+        line-height-xxl:        24px,
+        weight-sm:              300,
+        weight-md:              300,
+        weight-xxl:             300,
+        family-sm:              $font-family-semilight,
+        family-md:              $font-family-semilight,
+        family-xxl:             $font-family-semilight,
+        letter-spacing:         normal
+    ),
+    t7: (
+        size-sm:                15px,
+        size-md:                15px,
+        size-xxl:               18px,
+        line-height-sm:         20px,
+        line-height-md:         20px,
+        line-height-xxl:        24px,
+        weight-sm:              400,
+        weight-md:              400,
+        weight-xxl:             400,
+        family-sm:              $font-family-normal,
+        family-md:              $font-family-normal,
+        family-xxl:             $font-family-normal,
+        letter-spacing:         normal
+    ),
+    t8: (
+        size-sm:                12px,
+        size-md:                13px,
+        size-xxl:               15px,
+        line-height-sm:         16px,
+        line-height-md:         16px,
+        line-height-xxl:        20px,
+        weight-sm:              400,
+        weight-md:              400,
+        weight-xxl:             400,
+        family-sm:              $font-family-normal,
+        family-md:              $font-family-normal,
+        family-xxl:             $font-family-normal,
+        letter-spacing:         normal
+    ),
+    t9: (
+        size-sm:                10px,
+        size-md:                11px,
+        size-xxl:               13px,
+        line-height-sm:         12px,
+        line-height-md:         16px,
+        line-height-xxl:        16px,
+        weight-sm:              400,
+        weight-md:              400,
+        weight-xxl:             400,
+        family-sm:              $font-family-normal,
+        family-md:              $font-family-normal,
+        family-xxl:             $font-family-normal,
+        letter-spacing:         normal
+    ),
+
+);
+
+// Responsive typography control spacing key:value
+// These are padding values to make sure headings, subheadings, paragraphs, and captions land on the vertical grid.
+$fonts-spacing: (
+    h1: (
+        type-size:      "t1",
+        space-sm:       37px 0 3px,
+        space-md:       38px 0 6px,
+        space-xxl:      39px 0 5px
+    ),
+    h2: (
+        type-size:      "t2",
+        space-sm:       38px 0 2px,
+        space-md:       37px 0 3px,
+        space-xxl:      36px 0 4px
+    ),
+    h3: (
+        type-size:      "t3",
+        space-sm:       38px 0 2px,
+        space-md:       38px 0 2px,
+        space-xxl:      37px 0 3px
+    ),
+    h4: (
+        type-size:      "t4",
+        space-sm:       36px 0 4px,
+        space-md:       36px 0 4px,
+        space-xxl:      38px 0 2px
+    ),
+    h5: (
+        type-size:      "t5",
+        space-sm:       37px 0 3px,
+        space-md:       35px 0 5px,
+        space-xxl:      37px 0 3px
+    ),
+    h6: (
+        type-size:      "t6",
+        space-sm:       39px 0 1px,
+        space-md:       37px 0 3px,
+        space-xxl:      40px 0 4px
+    ),
+    sh1: (
+        type-size:      "t3",
+        space-sm:       9px 0 3px,
+        space-md:       2px 0 2px,
+        space-xxl:      9px 0 3px
+    ),
+    sh2: (
+        type-size:      "t4",
+        space-sm:       8px 0 4px,
+        space-md:       4px 0 8px,
+        space-xxl:      10px 0 2px
+    ),
+    sh3: (
+        type-size:      "t5",
+        space-sm:       4px 0 4px,
+        space-md:       8px 0 4px,
+        space-xxl:      8px 0 4px
+    ),
+    sh4: (
+        type-size:      "t6",
+        space-sm:       7px 0 5px,
+        space-md:       9px 0 3px,
+        space-xxl:      12px 0 4px
+    ),
+    sh5: (
+        type-size:      "t7",
+        space-sm:       8px 0 0,
+        space-md:       8px 0 0px,
+        space-xxl:      9px 0 3px
+    ),
+    sh6: (
+        type-size:      "t7",
+        space-sm:       8px 0 0,
+        space-md:       8px 0 0px,
+        space-xxl:      9px 0 3px
+    ),
+    p1: (
+        type-size:      "t5",
+        space-sm:       24px 0 4px,
+        space-md:       24px 0 4px,
+        space-xxl:      24px 0 4px
+    ),
+    p2: (
+        type-size:      "t6",
+        space-sm:       27px 0 1px,
+        space-md:       25px 0 3px,
+        space-xxl:      28px 0 4px
+    ),
+    p3: (
+        type-size:      "t7",
+        space-sm:       24px 0 0,
+        space-md:       24px 0 0,
+        space-xxl:      25px 0 3px
+    ),
+    p4: (
+        type-size:      "t7",
+        space-sm:       24px 0 0,
+        space-md:       24px 0 0,
+        space-xxl:      25px 0 3px
+    ),
+    c1: (
+        type-size:      "t8",
+        space-sm:       3px 0 1px,
+        space-md:       3px 0 1px,
+        space-xxl:      4px 0 0
+    ),
+    c2: (
+        type-size:      "t9",
+        space-sm:       2px 0 2px,
+        space-md:       4px 0 4px,
+        space-xxl:      3px 0 1px
+    ),
+);
+
+$spacer-sizes: (
+    xxl:    84px,
+    xl:     72px,
+    lg:     64px,
+    md:     48px,
+    sm:     36px,
+    xs:     24px,
+    xxs:    12px,
+    xxxs:   8px,
+    n:      0px
+);

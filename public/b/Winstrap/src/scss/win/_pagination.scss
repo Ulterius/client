@@ -1,0 +1,95 @@
+﻿.pagination {
+    @include clearfix();
+
+    li.pagination-ellipsis {
+        > span {
+            background: none;
+            margin: spacing(xxs, -7) 0;
+            padding: spacing(xxs, -8) 0 spacing(xxs, -7);
+            min-width: 18px;
+        }
+    }
+
+    li.pagination-prev,
+    li.pagination-next {
+        i[class*="glyph-"] {
+            margin: 0 spacing(xxs, -10);
+            font-size: .813em;
+            vertical-align: -.1em;
+        }
+        &.disabled {
+            display: none;
+        }
+    }
+    li.pagination-prev {
+        > a, > span {
+            padding: spacing(xxs, -7) spacing(xxs, -2) spacing(xxs, -7) spacing(xxs, -6);
+            margin-left: spacing(n, -6);
+        }
+    }
+    li.pagination-next {
+        > a, > span {
+            padding: spacing(xxs, -7) spacing(xxs, -6) spacing(xxs, -7) spacing(xxs, -2);
+        }
+    }
+
+    //
+    // Colors
+    //
+
+    // Default colors
+    li.pagination-prev,
+    li.pagination-next {
+        > a, > span {
+            background: none;
+            border-color: transparent;
+            &:hover {
+                background-color: $color-dim-mid;
+            }
+            &:focus {
+                background-color: $color-neutral-mid;
+            }
+        }
+    }
+
+    // Alt theme
+    &.theme-alt {
+        > li {
+            > a, > span {
+                color: $color-type-primary-alt;
+                &:hover {
+                    background-color: $color-dim-mid-alt;
+                }
+                &:focus {
+                    background-color: $color-neutral-mid-alt;
+                }
+            }
+        }
+        > .active > a,
+        > .active > span {
+            &:hover,
+            &:focus {
+              color: $color-type-primary-alt;
+              background-color: $pagination-active-bg;
+            }
+        }
+    }
+}
+
+@media (min-width: $screen-sm) {
+    .pagination-prev {
+        > a, > span {
+            &:after {
+                content: attr(aria-label);
+            }
+        }
+    }
+
+    .pagination-next {
+        > a, > span {
+            &:before {
+                content: attr(aria-label);
+            }
+        }
+    }
+}

@@ -7,6 +7,7 @@ interface Actions {
     updateCPU(cpu: CpuInfo): CpuInfo
     updateOS(os: OSInfo): OSInfo
     updateGpu(gpus: GpusInfo): GpusInfo
+    updateUser(user: UserInfo): UserInfo
 }
 
 class SystemActions extends AbstractActions implements Actions {
@@ -26,6 +27,9 @@ class SystemActions extends AbstractActions implements Actions {
     }
     updateGpu(gpus: GpusInfo) {
         return gpus
+    }
+    updateUser(user: UserInfo) {
+        return user
     }
 }
 

@@ -1,0 +1,60 @@
+﻿.breadcrumb {
+  margin: spacing(xs, -4) 0 spacing(xs, +1);
+  @include type(t8);
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  > li + li:before {
+    content: '\005c';
+    display: inline-block;
+    padding: 0 spacing(xxxs) 0 spacing(xxxs, -4);
+    vertical-align: baseline;
+  }
+
+  &,
+  &.theme-default,
+  &.theme-light {
+
+    a {
+      &,
+      &:hover {
+        color: $color-accent-vivid-high;
+      }
+    }
+
+    > li + li:before {
+      color: $color-vivid-low;
+    }
+
+    &,
+    > li.active {
+      color: $color-type-primary;
+    }
+  }
+
+  &.theme-alt,
+  &.theme-dark {
+
+    a {
+      &,
+      &:hover {
+        color: $color-vivid-high-alt;
+      }
+    }
+
+    > li + li:before {
+      color: $color-vivid-low-alt;
+    }
+
+    &,
+    > li.active {
+      color: $color-type-secondary-alt;
+    }
+  }
+}

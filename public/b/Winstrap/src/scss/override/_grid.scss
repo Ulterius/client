@@ -1,0 +1,32 @@
+//
+// Grid system
+// --------------------------------------------------
+
+
+// Container widths
+//
+// Set the container width and max-width, and override it for fixed navbars in media queries.
+
+.container {
+    width: 90%;
+    
+    @media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
+        @include spacer(margin, horizontal, xxs);
+    }
+    
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+        @include spacer(margin, horizontal, xs);
+    }
+    
+    @media (min-width: $screen-xl-min) {
+        max-width: $container-xl;
+    }
+}
+
+// Extra Large grid
+//
+// Columns, offsets, pushes, and pulls for the large desktop device range.
+
+@media (min-width: $screen-xl-min) {
+  @include make-grid(xl);
+}

@@ -71,11 +71,6 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
                 return (stats.usedMemory/stats.totalMemory)*100
             })
 
-            let usages: [string, number][] = this.state.stats.cpuUsage.map(function(e, i) {
-                return (["CPU"+i, e] as [string, number])
-            })
-            usages.push(["RAM", (this.state.stats.usedMemory/this.state.stats.totalMemory)*100])
-
             return <div>
                 <br />
                 <h4>CPU Usage</h4>
@@ -198,6 +193,8 @@ export class SystemPage extends React.Component<{}, {
                                     <span className="label label-default">
                                         {GpuAvailability[gpu.Availability]}
                                     </span>
+                                    &nbsp;
+                                    <Temperature>{gpu.Temperature}</Temperature>
                                 </p>
                             )
                         })}

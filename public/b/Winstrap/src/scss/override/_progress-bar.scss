@@ -1,0 +1,28 @@
+.progress {
+    box-shadow: none;
+    height: 4px;
+    background-color: $color-neutral-low;
+    margin-bottom: 0; // Might need to look at this for vertical-spacing
+
+    .progress-bar {
+        @include transition(width 2s ease-in-out);
+        background-color: $color-accent;
+    }
+
+    &.theme-alt,
+    &.theme-on-img-dark {
+        background-color: $color-neutral-low-alt;
+
+        .progress-bar {
+            background-color: $color-accent;
+        }
+    }
+    &.theme-on-color,
+    &.theme-dark {
+        background-color: $color-neutral-low-alt;
+
+        .progress-bar {
+            background-color: $color-vivid-high-alt;
+        }
+    }
+}

@@ -1,7 +1,8 @@
 
 import React = require("react")
 import {GpuAvailability, bytesToSize} from "../util"
-import {systemStore, auxillarySystemStore} from "../store/system-stores"
+import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
+import {OverLayTrigger} from "react-bootstrap"
 
 export class Bar extends React.Component<{value: number, style?: any}, {}> {
     render() {
@@ -100,5 +101,33 @@ export class Modal extends React.Component<{children?: any}, {}> {
                 </div>
             </div>
         </div>
+    }
+}
+
+export class UserWidget extends React.Component<{}, {user: UserInfo}> {
+    constructor(props) {
+        super(props)
+        this.state = {user: null}
+    }
+    componentDidMount() {
+        userStore.listen(this.updateUser)
+    }
+    componentWillUnmount() {
+        userStore.unlisten(this.updateUser)
+    }
+    updateUser = (state) => {
+        this.setState(state)
+    }
+    render() {
+        if (this.state.user) {
+            let {avatar, username} = this.state.user
+            return <div className="clearfix" style={{float: "right"}}>
+                <img src={"data:image/png;base64," + avatar} width="32" height="32" alt="avatar" />
+                &nbsp; {username}
+            </div>
+        }
+        else {
+            return <div></div>
+        }
     }
 }

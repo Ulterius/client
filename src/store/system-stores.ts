@@ -74,5 +74,23 @@ class AuxillarySystemStore extends AbstractStoreModel<AuxState> {
     }
 }
 
+interface UserState {
+    user: UserInfo
+}
+
+class UserStore extends AbstractStoreModel<UserState> {
+    user: UserInfo
+    constructor() {
+        this.bindListeners({
+            handleUpdateUser: systemActions.updateUser
+        })
+        super()
+    }
+    handleUpdateUser(user: UserInfo) {
+        this.user = user
+    }
+}
+
+export let userStore = alt.createStore<UserState>(UserStore, "UserStore")
 export let systemStore = alt.createStore<SystemState>(SystemStore, "SystemStore")
 export let auxillarySystemStore = alt.createStore<AuxState>(AuxillarySystemStore, "AuxillarySystemStore")

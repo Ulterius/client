@@ -195,7 +195,8 @@ declare interface GpuInfo {
     VideoArchitecture: number,
     VideoMemoryType: number,
     Status: string,
-    Availability: number
+    Availability: number,
+    Temperature: number
 }
 
 declare interface ApiMessage {
@@ -222,4 +223,9 @@ declare interface KilledProcessInfo {
 declare interface AuthInfo {
     authenticated: boolean,
     message: string
+}
+
+declare interface UserInfo {
+    avatar: string,
+    username: string
 }

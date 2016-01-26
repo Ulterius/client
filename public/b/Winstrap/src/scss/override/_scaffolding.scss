@@ -1,0 +1,93 @@
+// Override Bootstrap Link syles
+a {
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:active {
+        text-decoration: none;
+    }
+
+    &:focus {
+        @include tab-focus;
+    }
+
+    //
+    // Colors
+    //
+
+    &,
+    &.theme-default {
+        &:active {
+            // $color-type-accent with overlay of $color-dim-mid
+            color: mix($color-type-accent, $color-black, 90%);
+        }
+    }
+
+    &.theme-alt {
+        &:active {
+            // $color-type-accent with overlay of $color-dim-high-alt
+            color: mix($color-type-accent, $color-white, 85%);
+        }
+    }
+
+    &.theme-light {
+        color: $color-vivid-high;
+        text-decoration: underline;
+
+        &:hover {
+            color: $color-vivid-mid;
+        }
+
+        &:active {
+            color: $color-vivid-low;
+        }
+    }
+
+    &.theme-dark {
+        color: $color-vivid-high-alt;
+        text-decoration: underline;
+
+        &:hover {
+            color: $color-vivid-mid-alt;
+        }
+
+        &:active {
+            color: $color-vivid-low-alt;
+        }
+    }
+}
+
+hr {
+    margin-top: spacing(sm);
+    margin-bottom: 0;
+    @media (min-width: $screen-sm) {
+        margin-top: spacing(md);
+    }
+
+    //
+    // Colors
+    //
+
+    // Default colors
+    &,
+    &.theme-default {
+        border-color: $color-neutral-low;
+    }
+
+    // Alt theme
+    &.theme-alt {
+        border-color:  $color-neutral-low-alt;
+    }
+
+    // On light image
+    &.theme-light {
+        border-color: $color-vivid-high;
+    }
+
+    // On dark image or any color
+    &.theme-dark,
+    &.theme-on-color {
+        border-color: $color-vivid-high-alt;
+    }
+}

@@ -54,8 +54,13 @@ export function authentication(info: AuthInfo) {
     if (info.authenticated) {
         setIntervals(socket)
         helpers.requestAuxillarySystemInformation()
+        sendCommandToDefault("getWindowsData")
         appState.authenticated = true
     }
+}
+
+export function getWindowsData(data: UserInfo) {
+    systemActions.updateUser(data)
 }
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {

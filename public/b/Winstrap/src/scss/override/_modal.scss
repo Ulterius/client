@@ -1,0 +1,93 @@
+.modal-content {
+    margin-top: 20px;
+    padding: spacing(xs, -4) spacing(xs) spacing(xs, -4);
+    box-shadow: none;
+
+    .modal-header {
+        padding: 0;
+
+        .modal-title {
+            @include type(t5);
+        }
+
+        .close {
+            display: none;
+        }
+    }
+
+    .modal-body {
+        padding: 0;
+        margin: spacing(xxxs) 0 0;
+        @include type(t7);
+    }
+
+    .modal-footer {
+        padding: 0;
+        margin: spacing(sm, -8) 0 0;
+
+        .btn {
+            width: 100%;
+            margin: spacing(xxs, -8) 0 0 -5px;
+        }
+
+        @media (min-width: $screen-sm-min) {
+            .btn {
+                max-width: 50%; // IE8
+                max-width: calc(50% - 2px); // IE9+ (compensate button margins)
+
+                & + .btn {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
+
+// Center modal vertically
+.modal-center-vertical {
+    text-align: center;
+
+    &:before {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+
+        // The modal is vertically centered on medium devices and up
+        @media (min-width: $screen-sm-min) {
+            content: "";
+        }
+    }
+
+    .modal-dialog {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: left;
+    }
+}
+
+
+//
+// Colors
+//
+.modal-backdrop {
+    background-color: transparent;
+}
+
+.modal {
+    background-color: $color-vivid-low-alt;
+
+    .modal-content {
+        background-color: $color-bg-light-vivid-mid;
+        border-color: $color-accent-vivid-high;
+        color: $color-type-primary;
+    }
+
+    &.theme-alt {
+        background-color: $color-vivid-low;
+
+        .modal-content {
+            background-color: $color-bg-dark-vivid-low;
+            color: $color-type-primary-alt;
+        }
+    }
+}

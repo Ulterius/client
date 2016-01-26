@@ -1,0 +1,49 @@
+﻿// Section
+.section {
+    margin-bottom: 1.5em;
+}
+
+.section-header {
+    position: relative;
+    margin-bottom: 1.5em;
+
+    .section-title {
+        @include type(t2);
+        margin-bottom: 0;
+        color: $headings-color;
+
+        a {
+            color: inherit;
+
+            &:hover,
+            &:focus {
+                text-decoration: none;
+                color: $brand-primary;
+            }
+        }
+    }
+}
+
+.section-header-aside {
+    position: absolute;
+    top: .25em;
+    right: ($grid-gutter-width / 2);
+}
+
+.section-header-more {
+    margin-left: .5em;
+
+    &.btn-link {
+        padding-right: 0;
+    }
+}
+
+.section-body {
+    margin-bottom: 1.5em;
+}
+
+.section-gallery {
+    .media {
+        margin-bottom: 2 * ($grid-gutter-width / 2);
+    }
+}

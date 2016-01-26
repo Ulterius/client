@@ -2,7 +2,7 @@ import React = require("react")
 
 import * as socket from "../socket"
 import {TaskList} from "../component/tasks"
-import {Bars} from "../component/components"
+import {Bars, UserWidget} from "../component/components"
 import {Stats} from "./system";
 import TaskStore from "../store/task-store"
 import setIntervals from "../interval"
@@ -19,6 +19,7 @@ export default class App extends React.Component<{children?: any, location?: any
                 </div>
 
                 <div className="task-list">
+                    <UserWidget />
                     <ul className="nav nav-tabs">
                         <li className={
                             (this.props.location.pathname == "/tasks" ||

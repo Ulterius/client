@@ -1,0 +1,18 @@
+{
+    "name": "Winstrap",
+    "version": "0.5.7",
+    "main": [
+        "src/scss/winstrap.scss"
+    ],
+    "homepage": "https://github.com/winjs/winstrap",
+    "ignore": [
+        "bower_components",
+        "node_modules"
+    ],
+    "authors": "",
+    "description": "Bootstrap Theme for Microsoft design language",
+    "license": "MIT",
+    "dependencies": {
+        "bootstrap-sass": "3.3.4"
+    }
+}

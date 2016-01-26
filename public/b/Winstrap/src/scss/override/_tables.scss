@@ -1,0 +1,73 @@
+//override default bootstrap padding on table elements
+.table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
+  padding: spacing(xxs, -2) spacing(xxs);
+}
+
+.table {
+
+  tr th {
+    @include type(t7);
+    color: $color-type-secondary;
+  }
+
+  thead {
+
+    tr th {
+      @include type(t9);
+      color: $color-type-secondary;
+      border-bottom: 1px solid $color-neutral-low;
+      padding-bottom: spacing(xxs, +1);
+    }
+
+  }
+
+  //Default Striped table
+  &.table-striped {
+    > tbody {
+      tr td, tr th {
+        border-bottom: 1px solid $color-dim-mid;
+      }
+      > tr:nth-of-type(odd) {
+        background: transparent;
+      }
+    }
+  }
+
+
+  //Alt theme
+  &.theme-alt {
+    background: $color-bg-dark-vivid-low;
+    color: $color-type-primary-alt;
+
+    tr th {
+      color: $color-type-secondary-alt;
+    }
+
+    thead {
+      tr th {
+        border-bottom: 1px solid $color-neutral-low-alt;
+      }
+    }
+
+    &.table-striped {
+      > tbody {
+        tr td, tr th {
+          border-bottom: 1px solid $color-dim-mid-alt;
+        }
+      }
+    }
+  }
+
+}
+
+.table-responsive {
+  padding-bottom: spacing(xxs, +5);
+}
+//Add margin bottom for IE scrollbar
+@media (min-width: $screen-md-min) {
+
+  .table-responsive {
+    padding-bottom: 0;
+  }
+
+}

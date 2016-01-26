@@ -1,0 +1,103 @@
+.hero {
+    @extend .jumbotron;
+}
+
+.jumbotron {
+    padding: spacing(xxs) 0;
+    margin-bottom: initial;
+    
+    h1,
+    .h1 {
+        @include type(t1);
+    }
+    
+    p {
+        margin-bottom: initial;
+        @include type-control(p3);
+    }
+    
+    .container &,
+    .container-fluid & {
+        border-radius: 0; // no rounded corners
+    }
+    
+    @media screen and (min-width: $screen-sm-min) {
+        padding: spacing(xs) 0;
+    }
+    @media screen and (min-width: $screen-md-min) {
+        padding: spacing(md) 0;
+    }
+    @media screen and (min-width: $screen-lg-min) {
+        padding: spacing(lg, -4) 0;
+    }
+    
+    //
+    // Colors
+    //
+    
+    // Ordinarily, we do not add background color to color themes, but because Bootstrap applies a background color to .jumbotron, we have do here as well.
+    &,
+    &.theme-default {
+        color: $color-type-primary;
+        background-color: $color-dim-mid;
+        > hr {
+            border-top-color: darken($jumbotron-bg, 10%);
+        }
+    }
+    
+    &.theme-light {
+        color: $color-type-primary;
+        background-color: $color-dim-mid;
+        
+        .btn.btn-primary {
+            @extend .btn.btn-primary.theme-light;
+        }
+        
+        .btn.btn-secondary {
+            @extend .btn.btn-secondary.theme-light;
+        }
+        
+        .btn.btn-lightweight,
+        .btn.btn-link {
+            @extend .btn-lightweight.theme-light;
+        }
+        
+    }
+    
+    &.theme-dark {
+        color: $color-type-primary-alt;
+        background-color: $color-accent;
+        
+        .btn.btn-primary {
+            @extend .btn.btn-primary.theme-dark;
+        }
+        
+        .btn.btn-secondary {
+            @extend .btn.btn-secondary.theme-dark;
+        }
+        
+        .btn.btn-lightweight,
+        .btn.btn-link {
+            @extend .btn-lightweight.theme-dark;
+        }
+        
+    }
+    
+    &.theme-alt {
+        color: $color-type-primary-alt;
+        background-color: $color-vivid-high;
+        
+        .btn.btn-primary {
+            @extend .btn.btn-primary.theme-alt;
+        }
+        
+        .btn.btn-secondary {
+            @extend .btn.btn-secondary.theme-alt;
+        }
+        
+        .btn.btn-lightweight,
+        .btn.btn-link {
+            @extend .btn-lightweight.theme-alt;
+        }
+    }
+}
