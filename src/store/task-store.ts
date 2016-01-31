@@ -22,4 +22,5 @@ class TaskStore extends AbstractStoreModel<State> {
     }
 }
 
-export default alt.createStore<State>(TaskStore, "TaskStore")
+export let taskStore = alt.createStore<State>(TaskStore, "TaskStore")
+export default taskStore

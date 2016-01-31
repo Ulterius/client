@@ -1,12 +1,11 @@
 import React = require("react")
 
 import * as socket from "../socket"
-import {TaskList} from "../component/tasks"
-import {Bars, UserWidget} from "../component/components"
-import {Stats} from "./system";
-import TaskStore from "../store/task-store"
+import {Bars, UserWidget, TaskList, Stats, CameraPage} from "./"
+import {taskStore} from "../store"
 import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'
+
 
 export default class App extends React.Component<{children?: any, location?: any}, {}> {
     render() {
@@ -18,23 +17,33 @@ export default class App extends React.Component<{children?: any, location?: any
                     <Stats />
                 </div>
 
-                <div className="task-list">
+                <div className="page">
                     <UserWidget />
                     <ul className="nav nav-tabs">
                         <li className={
-                            (this.props.location.pathname == "/tasks" ||
-                            this.props.location.pathname == "/")  ?  "active": ""}>
+                            (this.getActive("/tasks") ||
+                             this.getActive("/"))  ?  "active": ""}>
                             <Link to="/tasks">Task Manager</Link>
                         </li>
-                        <li className={this.props.location.pathname == "/info" ?  "active" : ""} >
+                        <li className={this.getActiveClassName("/info")} >
                             <Link to="/info">System Info</Link>
                         </li>
+                        <li className={this.getActiveClassName("/cameras")} >
+                            <Link to="/cameras">Cameras</Link>
+                        </li>
                     </ul>
-                    <div>
+                    <div className="page-content">
                     {this.props.children}
                     </div>
                 </div>
             </div>
         )
     }
+    getActive(path: string) {
+        return this.props.location.pathname == path
+    }
+    getActiveClassName(path: string) {
+        return this.props.location.pathname == path ? "active" : ""
+    }
+    
 }

@@ -23,5 +23,5 @@ class TaskActions extends AbstractActions implements Actions {
     }
 }
 
-
-export default alt.createActions<Actions>(TaskActions)
+export let taskActions = alt.createActions<Actions>(TaskActions)
+export default taskActions

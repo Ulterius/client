@@ -6,4 +6,5 @@ export default class AbstractStoreModel<S> implements AltJS.StoreModel<S> {
     waitFor:any;
     exportConfig:any;
     getState:() => S;
+    setState:(any) => void;
 }

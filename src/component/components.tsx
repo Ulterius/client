@@ -2,7 +2,6 @@
 import React = require("react")
 import {GpuAvailability, bytesToSize} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
-import {OverLayTrigger} from "react-bootstrap"
 
 export class Bar extends React.Component<{value: number, style?: any}, {}> {
     render() {
@@ -22,7 +21,7 @@ export class Bar extends React.Component<{value: number, style?: any}, {}> {
                     width: `${percent}%`,
                     minWidth: "0%"
                 }}>
-                    {percent.toFixed(0) + "%"}
+                    {false}
                 </div>
             </div>
         )
@@ -35,7 +34,8 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
     }
     render() {
         return (
-            <div> {
+            <div>
+            {
                 this.props.values.map(value => {
                     let [name, percent] = value
                     return (
@@ -45,7 +45,8 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
                         </div>
                     )
                 })
-            }</div>
+            }
+            </div>
         )
     }
 }
@@ -57,22 +58,20 @@ export class IconMedia extends React.Component<{
     children?: any
 }, {}> {
     render() {
-        return (
-            <div className="media icon-media">
-                <div className="media-left">
-                    <div className="icon">
-                        <img className="media-object"
-                        width={this.props.size[0].toString()}
-                        height={this.props.size[1].toString()}
-                        src={this.props.src}
-                        alt={this.props.alt} />
-                    </div>
-                </div>
-                <div className="media-body">
-                {this.props.children}
+        return <div className="media icon-media">
+            <div className="media-left">
+                <div className="icon">
+                    <img className="media-object"
+                    width={this.props.size[0].toString()}
+                    height={this.props.size[1].toString()}
+                    src={this.props.src}
+                    alt={this.props.alt} />
                 </div>
             </div>
-        )
+            <div className="media-body">
+            {this.props.children}
+            </div>
+        </div>
     }
 }
 
@@ -81,7 +80,9 @@ export class Temperature extends React.Component<{children?: any}, {}> {
         let degs = Number(this.props.children)
         let color = (degs < 60 ? "primary" : (degs < 80 ? "warning" : "danger"))
         let extra = (degs > 90 ? "burning" : "")
-        return <span className={"label label-" + color + " " + extra}>{this.props.children} {"°C"}</span>
+        return <span className={"label label-" + color + " " + extra}>
+            {this.props.children} {"°C"}
+        </span>
     }
 }
 
@@ -127,7 +128,7 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
             </div>
         }
         else {
-            return <div></div>
+            return <div style={{float: "right"}}>Loading user...</div>
         }
     }
 }

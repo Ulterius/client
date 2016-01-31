@@ -36,12 +36,26 @@ export function connect() {
 
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
-                let dataObject = JSON.parse(e.data)
-
-                console.log(dataObject)
+                let dataObject = {}
+                try {
+                    dataObject = JSON.parse(e.data)
+                }
+                catch (e) {
+                    console.log("Failed to parse a message!")
+                    dataObject = {
+                        endpoint: "error",
+                        results: {
+                            message: "Failed to parse a message!",
+                            exception: e
+                        }
+                    }
+                }
+                
 
                 let message = (dataObject as ApiMessage)
-
+                if (message.endpoint != "getcameraframe") {
+                    console.log(message.endpoint)
+                }
                 let caught = false
                 for (let endpoint of Object.keys(apiLayer)) {
                     if (message.endpoint.toLowerCase() == endpoint.toLowerCase() &&
@@ -52,7 +66,8 @@ export function connect() {
                     }
                 }
                 if (!caught) {
-                    console.log("Uncaught message! " + message.endpoint)
+                    console.log("Uncaught message: " + message.endpoint)
+                    console.log(dataObject)
                 }
 
                 /*

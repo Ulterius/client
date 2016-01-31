@@ -13,7 +13,6 @@ interface Actions {
 class SystemActions extends AbstractActions implements Actions {
 
     updateStats(stats: SystemInfo) {
-        console.log(stats)
         return stats
     }
     updateNet(net: NetworkInfo) {
@@ -33,4 +32,5 @@ class SystemActions extends AbstractActions implements Actions {
     }
 }
 
-export default alt.createActions<Actions>(SystemActions)
+export let systemActions = alt.createActions<Actions>(SystemActions)
+export default systemActions

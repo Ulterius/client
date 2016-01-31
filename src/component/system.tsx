@@ -55,7 +55,6 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
             cpuSeries = cpuSeries.map((cpu) => {
                 return _(cpu as Array<number>).reverse().value()
             })
-            console.log(cpuSeries)
 
             //when you stare into the abyss
             //the abyss may also stare into you
@@ -70,6 +69,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
             let ramSeries = this.state.statStack.map(stats => {
                 return (stats.usedMemory/stats.totalMemory)*100
             })
+            ramSeries = _(ramSeries).reverse().value()
 
             return <div>
                 <br />

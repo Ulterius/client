@@ -229,3 +229,57 @@ declare interface UserInfo {
     avatar: string,
     username: string
 }
+
+
+declare interface CameraInfo {
+    DevicePath: string,
+    DisplayName: string,
+    Id: string,
+    Name: string
+}
+
+declare interface CameraInfos {
+    cameraInfo: CameraInfo[]
+}
+
+declare interface CameraFrame {
+    cameraFrameFailed?: boolean,
+    message?: string,
+    exceptionMessage?: string,
+    cameraId: string,
+    cameraFrame: number[]
+}
+
+declare interface CameraImage {
+    cameraId: string,
+    URL: string
+}
+
+declare namespace CameraStatus {
+    interface Started {
+        cameraId: string,
+        cameraRunning: boolean,
+        cameraStarted: boolean
+    }
+    interface StreamStarted {
+        cameraId: string,
+        cameraStreamStarted: boolean
+    }
+    interface Stopped {
+        cameraId: string,
+        cameraRunning: boolean,
+        cameraStopped: boolean
+    }
+    interface StreamStopped {
+        cameraId: string,
+        cameraStreamStopped: boolean
+    }
+}
+
+/*
+declare interface CameraStatus {
+    
+    cameraStatus: boolean,
+    cameraStopped: boolean
+}
+*/

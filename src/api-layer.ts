@@ -1,6 +1,7 @@
 import taskActions from "./action/task-actions"
 import systemActions from "./action/system-actions"
 import {messageActions} from "./action/misc-actions"
+import {cameraActions} from "./action/camera-actions"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
 import appState from "./app-state"
@@ -12,6 +13,12 @@ export let helpers = {
         sendCommandToDefault("requestNetworkInformation")
         sendCommandToDefault("requestOSInformation")
         sendCommandToDefault("requestgpuinformation")
+    },
+    startCamera: function(id: string) {
+        sendCommandToDefault("startCamera", id)
+    },
+    stopCamera: function(id: string) {
+        sendCommandToDefault("stopCameraStream", id)
     }
 }
 
@@ -55,12 +62,51 @@ export function authentication(info: AuthInfo) {
         setIntervals(socket)
         helpers.requestAuxillarySystemInformation()
         sendCommandToDefault("getWindowsData")
+        //sendCommandToDefault("getEventLogs")
+        sendCommandToDefault("getCameras")
         appState.authenticated = true
     }
 }
 
 export function getWindowsData(data: UserInfo) {
     systemActions.updateUser(data)
+}
+
+export function getEventLogs(logs: any) {
+    console.log(logs)
+}
+
+export function getCameras(cams: CameraInfos) {
+    console.log(cams)
+    cameraActions.updateCameras(cams)
+}
+
+export function startCamera(did: CameraStatus.Started) {
+        if (did.cameraRunning) {
+            sendCommandToDefault("startCameraStream", did.cameraId)
+            
+        }
+}
+export function startCameraStream(did: CameraStatus.StreamStarted) {
+    console.log(did)
+    if (did.cameraStreamStarted) {
+        cameraActions.startCameraStream(did.cameraId)
+    }
+}
+
+export function stopCameraStream(did: CameraStatus.StreamStopped) {
+    if (did.cameraStreamStopped) {
+        cameraActions.stopCameraStream(did.cameraId)
+        sendCommandToDefault("stopCamera", did.cameraId)
+    }
+}
+
+export function stopCamera(did: CameraStatus.Stopped) {
+    console.log(did)
+}
+
+export function getCameraFrame(frame: CameraFrame) {
+    cameraActions.updateFrame(frame)
 }
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
