@@ -1,7 +1,15 @@
-import taskActions from "./action/task-actions"
-import systemActions from "./action/system-actions"
-import {messageActions} from "./action/misc-actions"
-import {cameraActions} from "./action/camera-actions"
+//import taskActions from "./action/task-actions"
+//import systemActions from "./action/system-actions"
+//import {messageActions} from "./action/misc-actions"
+//import {cameraActions} from "./action/camera-actions"
+import {
+    taskActions, 
+    systemActions, 
+    messageActions, 
+    cameraActions,
+    appActions
+} 
+from "./action"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
 import appState from "./app-state"
@@ -61,10 +69,13 @@ export function authentication(info: AuthInfo) {
     if (info.authenticated) {
         setIntervals(socket)
         helpers.requestAuxillarySystemInformation()
-        sendCommandToDefault("getWindowsData")
         //sendCommandToDefault("getEventLogs")
         sendCommandToDefault("getCameras")
+        appActions.login(true)
         appState.authenticated = true
+    }
+    else {
+        appActions.login(false)
     }
 }
 
@@ -84,7 +95,6 @@ export function getCameras(cams: CameraInfos) {
 export function startCamera(did: CameraStatus.Started) {
         if (did.cameraRunning) {
             sendCommandToDefault("startCameraStream", did.cameraId)
-            
         }
 }
 export function startCameraStream(did: CameraStatus.StreamStarted) {
@@ -110,8 +120,9 @@ export function getCameraFrame(frame: CameraFrame) {
 }
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
+    sendCommandToDefault("getWindowsData")
     if (results.authRequired) {
-        sendCommandToDefault("authenticate", config.auth.password)
-        console.log("Okay, lets log in.")
+        //sendCommandToDefault("authenticate", config.auth.password)
+        console.log("Okay, lets not log in.")
     }
 }

@@ -29,7 +29,6 @@ class SystemStore extends AbstractStoreModel<SystemState> {
             newStack = _(newStack).initial().value()
         }
         this.statStack = newStack
-        console.log(this.statStack)
     }
 }
 
@@ -74,7 +73,7 @@ class AuxillarySystemStore extends AbstractStoreModel<AuxState> {
     }
 }
 
-interface UserState {
+export interface UserState {
     user: UserInfo
 }
 

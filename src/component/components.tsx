@@ -2,6 +2,7 @@
 import React = require("react")
 import {GpuAvailability, bytesToSize} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
+import * as _ from "lodash"
 
 export class Bar extends React.Component<{value: number, style?: any}, {}> {
     render() {
@@ -111,6 +112,7 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
         this.state = {user: null}
     }
     componentDidMount() {
+        this.updateUser(userStore.getState())
         userStore.listen(this.updateUser)
     }
     componentWillUnmount() {
@@ -130,5 +132,17 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
         else {
             return <div style={{float: "right"}}>Loading user...</div>
         }
+    }
+}
+
+export class Base64Img extends React.Component<{
+    type?: string,
+    data?: string,
+    [key: string]: any
+}, {}> {
+    render() {
+        const {type, data} = this.props
+        const other = _.omit(this.props, ["type", "data"])
+        return <img src={`data:${type};base64,${data}`} {...other} />
     }
 }
