@@ -48,7 +48,7 @@ export default class App extends React.Component<{
             </div>
         }
         return (
-            <div className="main">
+            <div className="main animated fadeIn">
             
                 <div className="sidebar col-md-4 hidden-sm hidden-xs" data-spy="affix">
                     <h1 className="text-center">Ulterius</h1>

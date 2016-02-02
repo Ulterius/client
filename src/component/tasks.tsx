@@ -80,7 +80,7 @@ export class Task extends React.Component<
     closeButton() {
         return (this.state.gonnaDie ?
             <button onClick={this.killSelf}
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm animated fadeInRight"
                     style={{position: "absolute", marginLeft: -80, marginTop: -7}}>
                 Confirm
             </button>

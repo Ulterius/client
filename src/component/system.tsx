@@ -144,7 +144,9 @@ export class SystemPage extends React.Component<{}, {
         if (os && cpu && network && gpu && stats) {
             //stats.cpuTemps.push(25, 67, 2, 1000)
             return (
-                <div style={{marginLeft: 30, marginTop: 40, maxWidth: 900}}>
+                <div 
+                className="animated fadeInDown" 
+                style={{marginLeft: 30, marginTop: 40, maxWidth: 900}}>
                     <IconMedia src="/img/icon/pc.svg" size={[40, 75]} alt="PC">
                         <h4 className="media-heading">Operating System</h4>
                         {os.name} {os.architecture}, version {os.version}
