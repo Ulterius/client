@@ -1,4 +1,4 @@
-import {sendCommand} from "./socket"
+import {sendCommandToDefault} from "./socket"
 
 interface Command {
     endPoint: string,
@@ -11,9 +11,9 @@ function command(endPoint: string, time: number, args?): Command {
     return {endPoint, time, args}
 }
 
-export default function setIntervals(socket: WebSocket) {
+export default function setIntervals() {
     let intervals: {[key: string]: number}
-    intervals = setCommandIntervals(socket, [
+    intervals = setCommandIntervals([
         command("requestProcessInformation", 5000),
         command("requestSystemInformation", 1000),
     ])
@@ -22,25 +22,24 @@ export default function setIntervals(socket: WebSocket) {
     //since it needs an auth response
 }
 
-function setCommandIntervals(socket: WebSocket, commands: Command[]) {
+function setCommandIntervals(commands: Command[]) {
     let intervals: {[key: string]: number} = {}
     for (let command of commands) {
         setCommandInterval(
             intervals,
-            socket,
             command.time,
             command.endPoint,
             command.args
         )
     }
+    console.log(intervals)
     return intervals
 }
 
 function setCommandInterval(graftTo: any,
-                            socket: WebSocket,
                             ms: number,
                             command: string,
                             args?) {
-    sendCommand(socket, command, args)
-    graftTo[command] = setInterval( (() => sendCommand(socket, command, args)), ms )
+    sendCommandToDefault(command, args)
+    graftTo[command] = setInterval( (() => sendCommandToDefault(command, args)), ms )
 }

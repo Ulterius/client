@@ -15,10 +15,7 @@ import {TaskList} from "./component/tasks"
 
 $(document).ready(function() {
     (window as any).send = sendCommandToDefault
-    connect().onopen = function() {
-        console.log('Socket Status: ' + socket.readyState + ' (open)')
-        //sendCommandToDefault("authenticate", config.auth.password)
-    }
+    connect()
     ReactDOM.render((
         <Router>
             <Route path="/" component={App}>

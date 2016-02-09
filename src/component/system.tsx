@@ -45,7 +45,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
     }
 
     render() {
-        if (this.state.stats) {
+        if (this.state.stats && this.state.stats.cpuUsage) {
             let cpuSeries = []
             for (var i=0; i<this.state.stats.cpuUsage.length; i++) {
                 cpuSeries.push(this.state.statStack.map(stats => {

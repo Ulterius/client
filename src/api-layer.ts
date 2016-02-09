@@ -14,6 +14,9 @@ import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
 import appState from "./app-state"
 import config from "./config"
+import * as _ from "lodash"
+
+let intervals: {[key:string]: number} = {}
 
 export let helpers = {
     requestAuxillarySystemInformation: function() {
@@ -67,7 +70,7 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
-        setIntervals(socket)
+        intervals = setIntervals()
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
         sendCommandToDefault("getCameras")
@@ -122,7 +125,18 @@ export function getCameraFrame(frame: CameraFrame) {
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
     sendCommandToDefault("getWindowsData")
     if (results.authRequired) {
+        appActions.login(false)
         //sendCommandToDefault("authenticate", config.auth.password)
         console.log("Okay, lets not log in.")
     }
+    setInterval(() => {
+        messageActions.message({style: "info", text: "why helo it is I jimbles notronbo"})
+        messageActions.message({style: "danger", text: "why helo it is I jimbles notronbo"})
+    }, 5000)
+}
+
+export function disconnectedFromUlterius() {
+    _.forEach(intervals, (v: number, k) => {
+        clearInterval(v)
+    })
 }

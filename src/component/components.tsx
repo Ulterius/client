@@ -146,3 +146,34 @@ export class Base64Img extends React.Component<{
         return <img src={`data:${type};base64,${data}`} {...other} />
     }
 }
+
+import {MessageState, messageStore} from "../store"
+import {Alert} from "react-bootstrap"
+
+export class Messages extends React.Component<{}, MessageState> {
+    componentDidMount() {
+        this.updateMessages(messageStore.getState())
+        messageStore.listen(this.updateMessages)
+    }
+    componentWillUnmount() {
+        messageStore.unlisten(this.updateMessages)
+    }
+    updateMessages = (state) => {
+        this.setState(state)
+    }
+    
+    render() {
+        if (this.state) {
+            return <div className="messages">
+            {
+                this.state.messages.map(msg => {
+                    return <Alert bsStyle={msg.style}>{msg.text}</Alert>
+                })
+            }
+            </div>
+        }
+        else {
+            return <div className="messages"></div>
+        }
+    }
+}

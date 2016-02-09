@@ -1,5 +1,19 @@
 $sidebar-width: 300px
+$strike-deepseagreen: rgb(38, 116, 126)
 $sidebar-color: rgba(90%, 90%, 90%, 100%)
+
+.ct-series-a .ct-line
+    stroke: white
+    stroke-width: 1px
+
+.ct-series-a .ct-area
+    fill: white
+a
+    color: $strike-deepseagreen !important
+    
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus
+    color: #555555 !important
+
 
 th
     cursor: pointer
@@ -11,7 +25,8 @@ td
     height: 100%
     width: $sidebar-width
     padding: 10px
-    background-color: $sidebar-color
+    color: white !important
+    background-color: $strike-deepseagreen
     position: fixed
     .progress
         margin-bottom: 0 !important
@@ -67,9 +82,6 @@ td
     -moz-box-shadow:    1px -1px 7px 0px rgba(255, 0, 0, 0.91)
     box-shadow:         1px -1px 7px 0px rgba(255, 0, 0, 0.91)
 
-.ct-line
-    stroke-width: 1px
-
 .modal-content
     margin-top: 300px
 
@@ -84,3 +96,8 @@ td
     width: 40%
     margin: -15% 0 0 -20%
     text-align: center
+    
+.messages
+    position: fixed
+    top: 10px
+    left: 10px

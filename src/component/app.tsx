@@ -1,7 +1,7 @@
 import React = require("react")
 
 import * as socket from "../socket"
-import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen} from "./"
+import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen, Messages} from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'
@@ -38,6 +38,7 @@ export default class App extends React.Component<{
         }
         if (!this.state.app.auth.loggedIn) {
             return <div className="main">
+                <Messages />
                 <LoginScreen 
                     username={this.state.user.username} 
                     avatar = {this.state.user.avatar}

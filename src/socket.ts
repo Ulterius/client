@@ -3,7 +3,9 @@ import * as _ from "lodash"
 
 import * as apiLayer from "./api-layer"
 
-export let socket = new WebSocket(config.server)
+export let socket: WebSocket
+
+let connectInterval = undefined
 
 export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
@@ -31,9 +33,25 @@ export function sendCommandToDefault(action, args?) {
 }
 
 export function connect() {
+    
     try {
+        socket = new WebSocket(config.server)
         console.log('Socket Status: ' + socket.readyState)
-
+        if (connectInterval === undefined)
+        socket.onerror = function() {
+            connectInterval = setInterval(() => {
+                console.log("Not connected... trying to reconnect.")
+                connect()
+            }, 4000)
+        }
+        socket.onopen = function() {
+            console.log('Socket Status: ' + socket.readyState + ' (open)')
+            if (connectInterval !== undefined && socket.readyState === 1) {
+                clearInterval(connectInterval)
+            }
+            //sendCommandToDefault("authenticate", config.auth.password)
+        }
+        
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
                 let dataObject = {}
@@ -86,6 +104,15 @@ export function connect() {
             }
             else if (e.data instanceof Blob) {
                 console.log("Blob get (for some reason): " + e.data)
+            }
+            
+            socket.onclose = function() {
+                console.log("Socket... died? Trying to reconnect in a sec...")
+                apiLayer.disconnectedFromUlterius()
+                connectInterval = setInterval(() => {
+                    console.log("Disconnected. Trying to reconnect now...")
+                    connect()
+                }, 4000)
             }
         }
 

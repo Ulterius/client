@@ -1,7 +1,7 @@
 import React = require("react")
 import taskStore from "../store/task-store"
 import {createSortOnProperty, bytesToSize} from "../util"
-import {socket, sendCommand, sendCommandToDefault} from "../socket"
+import {socket, sendCommandToDefault} from "../socket"
 import appState from "../app-state"
 
 export class TaskList extends React.Component<
@@ -75,7 +75,7 @@ export class Task extends React.Component<
         this.state = {expanded: false, gonnaDie: false}
     }
     killSelf = () => {
-        sendCommand(socket, "killProcess", this.props.info.id.toString())
+        sendCommandToDefault("killProcess", this.props.info.id.toString())
     }
     closeButton() {
         return (this.state.gonnaDie ?
