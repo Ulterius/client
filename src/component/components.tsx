@@ -125,8 +125,8 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
         if (this.state.user) {
             let {avatar, username} = this.state.user
             return <div className="user-widget">
-                <Base64Img src={"data:image/png;base64," + avatar} width="32" height="32" alt="avatar" />
-                &nbsp; {username}
+                <Base64Img src={"data:image/png;base64," + avatar} className="img-circle" width="64" height="64" alt="avatar" />
+                <div style={{marginTop: 5}}>{username}</div>
             </div>
         }
         else {
@@ -140,20 +140,6 @@ export function Base64Img(props: {type?: string, data?: string, [key:string]: an
     const other = _.omit(props, ["type", "data"])
     return <img src={`data:${type};base64,${data}`} {...other} />
 }
-
-/*
-export class Base64Img extends React.Component<{
-    type?: string,
-    data?: string,
-    [key: string]: any
-}, {}> {
-    render() {
-        const {type, data} = this.props
-        const other = _.omit(this.props, ["type", "data"])
-        return <img src={`data:${type};base64,${data}`} {...other} />
-    }
-}
-*/
 
 import {MessageState, messageStore} from "../store"
 import {Alert} from "react-bootstrap"

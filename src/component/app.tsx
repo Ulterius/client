@@ -5,6 +5,8 @@ import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen, Messages} fr
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'
+import {Glyphicon} from "react-bootstrap"
+import {bootstrapSizeMatches} from "../util"
 
 
 export default class App extends React.Component<{
@@ -51,20 +53,20 @@ export default class App extends React.Component<{
         return (
             <div className="main animated fadeIn">
                 <Messages />
-                <div className="sidebar col-md-4 hidden-sm hidden-xs" data-spy="affix">
+                <div className="sidebar col-md-4" data-spy="affix">
                     <h1 className="text-center">Ulterius</h1>
                     <UserWidget />
                     <ul className="nav nav-pills nav-stacked">
                         <li className={
                             (this.getActive("/tasks") ||
                              this.getActive("/"))  ?  "active": ""}>
-                            <Link to="/tasks">Task Manager</Link>
+                            <Link to="/tasks"><Glyphicon glyph="tasks" />  <span className="tab-label">&nbsp;Task Manager</span></Link>
                         </li>
                         <li className={this.getActiveClassName("/info")} >
-                            <Link to="/info">System Info</Link>
+                            <Link to="/info"><Glyphicon glyph="stats" /> <span className="tab-label">&nbsp;System Info </span></Link>
                         </li>
                         <li className={this.getActiveClassName("/cameras")} >
-                            <Link to="/cameras">Cameras</Link>
+                            <Link to="/cameras"><Glyphicon glyph="record" /> <span className="tab-label">&nbsp;Cameras </span></Link>
                         </li>
                     </ul>
                 </div>

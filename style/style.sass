@@ -1,6 +1,14 @@
 $sidebar-width: 200px
+$sidebar-sm-width: 75px
 $strike-deepseagreen: rgb(38, 116, 126)
 $sidebar-color: rgba(90%, 90%, 90%, 100%)
+
+$screen-sm-min: 786px
+$screen-xs-max: $screen-sm-min - 1px
+$screen-md-min: 992px
+$screen-sm-max: $screen-md-min - 1px
+$screen-lg-min: 1200px
+$screen-md-max: $screen-lg-min - 1px
 
 .ct-series-a .ct-line
     stroke: $strike-deepseagreen
@@ -43,11 +51,25 @@ td
 .page
     padding: 10px
     box-sizing: border-box
+    float: right
 
-
-@media (min-width: 992px)
+@media (max-width: $screen-sm-max)
+    .sidebar
+        width: $sidebar-sm-width
+        img
+            width: 32px
+            height: 32px
     .page
-        float: right
+        width: calc(100% - #{$sidebar-sm-width})
+    .tab-label
+        display: none
+    li
+        text-align: center
+    
+@media (min-width: $screen-md-min)
+    .sidebar
+        width: $sidebar-width
+    .page
         width: calc(100% - #{$sidebar-width})
 
 .close-button

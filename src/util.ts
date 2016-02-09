@@ -58,3 +58,11 @@ export function frameBufferToImageURL(buffer: number[]) {
     let urlCreator = window.URL || (window as any).webkitURL
     return urlCreator.createObjectURL(blob)
 }
+
+//return true if bootstrap will match the size, give a string like "xs", "sm", "md", "lg"
+export function bootstrapSizeMatches(size: string) {
+    return (  size == "xs" ||
+             (size == "sm" && window.matchMedia("(min-width: 768px)").matches) ||
+             (size == "md" && window.matchMedia("(min-width: 992px)").matches) ||
+             (size == "lg" && window.matchMedia("(min-width: 1200px)").matches) )
+}

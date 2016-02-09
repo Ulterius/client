@@ -121,7 +121,7 @@ export class Task extends React.Component<
     }
 }
 
-export let TaskPage = function(props: any) {
+export function TaskPage(props: any) {
     return <div className="row">
         <div className="col-md-8">
             <TaskList />
