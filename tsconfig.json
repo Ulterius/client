@@ -18,11 +18,8 @@
     },
     "files": [
         "src/action/abstract-actions.ts",
-        "src/action/app-actions.ts",
-        "src/action/camera-actions.ts",
         "src/action/index.ts",
         "src/action/actions.ts",
-        "src/action/system-actions.ts",
         "src/action/task-actions.ts",
         "src/alt.ts",
         "src/api-layer.ts",
