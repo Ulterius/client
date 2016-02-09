@@ -17,7 +17,7 @@ export class LoginScreen extends React.Component<{
                 <Glyphicon glyph="arrow-right" />
             </Button>
         return <div className="login">
-            <Base64Img type="image/png" data={this.props.avatar} />
+            <Base64Img type="image/png" className="img-circle" data={this.props.avatar} />
             <h2>{this.props.username}</h2>
             <br />
             <Input 

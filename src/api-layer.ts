@@ -127,7 +127,7 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
     if (results.authRequired) {
         appActions.login(false)
         if (config.auth.password) {
-            sendCommandToDefault("authenticate", config.auth.password)
+            //sendCommandToDefault("authenticate", config.auth.password)
         }
     }
     /*

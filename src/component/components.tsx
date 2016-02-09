@@ -4,29 +4,25 @@ import {GpuAvailability, bytesToSize} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
 import * as _ from "lodash"
 
-export class Bar extends React.Component<{value: number, style?: any}, {}> {
-    render() {
-        let percent = this.props.value
-        return (
-            <div className="progress" style={this.props.style || {}}>
-                <div
-                className={
-                    "progress-bar progress-bar-" +
-                    (percent < 60 ? "primary":
-                        (percent < 80 ? "warning" : "danger"))
-                }
-                aria-valuenow={percent.toString()}
-                aria-valuemin="0"
-                aria-valuemax="100"
-                style={{
-                    width: `${percent}%`,
-                    minWidth: "0%"
-                }}>
-                    {false}
-                </div>
-            </div>
-        )
-    }
+
+export function Bar(props: {value: number, style?: any}) {
+    let percent = props.value
+    return <div className="progress" style={props.style || {}}>
+        <div
+        className={
+            "progress-bar progress-bar-" +
+            (percent < 60 ? "primary":
+                (percent < 80 ? "warning" : "danger"))
+        }
+        aria-valuenow={percent.toString()}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style={{
+            width: `${percent}%`,
+            minWidth: "0%"
+        }}>
+        </div>
+    </div>
 }
 
 export class Bars extends React.Component<{ values: [string, number][] }, {}> {
@@ -52,39 +48,35 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
     }
 }
 
-export class IconMedia extends React.Component<{
-    src: string,
-    alt: string,
-    size: [number, number],
+export function IconMedia(props: {
+    src: string, 
+    alt: string, 
+    size: [number, number], 
     children?: any
-}, {}> {
-    render() {
-        return <div className="media icon-media">
-            <div className="media-left">
-                <div className="icon">
-                    <img className="media-object"
-                    width={this.props.size[0].toString()}
-                    height={this.props.size[1].toString()}
-                    src={this.props.src}
-                    alt={this.props.alt} />
-                </div>
-            </div>
-            <div className="media-body">
-            {this.props.children}
+}) {
+    return <div className="media icon-media">
+        <div className="media-left">
+            <div className="icon">
+                <img className="media-object"
+                    width={props.size[0].toString()}
+                    height={props.size[1].toString()}
+                    src={props.src}
+                    alt={props.alt} />
             </div>
         </div>
-    }
+        <div className="media-body">
+            {props.children}
+        </div>
+    </div>
 }
 
-export class Temperature extends React.Component<{children?: any}, {}> {
-    render() {
-        let degs = Number(this.props.children)
-        let color = (degs < 60 ? "primary" : (degs < 80 ? "warning" : "danger"))
-        let extra = (degs > 90 ? "burning" : "")
-        return <span className={"label label-" + color + " " + extra}>
-            {this.props.children} {"°C"}
-        </span>
-    }
+export function Temperature(props: {children?: any}) {
+    let degs = Number(props.children)
+    let color = (degs < 60 ? "primary" : (degs < 80 ? "warning" : "danger"))
+    let extra = (degs > 90 ? "burning" : "")
+    return <span className={"label label-" + color + " " + extra}>
+        {props.children} {"°C"}
+    </span>
 }
 
 export class Modal extends React.Component<{children?: any}, {}> {
