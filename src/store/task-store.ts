@@ -11,10 +11,10 @@ class TaskStore extends AbstractStoreModel<State> {
     tasks: TaskInfo[]
 
     constructor() {
+        super()
         this.bindListeners({
             handleUpdateTasks: taskActions.updateTasks
         })
-        super()
     }
 
     handleUpdateTasks(tasks: TaskInfo[]) {

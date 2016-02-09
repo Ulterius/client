@@ -34,7 +34,7 @@ export default class App extends React.Component<{
     }
     render() {
         if (!this.state || !this.state.app || !this.state.user) {
-            return <div className="main">Loading stores..</div>
+            return <div className="main">Connecting to server...</div>
         }
         if (!this.state.app.auth.loggedIn) {
             return <div className="main">
@@ -50,15 +50,11 @@ export default class App extends React.Component<{
         }
         return (
             <div className="main animated fadeIn">
-            
+                <Messages />
                 <div className="sidebar col-md-4 hidden-sm hidden-xs" data-spy="affix">
                     <h1 className="text-center">Ulterius</h1>
-                    <Stats />
-                </div>
-
-                <div className="page">
                     <UserWidget />
-                    <ul className="nav nav-tabs">
+                    <ul className="nav nav-pills nav-stacked">
                         <li className={
                             (this.getActive("/tasks") ||
                              this.getActive("/"))  ?  "active": ""}>
@@ -71,11 +67,12 @@ export default class App extends React.Component<{
                             <Link to="/cameras">Cameras</Link>
                         </li>
                     </ul>
-                    <div className="page-content">
-                    {this.props.children}
+                </div>
+                <div className="page">
+                    <div className="page-content container-fluid">
+                        {this.props.children}
                     </div>
                 </div>
-                
             </div>
         )
     }

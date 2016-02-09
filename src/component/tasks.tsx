@@ -3,6 +3,7 @@ import taskStore from "../store/task-store"
 import {createSortOnProperty, bytesToSize} from "../util"
 import {socket, sendCommandToDefault} from "../socket"
 import appState from "../app-state"
+import {Stats} from "./"
 
 export class TaskList extends React.Component<
     {},
@@ -118,4 +119,15 @@ export class Task extends React.Component<
             )
         }
     }
+}
+
+export let TaskPage = function(props: any) {
+    return <div className="row">
+        <div className="col-md-8">
+            <TaskList />
+        </div>
+        <div className="col-md-4">
+            <Stats />
+        </div>
+    </div>
 }

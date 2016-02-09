@@ -124,8 +124,8 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
     render() {
         if (this.state.user) {
             let {avatar, username} = this.state.user
-            return <div className="clearfix" style={{float: "right"}}>
-                <img src={"data:image/png;base64," + avatar} width="32" height="32" alt="avatar" />
+            return <div className="user-widget">
+                <Base64Img src={"data:image/png;base64," + avatar} width="32" height="32" alt="avatar" />
                 &nbsp; {username}
             </div>
         }
@@ -135,6 +135,13 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
     }
 }
 
+export function Base64Img(props: {type?: string, data?: string, [key:string]: any}) {
+    const {type, data} = props
+    const other = _.omit(props, ["type", "data"])
+    return <img src={`data:${type};base64,${data}`} {...other} />
+}
+
+/*
 export class Base64Img extends React.Component<{
     type?: string,
     data?: string,
@@ -146,6 +153,7 @@ export class Base64Img extends React.Component<{
         return <img src={`data:${type};base64,${data}`} {...other} />
     }
 }
+*/
 
 import {MessageState, messageStore} from "../store"
 import {Alert} from "react-bootstrap"
@@ -164,7 +172,7 @@ export class Messages extends React.Component<{}, MessageState> {
     
     render() {
         if (this.state) {
-            return <div className="messages">
+            return <div style={{zIndex: 9001}} className="messages">
             {
                 this.state.messages.map(msg => {
                     return <Alert bsStyle={msg.style}>{msg.text}</Alert>

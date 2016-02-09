@@ -126,13 +126,16 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
     sendCommandToDefault("getWindowsData")
     if (results.authRequired) {
         appActions.login(false)
-        //sendCommandToDefault("authenticate", config.auth.password)
-        console.log("Okay, lets not log in.")
+        if (config.auth.password) {
+            sendCommandToDefault("authenticate", config.auth.password)
+        }
     }
+    /*
     setInterval(() => {
         messageActions.message({style: "info", text: "why helo it is I jimbles notronbo"})
         messageActions.message({style: "danger", text: "why helo it is I jimbles notronbo"})
     }, 5000)
+    */
 }
 
 export function disconnectedFromUlterius() {

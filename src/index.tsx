@@ -5,7 +5,7 @@ require("../style/style.sass")
 import React = require("react")
 import ReactDOM = require("react-dom")
 import {connect, socket, sendCommandToDefault} from "./socket"
-import {Bars, Stats, SystemPage, CameraPage} from "./component"
+import {Bars, Stats, SystemPage, CameraPage, TaskPage} from "./component"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 import App from "./component/app"
@@ -20,7 +20,7 @@ $(document).ready(function() {
         <Router>
             <Route path="/" component={App}>
                 <IndexRoute component={TaskList} />
-                <Route path="tasks" component={TaskList} />
+                <Route path="tasks" component={TaskPage} />
                 <Route path="info" component={SystemPage} />
                 <Route path="cameras" component={CameraPage} />
             </Route>

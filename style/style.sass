@@ -1,13 +1,13 @@
-$sidebar-width: 300px
+$sidebar-width: 200px
 $strike-deepseagreen: rgb(38, 116, 126)
 $sidebar-color: rgba(90%, 90%, 90%, 100%)
 
 .ct-series-a .ct-line
-    stroke: white
+    stroke: $strike-deepseagreen
     stroke-width: 1px
 
 .ct-series-a .ct-area
-    fill: white
+    fill: $strike-deepseagreen
 a
     color: $strike-deepseagreen !important
     
@@ -30,6 +30,15 @@ td
     position: fixed
     .progress
         margin-bottom: 0 !important
+    ul .active
+        background-color: white !important
+        a
+            background-color: white !important
+            color: $strike-deepseagreen !important
+    a
+        color: white !important
+        &:hover
+            color: $strike-deepseagreen !important
 
 .page
     padding: 10px
@@ -101,3 +110,7 @@ td
     position: fixed
     top: 10px
     left: 10px
+    
+.user-widget
+    text-align: center
+    margin-bottom: 20px

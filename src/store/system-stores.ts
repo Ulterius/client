@@ -14,10 +14,10 @@ class SystemStore extends AbstractStoreModel<SystemState> {
     statStack: SystemInfo[]
 
     constructor() {
+        super()
         this.bindListeners({
             handleUpdateStats: systemActions.updateStats
         })
-        super()
         this.statStack = []
     }
 
@@ -47,13 +47,13 @@ class AuxillarySystemStore extends AbstractStoreModel<AuxState> {
     gpu: GpusInfo
 
     constructor() {
+        super()
         this.bindListeners({
             handleUpdateCpu: systemActions.updateCPU,
             handleUpdateNet: systemActions.updateNet,
             handleUpdateOS: systemActions.updateOS,
             handleUpdateGpu: systemActions.updateGpu
         })
-        super()
     }
 
     handleUpdateCpu(info: CpuInfo) {
@@ -80,10 +80,11 @@ export interface UserState {
 class UserStore extends AbstractStoreModel<UserState> {
     user: UserInfo
     constructor() {
+        super()
         this.bindListeners({
             handleUpdateUser: systemActions.updateUser
         })
-        super()
+        
     }
     handleUpdateUser(user: UserInfo) {
         this.user = user

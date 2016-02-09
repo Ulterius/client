@@ -90,24 +90,6 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
                     options={graphOptions}
                     type={"Line"} />
             </div>
-            /*
-            return <div>
-                {cpuSeries.map(cpu => {
-                    return <Graph
-                        data={{
-                            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-                            series: [cpu]
-                        }}
-                        options={graphOptions}
-                        type={"Line"} />
-                })}
-            </div>
-            */
-            /*
-            return (
-                <Bars values={usages} />
-            )
-            */
         }
         else {
             return <p>Loading stats...</p>
