@@ -1,6 +1,6 @@
 import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
-import {cameraActions} from "../action/camera-actions"
+import {cameraActions} from "../action"
 import * as _ from "lodash"
 
 export interface CameraState {

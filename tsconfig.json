@@ -21,7 +21,7 @@
         "src/action/app-actions.ts",
         "src/action/camera-actions.ts",
         "src/action/index.ts",
-        "src/action/misc-actions.ts",
+        "src/action/actions.ts",
         "src/action/system-actions.ts",
         "src/action/task-actions.ts",
         "src/alt.ts",

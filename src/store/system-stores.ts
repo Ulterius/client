@@ -1,6 +1,6 @@
 import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
-import systemActions from "../action/system-actions"
+import {systemActions} from "../action/"
 
 interface SystemState {
     stats: SystemInfo,
