@@ -10,7 +10,6 @@ import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 import App from "./component/app"
 import {IndexRoute, Router, Route, Link} from 'react-router'
-import {TaskList} from "./component/tasks"
 
 
 $(document).ready(function() {
@@ -19,7 +18,7 @@ $(document).ready(function() {
     ReactDOM.render((
         <Router>
             <Route path="/" component={App}>
-                <IndexRoute component={TaskList} />
+                <IndexRoute component={TaskPage} />
                 <Route path="tasks" component={TaskPage} />
                 <Route path="info" component={SystemPage} />
                 <Route path="cameras" component={CameraPage} />

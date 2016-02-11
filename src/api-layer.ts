@@ -10,6 +10,7 @@ import {
     appActions
 } 
 from "./action"
+import {appStore} from "./store"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
 import appState from "./app-state"
@@ -79,6 +80,7 @@ export function authentication(info: AuthInfo) {
     }
     else {
         appActions.login(false)
+        appActions.setPassword("") //because it's obviously invalid
     }
 }
 
@@ -124,10 +126,14 @@ export function getCameraFrame(frame: CameraFrame) {
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
     sendCommandToDefault("getWindowsData")
+    messageActions.message({style: "success", text: "Connected."})
     if (results.authRequired) {
         appActions.login(false)
         if (config.auth.password) {
             //sendCommandToDefault("authenticate", config.auth.password)
+        }
+        if (appStore.getState().auth.password) {
+            sendCommandToDefault("authenticate", appStore.getState().auth.password)
         }
     }
     /*
@@ -139,6 +145,7 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
 }
 
 export function disconnectedFromUlterius() {
+    messageActions.message({style: "danger", text: "Disconnected. Trying to reconnect..."})
     _.forEach(intervals, (v: number, k) => {
         clearInterval(v)
     })

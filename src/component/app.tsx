@@ -7,6 +7,7 @@ import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'
 import {Glyphicon} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
+import {appActions} from "../action"
 
 
 export default class App extends React.Component<{
@@ -47,6 +48,7 @@ export default class App extends React.Component<{
                     onLogin = {pwd => {
                         console.log(pwd)
                         socket.sendCommandToDefault("authenticate", pwd)
+                        appActions.setPassword(pwd)
                     }} />
             </div>
         }

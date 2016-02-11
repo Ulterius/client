@@ -32,11 +32,15 @@ export let messageActions = alt.createActions<MessageActionFunctions>(MessageAct
 
 interface AppActionFunctions {
     login(loggedIn: boolean): boolean
+    setPassword(password: string): string
 }
 
 class AppActions extends AbstractActions implements AppActionFunctions{
     login(loggedIn: boolean) {
         return loggedIn
+    }
+    setPassword(password: string) {
+        return password
     }
 }
 
@@ -78,16 +82,17 @@ class SystemActions extends AbstractActions implements SystemActionFunctions {
 export let systemActions = alt.createActions<SystemActionFunctions>(SystemActions)
 
 
+
 import {frameBufferToImageURL} from "../util"
 
-interface Actions {
+interface CameraActionFunctions {
     updateCameras(cams: CameraInfos): CameraInfo[]
     updateFrame(frame: CameraFrame): CameraImage,
     startCameraStream(Id: string): string
     stopCameraStream(Id: string): string
 }
 
-class CameraActions extends AbstractActions implements Actions {
+class CameraActions extends AbstractActions implements CameraActionFunctions {
     
     updateCameras(cams: CameraInfos) {
         return cams.cameraInfo
@@ -105,9 +110,8 @@ class CameraActions extends AbstractActions implements Actions {
     stopCameraStream(Id: string) {
         return Id
     }
-    
 }
 
-export let cameraActions = alt.createActions<Actions>(CameraActions)
+export let cameraActions = alt.createActions<CameraActionFunctions>(CameraActions)
 
 
