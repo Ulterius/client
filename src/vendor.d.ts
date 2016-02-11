@@ -4,7 +4,6 @@ declare module "react-chartist" {
     const Graph: ChartistGraph
     export = Graph
 }
-
 /*
 declare namespace ReactBootstrap {
 

@@ -1,7 +1,7 @@
 import React = require("react")
 
 import * as socket from "../socket"
-import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen, Messages} from "./"
+import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen, Messages, FadeTransition} from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, Route, Link} from 'react-router'
@@ -46,7 +46,6 @@ export default class App extends React.Component<{
                     username={this.state.user.username} 
                     avatar = {this.state.user.avatar}
                     onLogin = {pwd => {
-                        console.log(pwd)
                         socket.sendCommandToDefault("authenticate", pwd)
                         appActions.setPassword(pwd)
                     }} />
@@ -68,14 +67,16 @@ export default class App extends React.Component<{
                             <Link to="/info"><Glyphicon glyph="stats" /> <span className="tab-label">&nbsp;System Info </span></Link>
                         </li>
                         <li className={this.getActiveClassName("/cameras")} >
-                            <Link to="/cameras"><Glyphicon glyph="record" /> <span className="tab-label">&nbsp;Cameras </span></Link>
+                            <Link to="/cameras"><Glyphicon glyph="facetime-video" /> <span className="tab-label">&nbsp;Cameras </span></Link>
                         </li>
                     </ul>
                 </div>
                 <div className="page">
-                    <div className="page-content container-fluid">
-                        {this.props.children}
-                    </div>
+                    <FadeTransition>
+                        <div className="page-content container-fluid">
+                            {this.props.children}
+                        </div>
+                    </FadeTransition>
                 </div>
             </div>
         )

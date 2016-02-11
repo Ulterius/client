@@ -121,13 +121,21 @@ export class Task extends React.Component<
     }
 }
 
+import {ProcessCreator} from "./"
+
 export function TaskPage(props: any) {
-    return <div className="row">
-        <div className="col-md-8">
-            <TaskList />
+    return <div>
+        <div className="row">
+            
         </div>
-        <div className="col-md-4">
-            <Stats />
+        <div className="row">
+            <div className="col-md-8">
+                <ProcessCreator />
+                <TaskList />
+            </div>
+            <div className="col-md-4">
+                <Stats />
+            </div>
         </div>
     </div>
 }

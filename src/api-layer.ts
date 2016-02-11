@@ -124,13 +124,23 @@ export function getCameraFrame(frame: CameraFrame) {
     cameraActions.updateFrame(frame)
 }
 
+export function startProcess(status: StartedProcessInfo) {
+    if (status.processStarted) {
+        messageActions.message({style: "success", text: `Started process "${status.path}"`})
+    }
+    else {
+        messageActions.message({style: "danger", text: `Failed to start process "${status.path}"`})
+    }
+    
+}
+
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
     sendCommandToDefault("getWindowsData")
     messageActions.message({style: "success", text: "Connected."})
     if (results.authRequired) {
         appActions.login(false)
         if (config.auth.password) {
-            //sendCommandToDefault("authenticate", config.auth.password)
+            sendCommandToDefault("authenticate", config.auth.password)
         }
         if (appStore.getState().auth.password) {
             sendCommandToDefault("authenticate", appStore.getState().auth.password)
@@ -142,6 +152,7 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
         messageActions.message({style: "danger", text: "why helo it is I jimbles notronbo"})
     }, 5000)
     */
+    
 }
 
 export function disconnectedFromUlterius() {

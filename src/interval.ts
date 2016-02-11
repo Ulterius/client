@@ -14,7 +14,7 @@ function command(endPoint: string, time: number, args?): Command {
 export default function setIntervals() {
     let intervals: {[key: string]: number}
     intervals = setCommandIntervals([
-        command("requestProcessInformation", 5000),
+        command("requestprocessinformation", 5000),
         command("requestSystemInformation", 1000),
     ])
     return intervals
@@ -41,5 +41,5 @@ function setCommandInterval(graftTo: any,
                             command: string,
                             args?) {
     sendCommandToDefault(command, args)
-    graftTo[command] = setInterval( (() => sendCommandToDefault(command, args)), ms )
+    graftTo[command] = setInterval( () => { try { sendCommandToDefault(command, args) } catch (e) {console.log(e)} }, ms )
 }

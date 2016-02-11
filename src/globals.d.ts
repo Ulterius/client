@@ -209,6 +209,12 @@ declare interface KilledProcessInfo {
     processKilled: boolean,
     processName: string
 }
+
+declare interface StartedProcessInfo {
+    path: string,
+    processId: string,
+    processStarted: boolean
+}
 /*
 {
     "endpoint":"authentication",

@@ -135,6 +135,18 @@ export function Base64Img(props: {type?: string, data?: string, [key:string]: an
 
 import {MessageState, messageStore} from "../store"
 import {Alert} from "react-bootstrap"
+import ReactCSSTransitionGroup = require("react-addons-css-transition-group")
+
+export function FadeTransition(props: {children?: any}) {
+    return <ReactCSSTransitionGroup 
+            transitionName={"fade"}
+            transitionAppear={true} 
+            transitionEnterTimeout={300} 
+            transitionAppearTimeout={300} 
+            transitionLeaveTimeout={300}>
+        {props.children}
+    </ReactCSSTransitionGroup>
+}
 
 export class Messages extends React.Component<{}, MessageState> {
     componentDidMount() {
@@ -151,15 +163,49 @@ export class Messages extends React.Component<{}, MessageState> {
     render() {
         if (this.state) {
             return <div style={{zIndex: 9001}} className="messages">
-            {
-                this.state.messages.map(msg => {
-                    return <Alert bsStyle={msg.style}>{msg.text}</Alert>
-                })
-            }
+                <FadeTransition>
+                {
+                    this.state.messages.map((msg, i) => {
+                        return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
+                    
+                    })
+                }
+                </FadeTransition>
             </div>
         }
         else {
             return <div className="messages"></div>
         }
+    }
+}
+
+import {Button, Input, Glyphicon} from "react-bootstrap"
+import {sendCommandToDefault} from "../socket"
+export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}> {
+    startProcess = () => {
+        if (this.state && this.state.exe) {
+            console.log(this.state.exe)
+            sendCommandToDefault("startProcess", this.state.exe)
+            if (this.state.box) {
+                this.state.box.value = ""
+            }
+        }
+        
+    }
+    render() {
+        const createButton = <Button bsStyle="primary" onClick={this.startProcess}><Glyphicon glyph="plus"/></Button>
+        return <div>
+            <Input 
+            type="text" 
+            placeholder="Start new process..." 
+            onChange={e => this.setState({exe: e.target.value, box: e.target})} 
+            onKeyDown={(e) => {
+                if (e.keyCode == 13) {
+                    this.startProcess()
+                    //e.target.value = ""
+                }
+            }}
+            buttonAfter={createButton}/>
+        </div>
     }
 }
