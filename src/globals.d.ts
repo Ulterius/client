@@ -282,6 +282,46 @@ declare namespace CameraStatus {
     }
 }
 
+declare namespace SettingsInfo {
+    interface Updated {
+        changedStatus: boolean
+    }
+    interface WebServer extends Updated {
+        UseWebServer: boolean
+    }
+    interface WebServerPort extends Updated {
+        WebServerPort: number
+    }
+    interface WebFilePath extends Updated {
+        WebFilePath: string
+    }
+    interface VncPass extends Updated {
+        VncPass: string
+    }
+    interface VncPort extends Updated {
+        VncPort: number
+    }
+    interface VncProxyPort extends Updated {
+        VncProxyPort: number
+    }
+    interface TaskServerPort extends Updated {
+        TaskServerPort: number
+    }
+    interface NetworkResolve extends Updated {
+        SkipHostNameResolve: boolean
+    }
+    interface Settings {
+        UseWebServer: boolean,
+        WebServerPort: number,
+        WebFilePath: string,
+        TaskServerPort: number,
+        SkipHostNameResolve: boolean,
+        VncPort: number,
+        VncProxyPort: number,
+        VncPass: string
+    }
+}
+
 /*
 declare interface CameraStatus {
     

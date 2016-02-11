@@ -4,15 +4,18 @@ import {createSortOnProperty, bytesToSize} from "../util"
 import {socket, sendCommandToDefault} from "../socket"
 import appState from "../app-state"
 import {Stats} from "./"
+import {Glyphicon} from "react-bootstrap"
 
 export class TaskList extends React.Component<
     {},
     {tasks?: Array<TaskInfo>, sortProperty?: string, sortType?: string}
 > {
+    columns: {[key:string]: string}
     constructor(props) {
         super(props)
         this.state = {tasks: [], sortProperty: "id", sortType: "asc"}
         this.onChange = this.onChange.bind(this)
+        this.columns = {name: "Name", id: "ID", cpuUsage: "CPU", ramUsage: "Memory"}
     }
     componentDidMount() {
         taskStore.listen(this.onChange)
@@ -23,6 +26,18 @@ export class TaskList extends React.Component<
     }
     componentWillUnmount() {
         taskStore.unlisten(this.onChange)
+    }
+    getName(property: string) {
+        if (this.state.sortProperty == property) {
+            return <span>
+                <Glyphicon glyph={(this.state.sortType == "asc" ? "menu-up" : "menu-down")} /> 
+                <br />
+                {this.columns[property]}
+            </span>
+        }
+        else {
+            return <span>{this.columns[property]}</span>
+        }
     }
     onChange(tasks) {
         this.setState(tasks)
@@ -49,10 +64,10 @@ export class TaskList extends React.Component<
                 <thead>
                     <tr>
                         <th>Icon</th>
-                        <th onClick={() => this.setSort("name")}>Name</th>
-                        <th onClick={() => this.setSort("id")}>ID</th>
-                        <th onClick={() => this.setSort("cpuUsage")}>CPU</th>
-                        <th onClick={() => this.setSort("ramUsage")}>Memory</th>
+                        <th onClick={() => this.setSort("name")}>{this.getName("name")}</th>
+                        <th onClick={() => this.setSort("id")}>{this.getName("id")}</th>
+                        <th onClick={() => this.setSort("cpuUsage")}>{this.getName("cpuUsage")}</th>
+                        <th onClick={() => this.setSort("ramUsage")}>{this.getName("ramUsage")}</th>
                         <th></th>
                     </tr>
                 </thead>
