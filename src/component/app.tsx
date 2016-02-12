@@ -70,7 +70,7 @@ export default class App extends React.Component<{
                             <Link to="/cameras"><Glyphicon glyph="facetime-video" /> <span className="tab-label">&nbsp;Cameras </span></Link>
                         </li>
                         <li className={this.getActiveClassName("/settings")} >
-                            <Link to="/cameras"><Glyphicon glyph="cog" /> <span className="tab-label">&nbsp;Settings </span></Link>
+                            <Link to="/settings"><Glyphicon glyph="cog" /> <span className="tab-label">&nbsp;Settings </span></Link>
                         </li>
                     </ul>
                 </div>

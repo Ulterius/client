@@ -37,6 +37,7 @@
         "src/store/message-store.ts",
         "src/store/system-stores.ts",
         "src/store/task-store.ts",
+        "src/store/settings-store.ts",
         "src/util.ts",
         "src/vendor.d.ts",
         "src/component/app.tsx",
@@ -45,6 +46,9 @@
         "src/component/login.tsx",
         "src/component/system.tsx",
         "src/component/tasks.tsx",
+        "src/component/settings.tsx",
+        "src/api/index.ts",
+        "src/api/settings.ts",
         "src/index.tsx",
         "typings/alt/alt.d.ts",
         "typings/es6-promise/es6-promise.d.ts",
@@ -58,5 +62,8 @@
         "typings/react/react.d.ts",
         "typings/react/react-addons-transition-group.d.ts",
         "typings/react/react-addons-css-transition-group.d.ts"
-    ]
+    ],
+    "not": {
+        
+    }
 }

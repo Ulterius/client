@@ -57,25 +57,17 @@ interface SystemActionFunctions {
     updateUser(user: UserInfo): UserInfo
 }
 
-class SystemActions extends AbstractActions implements SystemActionFunctions {
-
-    updateStats(stats: SystemInfo) {
-        return stats
-    }
-    updateNet(net: NetworkInfo) {
-        return net
-    }
-    updateCPU(cpu: CpuInfo) {
-        return cpu
-    }
-    updateOS(os: OSInfo) {
-        return os
-    }
-    updateGpu(gpus: GpusInfo) {
-        return gpus
-    }
-    updateUser(user: UserInfo) {
-        return user
+class SystemActions extends AbstractActions {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+        this.generateActions(
+            "updateStats",
+            "updateNet",
+            "updateCPU",
+            "updateOS",
+            "updateGpu",
+            "updateUser"
+        )
     }
 }
 
@@ -114,4 +106,35 @@ class CameraActions extends AbstractActions implements CameraActionFunctions {
 
 export let cameraActions = alt.createActions<CameraActionFunctions>(CameraActions)
 
+interface SettingsActionFunctions {
+    //sometimes great type safety requires great sacrifice
+    //such as all ten (10) of your fingers
+    updateWebServer(info: SettingsInfo.WebServer): SettingsInfo.WebServer
+    updateWebServerPort(info: SettingsInfo.WebServerPort): SettingsInfo.WebServerPort
+    updateWebFilePath(info: SettingsInfo.WebFilePath): SettingsInfo.WebFilePath
+    updateVncPass(info: SettingsInfo.VncPass): SettingsInfo.VncPass
+    updateVncPort(info: SettingsInfo.VncPort): SettingsInfo.VncPort
+    updateVncProxyPort(info: SettingsInfo.VncProxyPort): SettingsInfo.VncProxyPort
+    updateTaskServerPort(info: SettingsInfo.TaskServerPort): SettingsInfo.TaskServerPort
+    updateNetworkResolve(info: SettingsInfo.NetworkResolve): SettingsInfo.NetworkResolve
+    getAllSettings(info: SettingsInfo.Settings): SettingsInfo.Settings
+}
 
+class SettingsActions extends AbstractActions  {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+        this.generateActions(
+            "updateWebServer",
+            "updateWebServerPort",
+            "updateWebFilePath",
+            "updateVncPass",
+            "updateVncPort",
+            "updateVncProxyPort",
+            "updateTaskServerPort",
+            "updateNetworkResolve",
+            "getAllSettings"
+        )
+    }
+}
+
+export let settingsActions = alt.createActions<SettingsActionFunctions>(SettingsActions)

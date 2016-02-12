@@ -7,7 +7,8 @@ import {
     systemActions, 
     messageActions, 
     cameraActions,
-    appActions
+    appActions,
+    settingsActions
 } 
 from "./action"
 import {appStore} from "./store"
@@ -18,6 +19,10 @@ import config from "./config"
 import * as _ from "lodash"
 
 let intervals: {[key:string]: number} = {}
+
+export * from "./api"
+
+
 
 export let helpers = {
     requestAuxillarySystemInformation: function() {
@@ -75,6 +80,7 @@ export function authentication(info: AuthInfo) {
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
         sendCommandToDefault("getCameras")
+        sendCommandToDefault("getCurrentSettings")
         appActions.login(true)
         appState.authenticated = true
     }
@@ -131,7 +137,10 @@ export function startProcess(status: StartedProcessInfo) {
     else {
         messageActions.message({style: "danger", text: `Failed to start process "${status.path}"`})
     }
-    
+}
+
+export function changeVncPort(port: SettingsInfo.VncPort) {
+    settingsActions.updateVncPort(port)
 }
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
