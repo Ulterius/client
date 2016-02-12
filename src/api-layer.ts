@@ -139,9 +139,7 @@ export function startProcess(status: StartedProcessInfo) {
     }
 }
 
-export function changeVncPort(port: SettingsInfo.VncPort) {
-    settingsActions.updateVncPort(port)
-}
+
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
     sendCommandToDefault("getWindowsData")
