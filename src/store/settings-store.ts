@@ -1,6 +1,6 @@
 import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
-import {settingsActions} from "../action"
+import {settingsActions, messageActions} from "../action"
 import * as _ from "lodash"
 
 export interface SettingsState {
@@ -36,10 +36,10 @@ class SettingsStore extends AbstractStoreModel<SettingsState> {
             }
         }
         else {
-            console.log("Can you see me?")
             _.assign(this.settings, whichever)
             console.log(this.settings)
         }
+        console.log("Setting updated: "+JSON.stringify(whichever))
     }
 }
 

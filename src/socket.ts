@@ -13,7 +13,7 @@ export function sendCommand(sock: WebSocket, action, args?) {
         apiKey: config.key,
         syncKey: "anus"
     }
-    if (args) {
+    if (typeof args !== "undefined") {
         if (args instanceof Array) {
             packet.args = args
         }

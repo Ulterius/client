@@ -11,6 +11,7 @@ export let changeVncPort = settingsActions.updateVncPort
 export let changeVncPassword = settingsActions.updateVncPass
 export let changeVncProxyPort = settingsActions.updateVncProxyPort
 export let changeWebFilePath = settingsActions.updateWebFilePath
+export let changeWebServerPort = settingsActions.updateWebServerPort
 export let changeWebServerUse = settingsActions.updateWebServer
 export let changeNetworkResolve = settingsActions.updateNetworkResolve
 export let changeTaskServerPort = settingsActions.updateTaskServerPort
