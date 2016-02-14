@@ -140,6 +140,15 @@ td
 .btn-primary, .label-primary
     background-color: $strike-deepseagreen
     border-color: darken($strike-deepseagreen, 3%)
+    &:hover
+        background-color: darken($strike-deepseagreen, 5%)
+        border-color: darken($strike-deepseagreen, 3%)
+    &.active
+        background-color: darken($strike-deepseagreen, 10%)
+        border-color: darken($strike-deepseagreen, 3%)
+.btn-primary.active:hover
+    background-color: darken($strike-deepseagreen, 10%)
+    border-color: darken($strike-deepseagreen, 3%)
     
 .fade-enter
     opacity: 0.01

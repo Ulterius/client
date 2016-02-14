@@ -4,9 +4,13 @@ import {sendCommandToDefault} from "../socket"
 export function getCurrentSettings(settings: SettingsInfo.Settings) {
     console.log(settings)
     settingsActions.getAllSettings(settings)
-    sendCommandToDefault("changeVncPort", 6670)
+    sendCommandToDefault("changeVncPort", 6690)
 }
 
-export function changeVncPort(port: SettingsInfo.VncPort) {
-    settingsActions.updateVncPort(port)
-}
+export let changeVncPort = settingsActions.updateVncPort
+export let changeVncPassword = settingsActions.updateVncPass
+export let changeVncProxyPort = settingsActions.updateVncProxyPort
+export let changeWebFilePath = settingsActions.updateWebFilePath
+export let changeWebServerUse = settingsActions.updateWebServer
+export let changeNetworkResolve = settingsActions.updateNetworkResolve
+export let changeTaskServerPort = settingsActions.updateTaskServerPort

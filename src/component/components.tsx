@@ -178,34 +178,3 @@ export class Messages extends React.Component<{}, MessageState> {
         }
     }
 }
-
-import {Button, Input, Glyphicon} from "react-bootstrap"
-import {sendCommandToDefault} from "../socket"
-export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}> {
-    startProcess = () => {
-        if (this.state && this.state.exe) {
-            console.log(this.state.exe)
-            sendCommandToDefault("startProcess", this.state.exe)
-            if (this.state.box) {
-                this.state.box.value = ""
-            }
-        }
-        
-    }
-    render() {
-        const createButton = <Button bsStyle="primary" onClick={this.startProcess}><Glyphicon glyph="plus"/></Button>
-        return <div>
-            <Input 
-            type="text" 
-            placeholder="Start new process..." 
-            onChange={e => this.setState({exe: e.target.value, box: e.target})} 
-            onKeyDown={(e) => {
-                if (e.keyCode == 13) {
-                    this.startProcess()
-                    //e.target.value = ""
-                }
-            }}
-            buttonAfter={createButton}/>
-        </div>
-    }
-}

@@ -4,7 +4,7 @@ export default class AbstractStoreModel<S> implements AltJS.StoreModel<S> {
     bindAction: (action: any, handler: Function) => void
     exportPublicMethods: (config: {[key:string]: (...args:Array<any>) => any}) => any
     exportAsync: (source: any) => void
-    waitFor: any;
+    waitFor: any
     exportConfig: any
     getState: () => S
     setState: (any) => void
