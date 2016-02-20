@@ -80,7 +80,8 @@ export function authentication(info: AuthInfo) {
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
         sendCommandToDefault("getCameras")
-        sendCommandToDefault("getCurrentSettings")
+        sendCommandToDefault("createFileTree", "C:\\")
+        sendCommandToDefault("getCurrentSettings")        
         appActions.login(true)
         appState.authenticated = true
     }

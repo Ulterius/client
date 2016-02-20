@@ -71,6 +71,12 @@ td
         width: $sidebar-width
     .page
         width: calc(100% - #{$sidebar-width})
+@media (min-width: $screen-lg-min)
+    .task-page, .file-page
+        width: 900px
+        margin: auto
+        //margin-left: calc((0.5 * (100% - #{$sidebar-width})) - 450px + #{$sidebar-width})
+        float: none !important
 
 .close-button
     width: 25px

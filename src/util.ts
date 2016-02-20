@@ -66,3 +66,7 @@ export function bootstrapSizeMatches(size: string) {
              (size == "md" && window.matchMedia("(min-width: 992px)").matches) ||
              (size == "lg" && window.matchMedia("(min-width: 1200px)").matches) )
 }
+
+export function lastPathSegment(path: string) {
+    return path.substr(path.lastIndexOf("\\")+1)
+}

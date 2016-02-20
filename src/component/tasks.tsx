@@ -166,7 +166,7 @@ export class Task extends React.Component<
 }
 
 export function TaskPage(props: any) {
-    return <div>
+    return <div className="task-page">
         <div className="row">
             
         </div>

@@ -61,17 +61,36 @@ export default class App extends React.Component<{
                         <li className={
                             (this.getActive("/tasks") ||
                              this.getActive("/"))  ?  "active": ""}>
-                            <Link to="/tasks"><Glyphicon glyph="tasks" />  <span className="tab-label">&nbsp;Task Manager</span></Link>
+                            <Link to="/tasks">
+                                <Glyphicon glyph="tasks" />  
+                                <span className="tab-label">&nbsp;Task Manager</span>
+                            </Link>
                         </li>
                         <li className={this.getActiveClassName("/info")} >
-                            <Link to="/info"><Glyphicon glyph="stats" /> <span className="tab-label">&nbsp;System Info </span></Link>
+                            <Link to="/info">
+                                <Glyphicon glyph="stats" />
+                                <span className="tab-label">&nbsp; System Info </span>
+                            </Link>
                         </li>
                         <li className={this.getActiveClassName("/cameras")} >
-                            <Link to="/cameras"><Glyphicon glyph="facetime-video" /> <span className="tab-label">&nbsp;Cameras </span></Link>
+                            <Link to="/cameras">
+                                <Glyphicon glyph="facetime-video" />
+                                <span className="tab-label">&nbsp; Cameras </span>
+                            </Link>
+                        </li>
+                        <li className={this.getActiveClassName("/filesystem") } >
+                            <Link to="/filesystem">
+                                <Glyphicon glyph="hdd" />
+                                <span className="tab-label">&nbsp; File System </span>
+                            </Link>
                         </li>
                         <li className={this.getActiveClassName("/settings")} >
-                            <Link to="/settings"><Glyphicon glyph="cog" /> <span className="tab-label">&nbsp;Settings </span></Link>
+                            <Link to="/settings">
+                                <Glyphicon glyph="cog" />
+                                <span className="tab-label">&nbsp; Settings </span>
+                            </Link>
                         </li>
+                        
                     </ul>
                 </div>
                 <div className="page">

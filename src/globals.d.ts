@@ -157,11 +157,21 @@ declare interface OSInfo {
             "ip":"192.168.1.2",
             "macAddress":"*"
         },
-        {"name":"null","ip":"192.168.1.1","macAddress":"*"},
-        {"name":"null","ip":"192.168.1.3","macAddress":"*"},
-        {"name":"mediapc","ip":"192.168.1.8","macAddress":"*"},
-        {"name":"null","ip":"192.168.45.254","macAddress":"*"},
-        {"name":"null","ip":"192.168.218.254","macAddress":"*"}
+        {"name":"null",
+        "ip":"192.168.1.1",
+        "macAddress":"*"},
+        {"name":"null",
+        "ip":"192.168.1.3",
+        "macAddress":"*"},
+        {"name":"mediapc",
+        "ip":"192.168.1.8",
+        "macAddress":"*"},
+        {"name":"null",
+        "ip":"192.168.45.254",
+        "macAddress":"*"},
+        {"name":"null",
+        "ip":"192.168.218.254",
+        "macAddress":"*"}
     ],
     "macAddress":"*",
     "internalIp":"192.168.1.2"
@@ -319,6 +329,39 @@ declare namespace SettingsInfo {
         VncPort: number,
         VncProxyPort: number,
         VncPass: string
+    }
+}
+
+declare namespace FileSystemInfo {
+    interface File {
+        FileSize: number,
+        Path: string
+    }
+    interface Folder {
+        ChildFolders: Folder[],
+        Name: string
+        Files: File[]
+    }
+    interface FileTree {
+        DeepWalk: boolean,
+        RootFolder: Folder
+    }
+    namespace Processed {
+        interface File {
+            FileSize: number,
+            Path: string,
+            Name: string
+        }
+        interface Folder {
+            ChildFolders: FileSystemInfo.Processed.Folder[],
+            Files: FileSystemInfo.Processed.File[],
+            Name: string,
+            Path: string
+        }
+        interface FileTree {
+            DeepWalk: boolean,
+            RootFolder: FileSystemInfo.Processed.Folder
+        }
     }
 }
 

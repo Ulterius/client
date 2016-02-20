@@ -138,3 +138,38 @@ class SettingsActions extends AbstractActions  {
 }
 
 export let settingsActions = alt.createActions<SettingsActionFunctions>(SettingsActions)
+
+
+interface FileSystemActionFunctions {
+    updateFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
+    goBack(): boolean
+}
+
+class FileSystemActions extends AbstractActions {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+    }
+    updateFileTree(tree: FileSystemInfo.FileTree) {
+        /*
+        let newTree: FileSystemInfo.Processed.FileTree
+        newTree.DeepWalk = tree.DeepWalk
+        newTree.RootFolder = {
+            Name: tree.RootFolder.Name.substr(tree.RootFolder.Name.lastIndexOf("\\")),
+            Path: tree.RootFolder.Name,
+            ChildFolders: tree.RootFolder.ChildFolders.map(folder => {
+                return {
+                    Name: folder.Name.substr(folder.Name.lastIndexOf("\\")),
+                    Path: folder.Name,
+                    
+                }
+            })
+        }
+        */
+        return tree
+    }
+    goBack() {
+        return true
+    }
+}
+
+export let fileSystemActions = alt.createActions<FileSystemActionFunctions>(FileSystemActions)

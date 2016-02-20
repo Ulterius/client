@@ -178,3 +178,37 @@ export class Messages extends React.Component<{}, MessageState> {
         }
     }
 }
+
+import {Input, Button, Glyphicon} from "react-bootstrap"
+
+export class EntryBox extends React.Component<
+    {
+        onConfirm: (text: string) => any, 
+        glyph: string, 
+        buttonStyle?: string,
+        placeholder?: string,
+        type?: string
+    }, 
+    {text?: string}> {
+    render() {
+        const confirmButton = 
+            <Button
+            bsStyle={this.props.buttonStyle || "primary"}
+            onClick={() => this.props.onConfirm(this.state.text)}>
+                <Glyphicon glyph={this.props.glyph} />
+            </Button>
+        return ( 
+            <Input
+            type={this.props.type || "text"}
+            placeholder={this.props.placeholder || ""}
+            buttonAfter={confirmButton}
+            onChange={e => this.setState({text: e.target.value})}
+            onKeyDown={e => {
+                if (e.keyCode == 13) {
+                    this.props.onConfirm(this.state.text)
+                }
+            }} />
+        )
+        
+    }
+}
