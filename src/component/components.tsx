@@ -183,18 +183,23 @@ import {Input, Button, Glyphicon} from "react-bootstrap"
 
 export class EntryBox extends React.Component<
     {
-        onConfirm: (text: string) => any, 
+        onConfirmation: (text: string) => any, 
         glyph: string, 
         buttonStyle?: string,
         placeholder?: string,
-        type?: string
+        type?: string,
+        defaultValue?: string
     }, 
-    {text?: string}> {
+    {text?: string, customized?: boolean}> {
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
     render() {
         const confirmButton = 
             <Button
             bsStyle={this.props.buttonStyle || "primary"}
-            onClick={() => this.props.onConfirm(this.state.text)}>
+            onClick={() => {this.props.onConfirmation(this.state.text)}}>
                 <Glyphicon glyph={this.props.glyph} />
             </Button>
         return ( 
@@ -202,10 +207,11 @@ export class EntryBox extends React.Component<
             type={this.props.type || "text"}
             placeholder={this.props.placeholder || ""}
             buttonAfter={confirmButton}
-            onChange={e => this.setState({text: e.target.value})}
+            onChange={e => this.setState({text: e.target.value, customized: true})}
+            value={this.state.customized ? this.state.text : this.props.defaultValue}
             onKeyDown={e => {
                 if (e.keyCode == 13) {
-                    this.props.onConfirm(this.state.text)
+                    this.props.onConfirmation(this.state.text)
                 }
             }} />
         )

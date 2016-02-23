@@ -103,7 +103,7 @@ export function connect() {
                 console.log("ArrayBuffer get (for some reason): " + e.data)
             }
             else if (e.data instanceof Blob) {
-                console.log("Blob get (for some reason): " + e.data)
+                console.log("Blob get " + e.data)
             }
             
             socket.onclose = function() {

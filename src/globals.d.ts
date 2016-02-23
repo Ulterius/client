@@ -337,6 +337,13 @@ declare namespace FileSystemInfo {
         FileSize: number,
         Path: string
     }
+    interface FileDownload {
+        fileBytes: number[],
+        fileName: string,
+        fileValid: boolean,
+        path: string,
+        size: number
+    }
     interface Folder {
         ChildFolders: Folder[],
         Name: string

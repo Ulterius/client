@@ -1,8 +1,7 @@
 import React = require("react")
-import taskStore from "../store/task-store"
+import {taskStore, appStore} from "../store"
 import {createSortOnProperty, bytesToSize} from "../util"
 import {socket, sendCommandToDefault} from "../socket"
-import appState from "../app-state"
 import {Stats} from "./"
 import {Button, Input, Glyphicon} from "react-bootstrap"
 
@@ -48,7 +47,7 @@ export class TaskList extends React.Component<
     }
     componentDidMount() {
         taskStore.listen(this.onChange)
-        if (appState.authenticated) {
+        if (appStore.getState().auth.loggedIn) {
             //sendCommandToDefault("requestProcessInformation")
             this.setState(taskStore.getState())
         }

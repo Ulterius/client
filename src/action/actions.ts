@@ -143,6 +143,7 @@ export let settingsActions = alt.createActions<SettingsActionFunctions>(Settings
 interface FileSystemActionFunctions {
     updateFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
     goBack(): boolean
+    goForward(): boolean
 }
 
 class FileSystemActions extends AbstractActions {
@@ -168,6 +169,9 @@ class FileSystemActions extends AbstractActions {
         return tree
     }
     goBack() {
+        return true
+    }
+    goForward() {
         return true
     }
 }

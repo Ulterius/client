@@ -23,7 +23,6 @@
         "src/action/task-actions.ts",
         "src/alt.ts",
         "src/api-layer.ts",
-        "src/app-state.ts",
         "src/component/index.ts",
         "src/config.example.ts",
         "src/config.ts",

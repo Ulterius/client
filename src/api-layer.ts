@@ -14,7 +14,6 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
-import appState from "./app-state"
 import config from "./config"
 import * as _ from "lodash"
 
@@ -76,14 +75,13 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
-        intervals = setIntervals()
+        //intervals = setIntervals()
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("getCurrentSettings")        
         appActions.login(true)
-        appState.authenticated = true
     }
     else {
         appActions.login(false)
@@ -104,27 +102,27 @@ export function getCameras(cams: CameraInfos) {
     cameraActions.updateCameras(cams)
 }
 
-export function startCamera(did: CameraStatus.Started) {
-        if (did.cameraRunning) {
-            sendCommandToDefault("startCameraStream", did.cameraId)
-        }
+export function startCamera(status: CameraStatus.Started) {
+    if (status.cameraRunning) {
+        sendCommandToDefault("startCameraStream", status.cameraId)
+    }
 }
-export function startCameraStream(did: CameraStatus.StreamStarted) {
-    console.log(did)
-    if (did.cameraStreamStarted) {
-        cameraActions.startCameraStream(did.cameraId)
+export function startCameraStream(status: CameraStatus.StreamStarted) {
+    console.log(status)
+    if (status.cameraStreamStarted) {
+        cameraActions.startCameraStream(status.cameraId)
     }
 }
 
-export function stopCameraStream(did: CameraStatus.StreamStopped) {
-    if (did.cameraStreamStopped) {
-        cameraActions.stopCameraStream(did.cameraId)
-        sendCommandToDefault("stopCamera", did.cameraId)
+export function stopCameraStream(status: CameraStatus.StreamStopped) {
+    if (status.cameraStreamStopped) {
+        cameraActions.stopCameraStream(status.cameraId)
+        sendCommandToDefault("stopCamera", status.cameraId)
     }
 }
 
-export function stopCamera(did: CameraStatus.Stopped) {
-    console.log(did)
+export function stopCamera(status: CameraStatus.Stopped) {
+    console.log(status)
 }
 
 export function getCameraFrame(frame: CameraFrame) {
@@ -164,7 +162,7 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
 }
 
 export function disconnectedFromUlterius() {
-    messageActions.message({style: "danger", text: "Disconnected. Trying to reconnect..."})
+    messageActions.message({style: "danger", text: "Disconnected. Reconnecting in a second..."})
     _.forEach(intervals, (v: number, k) => {
         clearInterval(v)
     })

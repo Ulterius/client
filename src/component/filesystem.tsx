@@ -1,12 +1,13 @@
 import React = require("react")
 import {EntryBox} from "./"
-import {Button, Table, Glyphicon} from "react-bootstrap"
+import {Button, ButtonGroup, Table, Glyphicon} from "react-bootstrap"
 import {FileSystemState, fileSystemStore} from "../store"
 import {fileSystemActions} from "../action"
 import {bytesToSize, lastPathSegment} from "../util"
 import {sendCommandToDefault} from "../socket"
 
 export class FileList extends React.Component<{}, FileSystemState> {
+    box: EntryBox
     componentDidMount() {
         this.updateState(fileSystemStore.getState())
         fileSystemStore.listen(this.updateState)
@@ -16,6 +17,9 @@ export class FileList extends React.Component<{}, FileSystemState> {
     }
     updateState = (state: FileSystemState) => {
         this.setState(state)
+        if (this.box) {
+            this.box.setState({customized: false})
+        }
     }
     openFolder = (path: string) => {
         sendCommandToDefault("createFileTree", path)
@@ -23,51 +27,82 @@ export class FileList extends React.Component<{}, FileSystemState> {
     goBack = () => {
         if (this.state.pathStack.length > 1) {
             fileSystemActions.goBack()
-            this.openFolder(this.state.pathStack[0])
+            //this.openFolder(this.state.pathStack[0].RootFolder.Name)
         }
     }
     render() {
         if (this.state) {
+            let {tree} = this.state
             return <div>
-                {JSON.stringify(this.state.pathStack)}
+                {this.state.pathStack.map(tree => tree.RootFolder.Name)}
+                {this.state.pathStack.indexOf(this.state.tree)}
                 <div className="row">
-                    <div className="col-xs-4">
-                        <Button onClick={this.goBack}><Glyphicon glyph="arrow-left" /></Button>
+                    <div className="col-xs-2">
+                        <ButtonGroup justified>
+                            <ButtonGroup>
+                                <Button onClick={fileSystemActions.goBack}>
+                                    <Glyphicon glyph="arrow-left" />
+                                </Button>
+                            </ButtonGroup>
+                            <ButtonGroup>
+                                <Button onClick={fileSystemActions.goForward}>
+                                    <Glyphicon glyph="arrow-right" />
+                                </Button>
+                            </ButtonGroup>
+                        </ButtonGroup>
                     </div>
-                    <div className="col-xs-8">
-                        <EntryBox onConfirm={console.log} glyph="arrow-right" />
+                    <div className="col-xs-10">
+                        <EntryBox 
+                        ref={box => this.box = box}
+                        onConfirmation={this.openFolder}
+                        defaultValue={tree.RootFolder.Name}
+                        glyph="chevron-right" />
                     </div>
                 </div>
                 <div className="row">
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Name</th>
-                                <th>Size</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            this.state.tree.RootFolder.ChildFolders.map(folder => {
-                                return <tr>
-                                    <td width="16"><Glyphicon glyph="folder-close"/></td>
-                                    <td style={{cursor: "pointer"}} onClick={() => this.openFolder(folder.Name)}>{lastPathSegment(folder.Name)}</td>
-                                    <td></td>
+                    <div className="col-xs-12">
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Size</th>
                                 </tr>
-                            })
-                        }
-                        {
-                            this.state.tree.RootFolder.Files.map(file => {
-                                return <tr>
-                                    <td><Glyphicon glyph="file" /></td>
-                                    <td>{lastPathSegment(file.Path)}</td>
-                                    <td>{bytesToSize(file.FileSize)}</td>
-                                </tr>
-                            })
-                        }
-                        </tbody>
-                    </Table>
+                            </thead>
+                            <tbody>
+                            {
+                                tree.RootFolder.ChildFolders.map(folder => {
+                                    return <tr>
+                                        <td width="16"><Glyphicon glyph="folder-close"/></td>
+                                        <td>
+                                            <span
+                                            style={{cursor: "pointer"}}
+                                            onClick={() => this.openFolder(folder.Name)}>
+                                                {lastPathSegment(folder.Name)}
+                                            </span>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                })
+                            }
+                            {
+                                tree.RootFolder.Files.map(file => {
+                                    return <tr>
+                                        <td><Glyphicon glyph="file" /></td>
+                                        <td>
+                                            <span
+                                            onClick={() => sendCommandToDefault("downloadFile", file.Path)} 
+                                            style={{cursor: "pointer"}}>
+                                                {lastPathSegment(file.Path)}
+                                            </span>
+                                        </td>
+                                        <td>{bytesToSize(file.FileSize)}</td>
+                                    </tr>
+                                })
+                            }
+                            </tbody>
+                        </Table>
+                    </div>
                 </div>
             </div>
         }
