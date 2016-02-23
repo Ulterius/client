@@ -1,4 +1,4 @@
-import {fileSystemActions} from "../action"
+import {fileSystemActions, messageActions} from "../action"
 import {frameBufferToImageURL} from "../util"
 
 export function createFileTree(tree: FileSystemInfo.FileTree) {
@@ -20,4 +20,19 @@ export function downloadFile(file: FileSystemInfo.FileDownload) {
     URL.revokeObjectURL(url)
     //you didn't see anything
     //please forget this ever happened
+}
+
+export function uploadFile(file: FileSystemInfo.FileUpload) {
+    if (file.fileUploaded) {
+        messageActions.message({
+            style: "success",
+            text: `File ${file.fileName} uploaded to ${file.path}.`
+        })
+    }
+    else {
+        messageActions.message({
+            style: "danger",
+            text: `File ${file.fileName} failed to upload.`
+        })
+    }
 }

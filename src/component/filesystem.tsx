@@ -1,6 +1,6 @@
 import React = require("react")
 import {EntryBox} from "./"
-import {Button, ButtonGroup, Table, Glyphicon} from "react-bootstrap"
+import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input} from "react-bootstrap"
 import {FileSystemState, fileSystemStore} from "../store"
 import {fileSystemActions} from "../action"
 import {bytesToSize, lastPathSegment} from "../util"
@@ -8,6 +8,7 @@ import {sendCommandToDefault} from "../socket"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
+    upload: any
     componentDidMount() {
         this.updateState(fileSystemStore.getState())
         fileSystemStore.listen(this.updateState)
@@ -30,14 +31,33 @@ export class FileList extends React.Component<{}, FileSystemState> {
             //this.openFolder(this.state.pathStack[0].RootFolder.Name)
         }
     }
+    handleUpload = (e) => {
+        let reader = new FileReader()
+        
+        reader.onload = ee => {
+            sendCommandToDefault("uploadFile", [
+                this.state.tree.RootFolder.Name + "\\" + readerAny.name,
+                [].slice.call(new Int8Array((ee.target as any).result))
+            ])
+        }
+        reader.onerror = function (e) {
+            console.error(e);
+		}
+        console.log(e.target.files)
+        let readerAny = (reader as any)
+        readerAny.name = e.target.files[0].name
+        reader.readAsArrayBuffer(e.target.files[0])
+    }
     render() {
         if (this.state) {
             let {tree} = this.state
             return <div>
-                {this.state.pathStack.map(tree => tree.RootFolder.Name)}
-                {this.state.pathStack.indexOf(this.state.tree)}
+                {/* this.state.pathStack.map(tree => tree.RootFolder.Name) */}
+                {/* this.state.pathStack.indexOf(this.state.tree) */}
+                <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
                 <div className="row">
-                    <div className="col-xs-2">
+                    <div className="col-xs-3">
+                        <ButtonToolbar>
                         <ButtonGroup justified>
                             <ButtonGroup>
                                 <Button onClick={fileSystemActions.goBack}>
@@ -49,9 +69,15 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                     <Glyphicon glyph="arrow-right" />
                                 </Button>
                             </ButtonGroup>
+                            <ButtonGroup>
+                                <Button bsStyle="primary" onClick={() => this.upload.click()}>
+                                    <Glyphicon glyph="export" />
+                                </Button>
+                            </ButtonGroup>
                         </ButtonGroup>
+                        </ButtonToolbar>
                     </div>
-                    <div className="col-xs-10">
+                    <div className="col-xs-9">
                         <EntryBox 
                         ref={box => this.box = box}
                         onConfirmation={this.openFolder}
@@ -70,8 +96,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                 </tr>
                             </thead>
                             <tbody>
-                            {
-                                tree.RootFolder.ChildFolders.map(folder => {
+                                {tree.RootFolder.ChildFolders.map(folder => {
                                     return <tr>
                                         <td width="16"><Glyphicon glyph="folder-close"/></td>
                                         <td>
@@ -83,10 +108,8 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                         </td>
                                         <td></td>
                                     </tr>
-                                })
-                            }
-                            {
-                                tree.RootFolder.Files.map(file => {
+                                })}
+                                {tree.RootFolder.Files.map(file => {
                                     return <tr>
                                         <td><Glyphicon glyph="file" /></td>
                                         <td>
@@ -98,8 +121,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                         </td>
                                         <td>{bytesToSize(file.FileSize)}</td>
                                     </tr>
-                                })
-                            }
+                                })}
                             </tbody>
                         </Table>
                     </div>

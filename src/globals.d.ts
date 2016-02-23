@@ -344,6 +344,11 @@ declare namespace FileSystemInfo {
         path: string,
         size: number
     }
+    interface FileUpload {
+        fileName: string,
+        fileUploaded: boolean,
+        path: string
+    }
     interface Folder {
         ChildFolders: Folder[],
         Name: string
