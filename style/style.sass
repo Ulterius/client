@@ -72,7 +72,7 @@ td
     .page
         width: calc(100% - #{$sidebar-width})
 @media (min-width: $screen-lg-min)
-    .task-page, .file-page, .settings-page
+    .task-page, .file-page, .settings-page, .plugin-page
         width: 900px
         margin: auto
         //margin-left: calc((0.5 * (100% - #{$sidebar-width})) - 450px + #{$sidebar-width})
@@ -183,3 +183,6 @@ td
 
 .upload
     display: none !important
+
+.plugin-page .form-group
+    width: 400px

@@ -135,7 +135,6 @@ export default class App extends React.Component<{
                             glyph="cog"
                             label="Settings"
                         />
-                        
                     </ul>
                 </div>
                 <div className="page">
