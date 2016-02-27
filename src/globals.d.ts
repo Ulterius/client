@@ -377,10 +377,24 @@ declare namespace FileSystemInfo {
     }
 }
 
-/*
-declare interface CameraStatus {
-    
-    cameraStatus: boolean,
-    cameraStopped: boolean
+declare namespace PluginInfo {
+    interface Plugin {
+        Name: string,
+        Version: number,
+        Author: string,
+        Website: string,
+        Description: string,
+        GUID: string,
+        Icon: string,
+        CanonicalName: string
+    }
+    interface Plugins {
+        [key: string]: Plugin //key is GUID
+    }
+    interface Started {
+        pluginData: {
+            [key: string]: any
+        },
+        pluginStarted: boolean
+    }
 }
-*/

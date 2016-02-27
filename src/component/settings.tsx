@@ -99,8 +99,8 @@ export class SettingsPage extends React.Component<{}, {currentSettings?: Setting
                     )
                 }
             })
-            return <div>
-                {JSON.stringify(this.state)}
+            return <div className="settings-page">
+                {/* JSON.stringify(this.state) */}
                 {page}
                 <Button onClick={this.finalizeSettings} bsStyle="primary">Save</Button>
             </div>

@@ -177,3 +177,21 @@ class FileSystemActions extends AbstractActions {
 }
 
 export let fileSystemActions = alt.createActions<FileSystemActionFunctions>(FileSystemActions)
+
+
+interface PluginActionFunctions {
+    updatePlugins(plugins: PluginInfo.Plugins): PluginInfo.Plugins
+    startPlugin(plugin: PluginInfo.Started): PluginInfo.Started
+}
+
+class PluginActions extends AbstractActions {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+        this.generateActions(
+            "updatePlugins",
+            "startPlugin"
+        )
+    }
+}
+
+export let pluginActions = alt.createActions<PluginActionFunctions>(PluginActions)

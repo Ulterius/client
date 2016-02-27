@@ -1,14 +1,53 @@
 import React = require("react")
 
 import * as socket from "../socket"
-import {Bars, UserWidget, TaskList, Stats, CameraPage, LoginScreen, Messages, FadeTransition} from "./"
+import {
+    Bars,
+    UserWidget,
+    TaskList,
+    Stats,
+    
+    CameraPage,
+    TaskPage,
+    SystemPage,
+    SettingsPage,
+    FilePage,
+    PluginPage,
+    
+    LoginScreen,
+    Messages,
+    FadeTransition
+} from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
-import {Router, Route, Link} from 'react-router'
+import {Router, IndexRoute, Route, Link} from 'react-router'
 import {Glyphicon} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
 
+export function RootRouter(props: any) {
+    return <Router>
+        <Route path="/" component={App}>
+            <IndexRoute component={TaskPage} />
+            <Route path="tasks" component={TaskPage} />
+            <Route path="info" component={SystemPage} />
+            <Route path="cameras" component={CameraPage} />
+            <Route path="settings" component={SettingsPage} />
+            <Route path="filesystem" component={FilePage} />
+            <Route path="plugin" component={PluginPage} />
+        </Route>
+    </Router>
+}
+
+function NavItem(props: {className: string, path: string, label: string, glyph: string}) {
+    let {className, path, label, glyph} = props
+    return <li className={className}>
+        <Link to={path}>
+            <Glyphicon glyph={glyph} />
+            <span className="tab-label">&nbsp; {label}</span>
+        </Link>
+    </li>
+}
 
 export default class App extends React.Component<{
     children?: any, 
@@ -58,38 +97,44 @@ export default class App extends React.Component<{
                     <h1 className="text-center">Ulterius</h1>
                     <UserWidget />
                     <ul className="nav nav-pills nav-stacked">
-                        <li className={
-                            (this.getActive("/tasks") ||
-                             this.getActive("/"))  ?  "active": ""}>
-                            <Link to="/tasks">
-                                <Glyphicon glyph="tasks" />  
-                                <span className="tab-label">&nbsp;Task Manager</span>
-                            </Link>
-                        </li>
-                        <li className={this.getActiveClassName("/info")} >
-                            <Link to="/info">
-                                <Glyphicon glyph="stats" />
-                                <span className="tab-label">&nbsp; System Info </span>
-                            </Link>
-                        </li>
-                        <li className={this.getActiveClassName("/cameras")} >
-                            <Link to="/cameras">
-                                <Glyphicon glyph="facetime-video" />
-                                <span className="tab-label">&nbsp; Cameras </span>
-                            </Link>
-                        </li>
-                        <li className={this.getActiveClassName("/filesystem") } >
-                            <Link to="/filesystem">
-                                <Glyphicon glyph="hdd" />
-                                <span className="tab-label">&nbsp; File System </span>
-                            </Link>
-                        </li>
-                        <li className={this.getActiveClassName("/settings")} >
-                            <Link to="/settings">
-                                <Glyphicon glyph="cog" />
-                                <span className="tab-label">&nbsp; Settings </span>
-                            </Link>
-                        </li>
+                        <NavItem 
+                            className={
+                                (this.getActive("/tasks") ||
+                                    this.getActive("/"))  ?  "active": ""} 
+                            path="/tasks"
+                            glyph="tasks"
+                            label="Task Manager"
+                        />
+                        <NavItem 
+                            className={this.getActiveClassName("/info")} 
+                            path="/info"
+                            glyph="stats"
+                            label="System Info"
+                        />
+                        <NavItem 
+                            className={this.getActiveClassName("/cameras")} 
+                            path="/cameras"
+                            glyph="facetime-video"
+                            label="Cameras"
+                        />
+                        <NavItem 
+                            className={this.getActiveClassName("/filesystem")} 
+                            path="/filesystem"
+                            glyph="hdd"
+                            label="Filesystem"
+                        />
+                        <NavItem 
+                            className={this.getActiveClassName("/plugin")} 
+                            path="/plugin"
+                            glyph="plus-sign"
+                            label="Plugins"
+                        />
+                        <NavItem 
+                            className={this.getActiveClassName("/settings")} 
+                            path="/settings"
+                            glyph="cog"
+                            label="Settings"
+                        />
                         
                     </ul>
                 </div>

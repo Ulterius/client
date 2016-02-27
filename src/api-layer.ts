@@ -75,12 +75,16 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authentication(info: AuthInfo) {
     if (info.authenticated) {
-        //intervals = setIntervals()
+        intervals = setIntervals()
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
+        onAuthenticate()
+        
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
-        sendCommandToDefault("getCurrentSettings")        
+        sendCommandToDefault("getCurrentSettings")
+        sendCommandToDefault("getPlugins")    
+        
         appActions.login(true)
     }
     else {
@@ -166,4 +170,10 @@ export function disconnectedFromUlterius() {
     _.forEach(intervals, (v: number, k) => {
         clearInterval(v)
     })
+}
+
+function onAuthenticate() {
+    //just a spot to put my calls that I don't do anything with.
+    
+    //sendCommandToDefault("getBadPlugins")
 }
