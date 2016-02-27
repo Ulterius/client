@@ -8,7 +8,8 @@ import {
     messageActions, 
     cameraActions,
     appActions,
-    settingsActions
+    settingsActions,
+    dialogActions
 } 
 from "./action"
 import {appStore} from "./store"
@@ -83,7 +84,9 @@ export function authentication(info: AuthInfo) {
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("getCurrentSettings")
-        sendCommandToDefault("getPlugins")    
+        sendCommandToDefault("getPlugins")
+        sendCommandToDefault("getBadPlugins")
+        sendCommandToDefault("checkForUpdate")
         
         appActions.login(true)
     }
@@ -133,16 +136,24 @@ export function getCameraFrame(frame: CameraFrame) {
     cameraActions.updateFrame(frame)
 }
 
-export function startProcess(status: StartedProcessInfo) {
-    if (status.processStarted) {
-        messageActions.message({style: "success", text: `Started process "${status.path}"`})
+export function refreshCameras(status: CamerasRefreshed) {
+    if (status.cameraFresh) {
+        sendCommandToDefault(getCameras)
     }
-    else {
-        messageActions.message({style: "danger", text: `Failed to start process "${status.path}"`})
-    }
+    messageActions.message({
+        style: status.cameraFresh ? "success" : "danger", 
+        text: status.message
+    })
 }
 
-
+export function startProcess({path, processStarted}: StartedProcessInfo) {
+    if (processStarted) {
+        messageActions.message({style: "success", text: `Started process "${path}"`})
+    }
+    else {
+        messageActions.message({style: "danger", text: `Failed to start process "${path}"`})
+    }
+}
 
 export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
     sendCommandToDefault("getWindowsData")
@@ -165,6 +176,12 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
     
 }
 
+export function checkForUpdate({update, message}: UpdateInfo) {
+    if (update) {
+        dialogActions.showDialog({title: "Update Available", body: message})
+    }
+}
+
 export function disconnectedFromUlterius() {
     messageActions.message({style: "danger", text: "Disconnected. Reconnecting in a second..."})
     _.forEach(intervals, (v: number, k) => {
@@ -174,6 +191,6 @@ export function disconnectedFromUlterius() {
 
 function onAuthenticate() {
     //just a spot to put my calls that I don't do anything with.
-    
+    //dialogActions.showDialog({title: "Hi!", body: "How are you doing today?"})
     //sendCommandToDefault("getBadPlugins")
 }

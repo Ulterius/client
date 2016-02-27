@@ -5,6 +5,7 @@ import * as _ from "lodash"
 
 export interface PluginState {
     plugins: PluginInfo.Plugins,
+    badPlugins: PluginInfo.Plugin[],
     pluginResponses: PluginInfo.Started[]
 }
 

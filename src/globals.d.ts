@@ -292,6 +292,11 @@ declare namespace CameraStatus {
     }
 }
 
+declare interface CamerasRefreshed {
+    cameraFresh: boolean,
+    message: string
+}
+
 declare namespace SettingsInfo {
     interface Updated {
         changedStatus: boolean
@@ -397,4 +402,15 @@ declare namespace PluginInfo {
         },
         pluginStarted: boolean
     }
+}
+
+declare interface UpdateInfo {
+    update: boolean,
+    message: string
+}
+
+declare interface DialogContent {
+    title: string,
+    ///body: string,
+    body: __React.Component<any, any> | string
 }

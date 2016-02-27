@@ -31,24 +31,24 @@ export class PluginList extends Component<{}, PluginState> {
         return <div>
             {/* JSON.stringify(this.state) */}
             <ListGroup>
-                {_.map(this.state.plugins, (v, k) => {
+                {_.map(this.state.plugins, (plugin, guid) => {
                     return <ListGroupItem>
                         <div className="clearfix">
                             <div style={{float: "left"}}>
-                                <Base64Img type="image/png" data={v.Icon} style={{display: "inline", verticalAlign: "top"}} />
+                                <Base64Img type="image/png" data={plugin.Icon} style={{display: "inline", verticalAlign: "top"}} />
                                 &nbsp;
-                                <h2 style={{display: "inline"}}>{v.Name}</h2>
+                                <h2 style={{display: "inline"}}>{plugin.Name}</h2>
                                 <br />
-                                {v.Description}
+                                {plugin.Description}
                                 <br />
-                                By {v.Author}&nbsp; <a href={v.Website}><Glyphicon glyph="link"/></a>
+                                By {plugin.Author}&nbsp; <a href={plugin.Website}><Glyphicon glyph="link"/></a>
                                 <br />
-                                {v.CanonicalName}, Version {v.Version}
+                                {plugin.CanonicalName}, Version {plugin.Version}
                             </div>
                             <div style={{float: "right"}}>
                                 <EntryBox 
                                     placeholder="arg, arg2, ..." 
-                                    onConfirmation={(t) => this.runPlugin(t, k)} 
+                                    onConfirmation={(t) => this.runPlugin(t, guid)} 
                                     glyph="play" 
                                 />
                             </div>

@@ -3,11 +3,11 @@ Todo
 * ~~createFiletree~~
 * ~~downloadFile~~
 * ~~uploadFile~~
-* generateNewApiKey
+* ~~(generateNewApiKey)~~
 * startVncServer
-* checkForUpdate
-* restartServer
-* plugin
-* getPlugins
+* ~~checkForUpdate~~
+* ~~restartServer~~
+* ~~plugin~~
+* ~~getPlugins~~
 * getBadPlugins
-* refreshCameras
+* ~~refreshCameras~~

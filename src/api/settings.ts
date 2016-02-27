@@ -1,4 +1,4 @@
-import {settingsActions} from "../action"
+import {settingsActions, messageActions} from "../action"
 import {sendCommandToDefault} from "../socket"
 
 export function getCurrentSettings(settings: SettingsInfo.Settings) {
@@ -15,3 +15,8 @@ export let changeWebServerPort = settingsActions.updateWebServerPort
 export let changeWebServerUse = settingsActions.updateWebServer
 export let changeNetworkResolve = settingsActions.updateNetworkResolve
 export let changeTaskServerPort = settingsActions.updateTaskServerPort
+export function restartServer(status: {serverRestarting: boolean}) {
+    if (status.serverRestarting) {
+        messageActions.message({style: "success", text: "Server is restarting."})
+    }
+}

@@ -13,7 +13,7 @@ import {
     SettingsPage,
     FilePage,
     PluginPage,
-    
+    Dialog,
     LoginScreen,
     Messages,
     FadeTransition
@@ -93,6 +93,7 @@ export default class App extends React.Component<{
         return (
             <div className="main animated fadeIn">
                 <Messages />
+                <Dialog />
                 <div className="sidebar col-md-4" data-spy="affix">
                     <h1 className="text-center">Ulterius</h1>
                     <UserWidget />
@@ -103,38 +104,32 @@ export default class App extends React.Component<{
                                     this.getActive("/"))  ?  "active": ""} 
                             path="/tasks"
                             glyph="tasks"
-                            label="Task Manager"
-                        />
+                            label="Task Manager"/>
                         <NavItem 
                             className={this.getActiveClassName("/info")} 
                             path="/info"
                             glyph="stats"
-                            label="System Info"
-                        />
+                            label="System Info"/>
                         <NavItem 
                             className={this.getActiveClassName("/cameras")} 
                             path="/cameras"
                             glyph="facetime-video"
-                            label="Cameras"
-                        />
+                            label="Cameras"/>
                         <NavItem 
                             className={this.getActiveClassName("/filesystem")} 
                             path="/filesystem"
                             glyph="hdd"
-                            label="Filesystem"
-                        />
+                            label="Filesystem"/>
                         <NavItem 
                             className={this.getActiveClassName("/plugin")} 
                             path="/plugin"
                             glyph="plus-sign"
-                            label="Plugins"
-                        />
+                            label="Plugins"/>
                         <NavItem 
                             className={this.getActiveClassName("/settings")} 
                             path="/settings"
                             glyph="cog"
-                            label="Settings"
-                        />
+                            label="Settings"/>
                     </ul>
                 </div>
                 <div className="page">

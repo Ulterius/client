@@ -1,6 +1,6 @@
 import React = require("react")
 import {settingsStore, SettingsState} from "../store"
-import {Input, Button, ButtonGroup} from "react-bootstrap"
+import {Input, Button, ButtonGroup, ButtonToolbar} from "react-bootstrap"
 import {sendCommandToDefault} from "../socket"
 import * as _ from "lodash"
 
@@ -40,7 +40,11 @@ class RadioGroup extends React.Component<{
     }
 }
 
-export class SettingsPage extends React.Component<{}, {currentSettings?: SettingsState, newSettings?: {[key: string]: any}}> {
+export class SettingsPage extends React.Component<{}, {
+    currentSettings?: SettingsState, 
+    newSettings?: {[key: string]: any},
+    restartConfirm?: boolean
+}> {
     settingNames = {
         UseWebServer: "Use web server",
         WebServerPort: "Web server port",
@@ -66,6 +70,16 @@ export class SettingsPage extends React.Component<{}, {currentSettings?: Setting
         if (property == "UseWebServer") return "changeWebServerUse"
         if (property == "SkipHostNameResolve") return "changeNetworkResolve"
         return "change" + property
+    }
+    restart = () => {
+        if (this.state.restartConfirm) {
+            sendCommandToDefault("restartServer")
+            this.state.restartConfirm = false
+        }
+        else {
+            this.setState({restartConfirm: true})
+        }
+        
     }
     finalizeSettings = () => {
         _.forIn(this.state.newSettings, (v, k) => {
@@ -102,7 +116,10 @@ export class SettingsPage extends React.Component<{}, {currentSettings?: Setting
             return <div className="settings-page">
                 {/* JSON.stringify(this.state) */}
                 {page}
-                <Button onClick={this.finalizeSettings} bsStyle="primary">Save</Button>
+                <ButtonToolbar>
+                    <Button onClick={this.finalizeSettings} bsStyle="primary">Save</Button>
+                    <Button bsStyle="danger" onClick={this.restart}>{this.state.restartConfirm?"Confirm Restart":"Restart Server"}</Button>
+                </ButtonToolbar>
             </div>
         }
         else {

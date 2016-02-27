@@ -76,7 +76,8 @@ export function connect() {
                 }
                 let caught = false
                 for (let endpoint of Object.keys(apiLayer)) {
-                    if (message.endpoint.toLowerCase() == endpoint.toLowerCase() &&
+                    if (message.endpoint && 
+                        message.endpoint.toLowerCase() == endpoint.toLowerCase() &&
                         typeof apiLayer[endpoint] == "function") {
 
                         apiLayer[endpoint](message.results)

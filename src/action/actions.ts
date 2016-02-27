@@ -30,6 +30,24 @@ export let messageActions = alt.createActions<MessageActionFunctions>(MessageAct
 
 
 
+interface DialogActionFunctions {
+    showDialog(dialog: DialogContent): DialogContent
+    closeFirstDialog(): boolean
+}
+
+class DialogActions extends AbstractActions {
+    showDialog(dialog: DialogContent) {
+        return dialog
+    }
+    closeFirstDialog() {
+        return true
+    }
+}
+
+export let dialogActions = alt.createActions<DialogActionFunctions>(DialogActions)
+
+
+
 interface AppActionFunctions {
     login(loggedIn: boolean): boolean
     setPassword(password: string): string

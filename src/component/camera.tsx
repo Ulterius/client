@@ -27,6 +27,11 @@ export class CameraPage extends React.Component<{}, CameraState> {
     startCamera(id: string) {
         api.startCamera(id)
     }
+    refresh = () => {
+        if (this.state.activeCameras.length == 0) {
+            sendCommand("refreshCameras")
+        }
+    }
     getButtonStyle(id: string) {
         return cu(this.state).cameraIsActive(id) ? "danger" : "success"
     }
@@ -40,15 +45,14 @@ export class CameraPage extends React.Component<{}, CameraState> {
         let {cameras, activeCameras} = this.state
         return <div className="camera-page">
             <ButtonToolbar>
-            {
-                cameras.map(cam => {
+                {cameras.map(cam => {
                     return <Button 
                             onClick={() => this.toggleCamera(cam.Id)} 
                             bsStyle={this.getButtonStyle(cam.Id)}>
                         {this.getIcon(cam.Id)} {cam.Name}
                     </Button>
-                })
-            }
+                })}
+                <Button bsStyle="primary" disabled={this.state.activeCameras.length > 0} onClick={this.refresh}><Glyphicon glyph="refresh" /></Button>
             </ButtonToolbar>
             {activeCameras.map(cam => {
                  return <img src={cam.URL} width="640" height="480" />

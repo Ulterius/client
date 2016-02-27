@@ -50,6 +50,7 @@
         "src/component/settings.tsx",
         "src/component/filesystem.tsx",
         "src/component/plugin.tsx",
+        "src/component/dialog.tsx",
         "src/api/index.ts",
         "src/api/settings.ts",
         "src/api/filesystem.ts",
