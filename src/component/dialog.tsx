@@ -19,8 +19,9 @@ export class Dialog extends React.Component<{}, DialogState> {
         dialogActions.closeFirstDialog()
     }
     render() {
-        if (!this.state || this.state.dialogs.length == 0)
+        if (!this.state || this.state.dialogs.length == 0) {
             return <div style={{display: "none"}}></div>
+        }
             
         let {dialogs} = this.state
         let dialog = dialogs[0]

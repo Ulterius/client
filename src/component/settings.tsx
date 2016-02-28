@@ -87,44 +87,44 @@ export class SettingsPage extends React.Component<{}, {
         })
     }
     render() {
-        if (this.state) {
-            let page = []
-            _.forIn(this.state.currentSettings.settings, (v, k) => {
-                if (typeof v === "boolean") {
-                    page.push(
-                        <RadioGroup 
-                            onChange={(val) => {
-                                this.setState({newSettings: _.assign(this.state.newSettings, {[k]: (val=="yes")})})
-                            }}
-                            label={this.settingNames[k]} 
-                            default={v?"yes":"no"} 
-                            options={["yes", "no"]} />
-                    )
-                }
-                else {
-                    page.push(
-                        <Input 
-                            type="text" 
-                            label={this.settingNames[k]} 
-                            defaultValue={String(v)}
-                            onChange={e => {
-                                this.setState({newSettings: _.assign(this.state.newSettings, {[k]: e.target.value})})
-                            }}/>
-                    )
-                }
-            })
-            return <div className="settings-page">
-                {/* JSON.stringify(this.state) */}
-                {page}
-                <ButtonToolbar>
-                    <Button onClick={this.finalizeSettings} bsStyle="primary">Save</Button>
-                    <Button bsStyle="danger" onClick={this.restart}>{this.state.restartConfirm?"Confirm Restart":"Restart Server"}</Button>
-                </ButtonToolbar>
-            </div>
-        }
-        else {
+        if (!this.state) {
             return <div>Loading settings...</div>
         }
+            
+
+        let page = []
+        _.forIn(this.state.currentSettings.settings, (v, k) => {
+            if (typeof v === "boolean") {
+                page.push(
+                    <RadioGroup 
+                        onChange={(val) => {
+                            this.setState({newSettings: _.assign(this.state.newSettings, {[k]: (val=="yes")})})
+                        }}
+                        label={this.settingNames[k]} 
+                        default={v?"yes":"no"} 
+                        options={["yes", "no"]} />
+                )
+            }
+            else {
+                page.push(
+                    <Input 
+                        type="text" 
+                        label={this.settingNames[k]} 
+                        defaultValue={String(v)}
+                        onChange={e => {
+                            this.setState({newSettings: _.assign(this.state.newSettings, {[k]: e.target.value})})
+                        }}/>
+                )
+            }
+        })
+        return <div className="settings-page">
+            {/* JSON.stringify(this.state) */}
+            {page}
+            <ButtonToolbar>
+                <Button onClick={this.finalizeSettings} bsStyle="primary">Save</Button>
+                <Button bsStyle="danger" onClick={this.restart}>{this.state.restartConfirm?"Confirm Restart":"Restart Server"}</Button>
+            </ButtonToolbar>
+        </div>
         
     }
 }

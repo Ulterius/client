@@ -30,21 +30,17 @@ export class Bars extends React.Component<{ values: [string, number][] }, {}> {
         super(props)
     }
     render() {
-        return (
-            <div>
-            {
-                this.props.values.map(value => {
-                    let [name, percent] = value
-                    return (
-                        <div style={{marginBottom: 5}}>
-                        {name} {percent.toFixed(0) + "%"}<br />
-                        <Bar value={percent} style={{width: "100%"}}/>
-                        </div>
-                    )
-                })
-            }
-            </div>
-        )
+        return <div>
+            {this.props.values.map(value => {
+                let [name, percent] = value
+                return (
+                    <div style={{marginBottom: 5}}>
+                    {name} {percent.toFixed(0) + "%"}<br />
+                    <Bar value={percent} style={{width: "100%"}}/>
+                    </div>
+                )
+            })}
+        </div>
     }
 }
 
@@ -79,25 +75,6 @@ export function Temperature(props: {children?: any}) {
     </span>
 }
 
-export class Modal extends React.Component<{children?: any}, {}> {
-    render() {
-        return <div>
-            <div className='modal-backdrop in' />
-            <div
-            className="modal in"
-            tabIndex={-1}
-            role="dialog"
-            style={{display: "block"}}>
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        {this.props.children}
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
-
 export class UserWidget extends React.Component<{}, {user: UserInfo}> {
     constructor(props) {
         super(props)
@@ -114,16 +91,16 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
         this.setState(state)
     }
     render() {
-        if (this.state.user) {
-            let {avatar, username} = this.state.user
-            return <div className="user-widget">
-                <Base64Img src={"data:image/png;base64," + avatar} className="img-circle" width="64" height="64" alt="avatar" />
-                <div style={{marginTop: 5}}>{username}</div>
-            </div>
-        }
-        else {
+        if (!this.state.user) {
             return <div style={{float: "right"}}>Loading user...</div>
         }
+
+        let {avatar, username} = this.state.user
+        return <div className="user-widget">
+            <Base64Img src={"data:image/png;base64," + avatar} className="img-circle" width="64" height="64" alt="avatar" />
+            <div style={{marginTop: 5}}>{username}</div>
+        </div>
+
     }
 }
 
@@ -139,11 +116,11 @@ import ReactCSSTransitionGroup = require("react-addons-css-transition-group")
 
 export function FadeTransition(props: {children?: any}) {
     return <ReactCSSTransitionGroup 
-            transitionName={"fade"}
-            transitionAppear={true} 
-            transitionEnterTimeout={300} 
-            transitionAppearTimeout={300} 
-            transitionLeaveTimeout={300}>
+        transitionName={"fade"}
+        transitionAppear={true} 
+        transitionEnterTimeout={300} 
+        transitionAppearTimeout={300} 
+        transitionLeaveTimeout={300}>
         {props.children}
     </ReactCSSTransitionGroup>
 }
@@ -161,21 +138,20 @@ export class Messages extends React.Component<{}, MessageState> {
     }
     
     render() {
-        if (this.state) {
-            return <div style={{zIndex: 9001}} className="messages">
-                <FadeTransition>
-                {
-                    this.state.messages.map((msg, i) => {
-                        return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
-                    
-                    })
-                }
-                </FadeTransition>
-            </div>
-        }
-        else {
+        if (!this.state) {
             return <div className="messages"></div>
         }
+        
+        return <div style={{zIndex: 9001}} className="messages">
+            <FadeTransition>
+            {
+                this.state.messages.map((msg, i) => {
+                    return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
+                
+                })
+            }
+            </FadeTransition>
+        </div>
     }
 }
 

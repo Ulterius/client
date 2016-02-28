@@ -40,7 +40,10 @@ export class CameraPage extends React.Component<{}, CameraState> {
             <Glyphicon glyph="stop" /> : <Glyphicon glyph="play" />
     }
     render() {
-        if (!this.state) return <div>No store...</div>
+        if (!this.state) {
+            return <div>Loading...</div>
+        }
+            
         
         let {cameras, activeCameras} = this.state
         return <div className="camera-page">
