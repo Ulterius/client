@@ -4,6 +4,10 @@ declare module "react-chartist" {
     const Graph: ChartistGraph
     export = Graph
 }
+declare module "node-rsa" {
+    const NodeRSA: any
+    export = NodeRSA
+}
 /*
 declare namespace ReactBootstrap {
 

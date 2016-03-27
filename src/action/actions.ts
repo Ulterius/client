@@ -51,6 +51,8 @@ export let dialogActions = alt.createActions<DialogActionFunctions>(DialogAction
 interface AppActionFunctions {
     login(loggedIn: boolean): boolean
     setPassword(password: string): string
+    setKey(key: string, iv: string): KeyInfo
+    setShake(shook: boolean): boolean
 }
 
 class AppActions extends AbstractActions implements AppActionFunctions{
@@ -59,6 +61,12 @@ class AppActions extends AbstractActions implements AppActionFunctions{
     }
     setPassword(password: string) {
         return password
+    }
+    setKey(key: string, iv: string) {
+        return {key, iv}
+    }
+    setShake(shook: boolean) {
+        return shook
     }
 }
 

@@ -76,6 +76,7 @@ export default class App extends React.Component<{
     }
     render() {
         if (!this.state || !this.state.app || !this.state.user) {
+            console.log(this.state)
             return <div className="main">Connecting to server...</div>
         }
         if (!this.state.app.auth.loggedIn) {

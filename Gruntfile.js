@@ -26,6 +26,10 @@ module.exports = function(grunt) {
                 {
                     test: /\.s(c|a)ss$/,
                     loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
+                },
+                {
+                    test: /\.json$/,
+                    loader: "json-loader"
                 }
             ]
         }

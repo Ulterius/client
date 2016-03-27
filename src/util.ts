@@ -70,3 +70,19 @@ export function bootstrapSizeMatches(size: string) {
 export function lastPathSegment(path: string) {
     return path.substr(path.lastIndexOf("\\")+1)
 }
+
+export function generateHexString(length: number) {
+    let ret = ""
+    while (ret.length < length) {
+        ret += Math.random().toString(16).substring(2)
+    }
+    return ret.substring(0, length)
+}
+
+export function toHex(str: string) {
+    let hex = ""
+    for(var i=0;i<str.length;i++) {
+        hex += ''+str.charCodeAt(i).toString(16)
+    }
+    return hex
+}

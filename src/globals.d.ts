@@ -414,3 +414,8 @@ declare interface DialogContent {
     ///body: string,
     body: __React.Component<any, any> | string
 }
+
+declare interface KeyInfo {
+    key: string, 
+    iv: string
+}

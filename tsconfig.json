@@ -67,7 +67,9 @@
         "typings/react/react-dom.d.ts",
         "typings/react/react.d.ts",
         "typings/react/react-addons-transition-group.d.ts",
-        "typings/react/react-addons-css-transition-group.d.ts"
+        "typings/react/react-addons-css-transition-group.d.ts",
+        "typings/crypto-js/crypto-js.d.ts",
+        "typings/node/node.d.ts"
     ],
     "not": {
         

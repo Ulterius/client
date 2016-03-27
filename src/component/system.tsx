@@ -2,6 +2,8 @@ import React = require("react")
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
 import {Bars, Bar, IconMedia, Temperature} from "./components"
 import {GpuAvailability, bytesToSize} from "../util"
+import {sendCommandToDefault} from "../socket"
+import {helpers} from "../api-layer"
 import Graph = require("react-chartist")
 import * as _ from  "lodash"
 
@@ -105,6 +107,7 @@ export class SystemPage extends React.Component<{}, {
     gpu?: GpusInfo
 }> {
     componentDidMount() {
+        helpers.requestAuxillarySystemInformation()
         systemStore.listen(this.onChange)
         auxillarySystemStore.listen(this.onChange)
         this.setState(auxillarySystemStore.getState())

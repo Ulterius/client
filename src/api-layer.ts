@@ -15,13 +15,13 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
+import {generateHexString} from "./util"
 import config from "./config"
 import * as _ from "lodash"
-
+declare let JSEncrypt: any
+import CryptoJS = require("crypto-js")
 let intervals: {[key:string]: number} = {}
-
 export * from "./api"
-
 
 
 export let helpers = {
@@ -56,6 +56,7 @@ export function requestCpuInformation(cpu: CpuInfo) {
 
 export function requestOSInformation(os: OSInfo) {
     console.log("OS info get")
+    console.log(os)
     systemActions.updateOS(os)
 }
 
@@ -74,7 +75,7 @@ export function killProcess(process: KilledProcessInfo) {
     messageActions.processHasBeenKilled(process)
 }
 
-export function authentication(info: AuthInfo) {
+export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
         intervals = setIntervals()
         helpers.requestAuxillarySystemInformation()
@@ -155,11 +156,14 @@ export function startProcess({path, processStarted}: StartedProcessInfo) {
     }
 }
 
-export function connectedToUlterius(results: {authRequired: boolean, message: string}) {
-    sendCommandToDefault("getWindowsData")
-    messageActions.message({style: "success", text: "Connected."})
-    if (results.authRequired) {
+export function aesHandshake(status: {shook: boolean}) {
+    console.log(status)
+    if (status.shook) {
+        appActions.setShake(true)
         appActions.login(false)
+        messageActions.message({style: "success", text: "AES handshake complete."})
+        sendCommandToDefault("getWindowsData")
+        
         if (config.auth.password) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
@@ -167,6 +171,31 @@ export function connectedToUlterius(results: {authRequired: boolean, message: st
             sendCommandToDefault("authenticate", appStore.getState().auth.password)
         }
     }
+    
+}
+
+let key = ""
+let iv = ""
+
+export function connectedToUlterius(results: {message: string, publicKey: string}) {
+    messageActions.message({style: "success", text: "Connected."})
+    appActions.setKey("", "")
+    appActions.setShake(false)
+    let encrypt = new JSEncrypt()
+    encrypt.setPublicKey(atob(results.publicKey))
+    key = generateHexString(16)
+    iv = generateHexString(16)
+    let encKey = encrypt.encrypt(key)
+    let encIV = encrypt.encrypt(iv)
+    sendCommandToDefault("aesHandshake", [encKey, encIV])
+    appActions.setKey(key, iv)
+    //let encIv = rsaKey.encrypt("fuckyouayy", "base64")
+    //console.log([encKey, encIv])
+    /*
+    if (results.authRequired) {
+        
+    }
+    */
     /*
     setInterval(() => {
         messageActions.message({style: "info", text: "why helo it is I jimbles notronbo"})

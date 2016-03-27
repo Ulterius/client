@@ -10,13 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "alt": "^0.18.1",
-    "backbone": "^1.2.3",
     "chartist": "^0.9.5",
+    "crypto-browserify": "^3.11.0",
+    "crypto-js": "^3.1.6",
     "css-loader": "^0.23.1",
     "flux": "^2.1.1",
     "history": "^1.17.0",
+    "jsencrypt": "^2.1.0",
     "lodash": "^3.10.1",
     "node-sass": "^3.4.2",
+    "public-encrypt": "^4.0.0",
     "react": "^0.14.7",
     "react-addons-css-transition-group": "^0.14.7",
     "react-bootstrap": "^0.28.2",
@@ -26,11 +29,12 @@
     "resolve-url-loader": "^1.4.3",
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
-    "typescript": "^1.9.0-dev.20160227"
+    "typescript": "^1.9.0-dev.20160319"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-webpack": "^1.0.11",
+    "json-loader": "^0.5.4",
     "ts-loader": "^0.7.2",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"

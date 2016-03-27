@@ -2,6 +2,9 @@ import config from "./config"
 import * as _ from "lodash"
 
 import * as apiLayer from "./api-layer"
+import {appStore} from "./store"
+import CryptoJS = require("crypto-js")
+import {toHex} from "./util"
 
 export let socket: WebSocket
 
@@ -10,7 +13,6 @@ let connectInterval = undefined
 export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
         endpoint: action,
-        apiKey: config.key,
         syncKey: "anus"
     }
     if (typeof args !== "undefined") {
@@ -22,8 +24,24 @@ export function sendCommand(sock: WebSocket, action, args?) {
         }
     }
     try {
-        sock.send(JSON.stringify(packet));
-    } catch (exception) {
+        let appState = appStore.getState()
+        if (appState.crypto && appState.crypto.key && appState.crypto.iv) {
+            let utf8Key = CryptoJS.enc.Utf8.parse(appState.crypto.key)
+            let utf8Iv = CryptoJS.enc.Utf8.parse(appState.crypto.iv)
+            let packetString = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(JSON.stringify(packet)), utf8Key, {
+                    keySize: 128 / 8,
+                    iv: utf8Iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }).toString()
+            sock.send(packetString)
+            
+        }
+        else {
+            sock.send(JSON.stringify(packet))
+        }
+    } 
+    catch (exception) {
         console.log(exception);
     }
 }
@@ -58,13 +76,24 @@ export function connect() {
                 try {
                     dataObject = JSON.parse(e.data)
                 }
-                catch (e) {
-                    console.log("Failed to parse a message!")
-                    dataObject = {
-                        endpoint: "error",
-                        results: {
-                            message: "Failed to parse a message!",
-                            exception: e
+                catch (err) {
+                    let decrypted = CryptoJS.AES.decrypt(
+                        e.data, 
+                        CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)), {
+                            iv: CryptoJS.enc.Hex.parse(toHex(appStore.getState().crypto.iv))
+                        }
+                    )
+                    try {
+                        dataObject = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
+                    }
+                    catch (errr) {
+                        console.log("Failed to parse a message!")
+                        dataObject = {
+                            endpoint: "error",
+                            results: {
+                                message: "Failed to parse a message!",
+                                exception: err
+                            }
                         }
                     }
                 }
