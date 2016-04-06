@@ -333,7 +333,8 @@ declare namespace SettingsInfo {
         SkipHostNameResolve: boolean,
         VncPort: number,
         VncProxyPort: number,
-        VncPass: string
+        VncPass: string,
+        AllowTerminal: boolean
     }
 }
 

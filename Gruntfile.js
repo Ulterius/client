@@ -5,10 +5,25 @@ module.exports = function(grunt) {
         global: true,
         events: true
     }
+    
+    let loaders = [
+        {
+            test: /\.tsx?$/,
+            loader: 'ts-loader'
+        },
+        {
+            test: /\.s(c|a)ss$/,
+            loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
+        },
+        {
+            test: /\.json$/,
+            loader: "json-loader"
+        }
+    ]
 
     let wpops = {
         entry: "./src/index.tsx",
-        devtool: "#source-map",
+        devtool: "#eval-source-map",
         output: {
             path: __dirname + "/public",
             filename: "bundle.js"
@@ -17,43 +32,24 @@ module.exports = function(grunt) {
         resolve: {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
-        module: {
-            loaders: [
-                {
-                    test: /\.tsx?$/,
-                    loader: 'ts-loader'
-                },
-                {
-                    test: /\.s(c|a)ss$/,
-                    loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
-                },
-                {
-                    test: /\.json$/,
-                    loader: "json-loader"
-                }
-            ]
-        }
+        module: {loaders}
     }
 
     let wptestops = {
-        entry: "./src/test.ts",
-        devtool: "#source-map",
+        entry: {
+            bundle: "./src/index.tsx",
+            spec: "./test/spec.ts"
+        },
+        devtool: "#eval-source-map",
         output: {
             path: __dirname + "/public",
-            filename: "test.js"
+            filename: "[name].js"
         },
         node: nodeops,
         resolve: {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
-        module: {
-            loaders: [
-                {
-                    test: /\.tsx?$/,
-                    loader: 'ts-loader'
-                }
-            ]
-        }
+        module: {loaders}
     }
 
     grunt.initConfig({
@@ -64,9 +60,9 @@ module.exports = function(grunt) {
         },
         "webpack-dev-server": {
             options: {
-                contentBase: "public/",
                 keepalive: true,
-                watch: true
+                watch: true,
+                contentBase: "public/"
             },
             default: {
                 webpack: wpops

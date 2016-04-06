@@ -4,6 +4,7 @@ import {pluginActions} from "../action"
 import * as _ from "lodash"
 
 export interface PluginState {
+    pendingPlugins: PluginInfo.Plugin[],
     plugins: PluginInfo.Plugins,
     badPlugins: PluginInfo.Plugin[],
     pluginResponses: PluginInfo.Started[]

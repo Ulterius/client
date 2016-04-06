@@ -92,10 +92,10 @@ export class TaskList extends React.Component<
                 <thead>
                     <tr>
                         <th>Icon</th>
-                        <th onClick={() => this.setSort("name")}>{this.getName("name")}</th>
-                        <th onClick={() => this.setSort("id")}>{this.getName("id")}</th>
-                        <th onClick={() => this.setSort("cpuUsage")}>{this.getName("cpuUsage")}</th>
-                        <th onClick={() => this.setSort("ramUsage")}>{this.getName("ramUsage")}</th>
+                        <th className="task-name-head" onClick={() => this.setSort("name")}>{this.getName("name")}</th>
+                        <th className="task-id-head" onClick={() => this.setSort("id")}>{this.getName("id")}</th>
+                        <th className="task-cpu-head" onClick={() => this.setSort("cpuUsage")}>{this.getName("cpuUsage")}</th>
+                        <th className="task-memory-head" onClick={() => this.setSort("ramUsage")}>{this.getName("ramUsage")}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -139,10 +139,10 @@ export class Task extends React.Component<
                     <td style={{width: "39px"}}>
                         <img src={"data:image/png;base64," + this.props.info.icon} />
                     </td>
-                    <td>{this.props.info.name}</td>
-                    <td style={{width: 20}}>{this.props.info.id}</td>
-                    <td style={{width: 20}}>{this.props.info.cpuUsage + "%"}</td>
-                    <td>{bytesToSize(this.props.info.ramUsage)}</td>
+                    <td className="task-name">{this.props.info.name}</td>
+                    <td className="task-id" style={{width: 20}}>{this.props.info.id}</td>
+                    <td className="task-cpu" style={{width: 20}}>{this.props.info.cpuUsage + "%"}</td>
+                    <td className="task-memory">{bytesToSize(this.props.info.ramUsage)}</td>
                     <td
                     className="close-button"
                     onClick={() => this.setState({gonnaDie: !this.state.gonnaDie})}

@@ -4,6 +4,12 @@ import {appActions} from "../action"
 import * as _ from "lodash"
 
 export interface AppState {
+    connection: {
+        host: string,
+        port: string,
+        terminalPort: string,
+        vncPort: string
+    }
     auth: {
         loggedIn: boolean,
         password: string

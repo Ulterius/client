@@ -34,7 +34,7 @@ export function RootRouter(props: any) {
             <Route path="cameras" component={CameraPage} />
             <Route path="settings" component={SettingsPage} />
             <Route path="filesystem" component={FilePage} />
-            <Route path="plugin" component={PluginPage} />
+            {/*<Route path="plugin" component={PluginPage} />*/}
         </Route>
     </Router>
 }
@@ -121,11 +121,11 @@ export default class App extends React.Component<{
                             path="/filesystem"
                             glyph="hdd"
                             label="Filesystem"/>
-                        <NavItem 
+                        {/*<NavItem 
                             className={this.getActiveClassName("/plugin")} 
                             path="/plugin"
                             glyph="plus-sign"
-                            label="Plugins"/>
+                            label="Plugins"/>*/}
                         <NavItem 
                             className={this.getActiveClassName("/settings")} 
                             path="/settings"

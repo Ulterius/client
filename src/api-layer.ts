@@ -23,6 +23,7 @@ import CryptoJS = require("crypto-js")
 let intervals: {[key:string]: number} = {}
 export * from "./api"
 
+const resLog = false
 
 export let helpers = {
     requestAuxillarySystemInformation: function() {
@@ -40,38 +41,40 @@ export let helpers = {
 }
 
 export function requestProcessInformation(tasks: TaskInfo[]) {
-    console.log("Tasks get")
+    if (resLog) console.log("Tasks get")
     taskActions.updateTasks(tasks)
 }
 
 export function requestsysteminformation(stats: SystemInfo) {
-    console.log("System stats get")
+    if (resLog) console.log("System stats get")
     systemActions.updateStats(stats)
 }
 
 export function requestCpuInformation(cpu: CpuInfo) {
-    console.log("CPU information get")
+    if (resLog) console.log("CPU information get")
     systemActions.updateCPU(cpu)
 }
 
 export function requestOSInformation(os: OSInfo) {
-    console.log("OS info get")
-    console.log(os)
+    if (resLog) {
+        console.log("OS info get")
+        console.log(os)
+    }
     systemActions.updateOS(os)
 }
 
 export function requestNetworkInformation(net: NetworkInfo) {
-    console.log("Net information get")
+    if (resLog) console.log("Net information get")
     systemActions.updateNet(net)
 }
 
 export function requestGpuInformation(gpus: GpusInfo) {
-    console.log("Gpu information get")
+    if (resLog) console.log("Gpu information get")
     systemActions.updateGpu(gpus)
 }
 
 export function killProcess(process: KilledProcessInfo) {
-    console.log("Process killed")
+    if (resLog) console.log("Process killed")
     messageActions.processHasBeenKilled(process)
 }
 
@@ -85,8 +88,8 @@ export function authenticate(info: AuthInfo) {
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("getCurrentSettings")
-        sendCommandToDefault("getPlugins")
-        sendCommandToDefault("getBadPlugins")
+        //sendCommandToDefault("getPlugins")
+        //sendCommandToDefault("getBadPlugins")
         sendCommandToDefault("checkForUpdate")
         
         appActions.login(true)
@@ -106,7 +109,7 @@ export function getEventLogs(logs: any) {
 }
 
 export function getCameras(cams: CameraInfos) {
-    console.log(cams)
+    if (resLog) console.log(cams)
     cameraActions.updateCameras(cams)
 }
 
@@ -116,7 +119,7 @@ export function startCamera(status: CameraStatus.Started) {
     }
 }
 export function startCameraStream(status: CameraStatus.StreamStarted) {
-    console.log(status)
+    if (resLog) console.log(status)
     if (status.cameraStreamStarted) {
         cameraActions.startCameraStream(status.cameraId)
     }
@@ -130,7 +133,7 @@ export function stopCameraStream(status: CameraStatus.StreamStopped) {
 }
 
 export function stopCamera(status: CameraStatus.Stopped) {
-    console.log(status)
+    if (resLog) console.log(status)
 }
 
 export function getCameraFrame(frame: CameraFrame) {
@@ -157,7 +160,7 @@ export function startProcess({path, processStarted}: StartedProcessInfo) {
 }
 
 export function aesHandshake(status: {shook: boolean}) {
-    console.log(status)
+    if (resLog) console.log(status)
     if (status.shook) {
         appActions.setShake(true)
         appActions.login(false)
@@ -171,7 +174,6 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", appStore.getState().auth.password)
         }
     }
-    
 }
 
 let key = ""
@@ -189,13 +191,6 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     let encIV = encrypt.encrypt(iv)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
     appActions.setKey(key, iv)
-    //let encIv = rsaKey.encrypt("fuckyouayy", "base64")
-    //console.log([encKey, encIv])
-    /*
-    if (results.authRequired) {
-        
-    }
-    */
     /*
     setInterval(() => {
         messageActions.message({style: "info", text: "why helo it is I jimbles notronbo"})

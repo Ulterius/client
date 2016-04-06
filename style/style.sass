@@ -52,7 +52,9 @@ td
     padding: 10px
     box-sizing: border-box
     float: right
-
+@media (max-width: $screen-xs-max)
+    .task-memory, .task-memory-head, .task-id, .task-id-head
+        display: none
 @media (max-width: $screen-sm-max)
     .sidebar
         width: $sidebar-sm-width
@@ -61,10 +63,11 @@ td
             height: 32px
     .page
         width: calc(100% - #{$sidebar-sm-width})
-    .tab-label
+    .tab-label, .task-id
         display: none
     li
         text-align: center
+        
     
 @media (min-width: $screen-md-min)
     .sidebar

@@ -53,7 +53,8 @@ export class SettingsPage extends React.Component<{}, {
         SkipHostNameResolve: "Skip network hostname resolve",
         VncPort: "VNC server port",
         VncProxyPort: "VNC server proxy port",
-        VncPass: "VNC password"
+        VncPass: "VNC password",
+        AllowTerminal: "Enable Terminal"
     }
     componentDidMount() {
         this.getSettings(settingsStore.getState())
@@ -94,6 +95,8 @@ export class SettingsPage extends React.Component<{}, {
 
         let page = []
         _.forIn(this.state.currentSettings.settings, (v, k) => {
+            if (k == "LoadPlugins")
+                return
             if (typeof v === "boolean") {
                 page.push(
                     <RadioGroup 

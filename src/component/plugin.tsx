@@ -8,6 +8,7 @@ import * as _ from "lodash"
 
 export class PluginList extends Component<{}, PluginState> {
     componentDidMount() {
+        sendCommandToDefault("getPendingPlugins")
         this.setState(pluginStore.getState())
         pluginStore.listen(this.updateState)
     }

@@ -28,12 +28,16 @@ export function sendCommand(sock: WebSocket, action, args?) {
         if (appState.crypto && appState.crypto.key && appState.crypto.iv) {
             let utf8Key = CryptoJS.enc.Utf8.parse(appState.crypto.key)
             let utf8Iv = CryptoJS.enc.Utf8.parse(appState.crypto.iv)
-            let packetString = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(JSON.stringify(packet)), utf8Key, {
+            let packetString = CryptoJS.AES.encrypt(
+                CryptoJS.enc.Utf8.parse(JSON.stringify(packet)),
+                utf8Key, 
+                {
                     keySize: 128 / 8,
                     iv: utf8Iv,
                     mode: CryptoJS.mode.CBC,
                     padding: CryptoJS.pad.Pkcs7
-                }).toString()
+                }
+            ).toString()
             sock.send(packetString)
             
         }
@@ -49,6 +53,8 @@ export function sendCommand(sock: WebSocket, action, args?) {
 export function sendCommandToDefault(action, args?) {
     sendCommand(socket, action, args)
 }
+
+(window as any).sendCommandToDefault = sendCommandToDefault
 
 export function connect() {
     
@@ -79,7 +85,8 @@ export function connect() {
                 catch (err) {
                     let decrypted = CryptoJS.AES.decrypt(
                         e.data, 
-                        CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)), {
+                        CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)), 
+                        {
                             iv: CryptoJS.enc.Hex.parse(toHex(appStore.getState().crypto.iv))
                         }
                     )
@@ -92,7 +99,7 @@ export function connect() {
                             endpoint: "error",
                             results: {
                                 message: "Failed to parse a message!",
-                                exception: err
+                                exception: errr
                             }
                         }
                     }
@@ -101,7 +108,7 @@ export function connect() {
 
                 let message = (dataObject as ApiMessage)
                 if (message.endpoint != "getcameraframe") {
-                    console.log(message.endpoint)
+                    //console.log(message.endpoint)
                 }
                 let caught = false
                 for (let endpoint of Object.keys(apiLayer)) {
