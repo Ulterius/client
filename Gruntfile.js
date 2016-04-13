@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 
     let wpops = {
         entry: "./src/index.tsx",
-        devtool: "#eval-source-map",
+        devtool: "#source-map",
         output: {
             path: __dirname + "/public",
             filename: "bundle.js"
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
             bundle: "./src/index.tsx",
             spec: "./test/spec.ts"
         },
-        devtool: "#eval-source-map",
+        devtool: "#source-map",
         output: {
             path: __dirname + "/public",
             filename: "[name].js"
@@ -100,5 +100,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask("nw", ["webpack", "copy:nm"])
     grunt.registerTask("default", ["webpack-dev-server"])
+    grunt.registerTask("build", ["webpack"])
     grunt.registerTask("test", ["webpack-dev-server:test"])
 }

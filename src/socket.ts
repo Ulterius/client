@@ -59,7 +59,8 @@ export function sendCommandToDefault(action, args?) {
 export function connect() {
     
     try {
-        socket = new WebSocket(config.server)
+        socket = new WebSocket(`ws://${window.location.hostname}:22007`)
+        //socket = new WebSocket(config.server)
         console.log('Socket Status: ' + socket.readyState)
         if (connectInterval === undefined)
         socket.onerror = function() {
@@ -120,21 +121,24 @@ export function connect() {
                         caught = true
                     }
                 }
+                if (message.endpoint && apiLayer.listeners[message.endpoint.toLowerCase()]) {
+                    for (let fn of apiLayer.listeners[message.endpoint.toLowerCase()]) {
+                        fn(message.results)
+                    }
+                }
+                /*
+                _.forIn(apiLayer.listeners, (v, k) => {
+                    if (message.endpoint && message.endpoint.toLowerCase() == k) {
+                        for (let fn of v) {
+                            fn(message.results)
+                        }
+                    }
+                })
+                */
                 if (!caught) {
                     console.log("Uncaught message: " + message.endpoint)
                     console.log(dataObject)
                 }
-
-                /*
-                if (apiLayer[message.endpoint] && typeof apiLayer[message.endpoint] == "function") {
-                    apiLayer[message.endpoint](message.results)
-                }
-
-                else {
-                    console.log("Uncaught message! " + message.endpoint)
-                }
-                */
-
             }
             else if (e.data instanceof ArrayBuffer) {
                 console.log("ArrayBuffer get (for some reason): " + e.data)

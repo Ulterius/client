@@ -60,7 +60,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
             {/* this.state.pathStack.indexOf(this.state.tree) */}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
             <div className="row">
-                <div className="col-xs-3">
+                <div className="col-sm-3">
                     <ButtonToolbar>
                     <ButtonGroup justified>
                         <ButtonGroup>
@@ -81,7 +81,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                     </ButtonGroup>
                     </ButtonToolbar>
                 </div>
-                <div className="col-xs-9">
+                <div className="col-sm-9">
                     <EntryBox 
                     ref={box => this.box = box}
                     onConfirmation={this.openFolder}

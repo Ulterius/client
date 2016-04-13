@@ -10,9 +10,11 @@ import TaskStore from "./store/task-store"
 import setIntervals from "./interval"
 import App from "./component/app"
 import {IndexRoute, Router, Route, Link} from 'react-router'
-
+let injectTapEventPlugin = require('react-tap-event-plugin')
+injectTapEventPlugin()
 
 $(document).ready(function() {
+    
     (window as any).send = sendCommandToDefault
     connect()
     ReactDOM.render(

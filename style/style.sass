@@ -36,6 +36,7 @@ td
     color: white !important
     background-color: $strike-deepseagreen
     position: fixed
+    z-index: 1000000
     .progress
         margin-bottom: 0 !important
     ul .active
@@ -55,18 +56,21 @@ td
 @media (max-width: $screen-xs-max)
     .task-memory, .task-memory-head, .task-id, .task-id-head
         display: none
+    .page
+        width: 100%
 @media (max-width: $screen-sm-max)
     .sidebar
         width: $sidebar-sm-width
         img
             width: 32px
             height: 32px
-    .page
-        width: calc(100% - #{$sidebar-sm-width})
     .tab-label, .task-id
         display: none
     li
         text-align: center
+@media (max-width: $screen-sm-max) and (min-width: $screen-sm-min)
+    .page
+        width: calc(100% - #{$sidebar-sm-width})
         
     
 @media (min-width: $screen-md-min)
@@ -82,7 +86,7 @@ td
         float: none !important
 
 .close-button
-    width: 25px
+    width: 25pxl
     cursor: pointer
     span
         color: gray
@@ -114,7 +118,7 @@ td
     font-weight: bold
 
 .icon-media
-    width: 450px
+    max-width: 450px
     float: left
 
 .burning
@@ -138,9 +142,10 @@ td
     text-align: center
     
 .messages
+    width: 300px
     position: fixed
-    top: 10px
-    left: 10px
+    bottom: calc(100% - 10px)
+    left: calc(100% - 10px)
     
 .user-widget
     text-align: center
@@ -184,6 +189,23 @@ td
     opacity: 1
     transition: opacity 300ms ease-in
 
+
+
+.slide-enter, .slide-appear
+    margin-left: -100px
+    
+.slide-enter.slide-enter-active, .slide-appear.slide-appear-active
+    margin-left: 0px
+    transition: margin-left 300ms ease-out
+    
+.slide-leave
+    margin-left: 0px
+    
+.slide-leave.slide-leave-active
+    margin-left: -100px
+    transition: margin-left 300ms ease-out
+    
+    
 .upload
     display: none !important
 

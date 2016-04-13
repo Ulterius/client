@@ -15,7 +15,7 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault} from "./socket"
 import setIntervals from "./interval"
-import {generateHexString} from "./util"
+import {generateHexString, events} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
@@ -38,6 +38,16 @@ export let helpers = {
     stopCamera: function(id: string) {
         sendCommandToDefault("stopCameraStream", id)
     }
+}
+
+export let listeners: {[key: string]: Function[]} = {}
+
+export function listen(endpoint: string, callback: (result: any) => any) {
+    let lowerEndpoint = endpoint.toLowerCase()
+    if (!listeners[lowerEndpoint]) {
+        listeners[lowerEndpoint] = []
+    }
+    listeners[lowerEndpoint].push(callback)
 }
 
 export function requestProcessInformation(tasks: TaskInfo[]) {
@@ -81,6 +91,8 @@ export function killProcess(process: KilledProcessInfo) {
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
         intervals = setIntervals()
+        sendCommandToDefault("requestsysteminformation")
+        helpers.requestAuxillarySystemInformation()
         helpers.requestAuxillarySystemInformation()
         //sendCommandToDefault("getEventLogs")
         onAuthenticate()
@@ -166,13 +178,14 @@ export function aesHandshake(status: {shook: boolean}) {
         appActions.login(false)
         messageActions.message({style: "success", text: "AES handshake complete."})
         sendCommandToDefault("getWindowsData")
-        
+        /*
         if (config.auth.password) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
         if (appStore.getState().auth.password) {
             sendCommandToDefault("authenticate", appStore.getState().auth.password)
         }
+        */
     }
 }
 

@@ -8,6 +8,20 @@ declare module "node-rsa" {
     const NodeRSA: any
     export = NodeRSA
 }
+
+declare module "react-responsive" {
+    interface MediaQuery extends __React.ComponentClass<{
+        query?: string,
+        minDeviceWidth?: number,
+        maxDeviceWidth?: number,
+        minWidth?: number,
+        maxWidth?: number,
+        orientation?: string,
+        minResolution?: string
+    }> {}
+    const Query: MediaQuery
+    export = Query
+}
 /*
 declare namespace ReactBootstrap {
 

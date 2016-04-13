@@ -21,6 +21,8 @@ Todo
 * make cameras movable
 * file context menu
 * log out
+* try to fix camera closing
+* totals on graphs
 
 Plugin Permissions
 ------

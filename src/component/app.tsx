@@ -16,14 +16,17 @@ import {
     Dialog,
     LoginScreen,
     Messages,
-    FadeTransition
+    FadeTransition,
+    SlideTransition,
+    LoadingScreen
 } from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link} from 'react-router'
-import {Glyphicon} from "react-bootstrap"
+import {Glyphicon, Button} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
+import MediaQuery = require("react-responsive")
 
 export function RootRouter(props: any) {
     return <Router>
@@ -48,6 +51,7 @@ function NavItem(props: {className: string, path: string, label: string, glyph: 
         </Link>
     </li>
 }
+
 
 export default class App extends React.Component<{
     children?: any, 
@@ -77,7 +81,8 @@ export default class App extends React.Component<{
     render() {
         if (!this.state || !this.state.app || !this.state.user) {
             console.log(this.state)
-            return <div className="main">Connecting to server...</div>
+            //return <div className="main">Connecting to server...</div>
+            return <LoadingScreen caption="connecting to server"/>
         }
         if (!this.state.app.auth.loggedIn) {
             return <div className="main">
@@ -95,44 +100,7 @@ export default class App extends React.Component<{
             <div className="main animated fadeIn">
                 <Messages />
                 <Dialog />
-                <div className="sidebar col-md-4" data-spy="affix">
-                    <h1 className="text-center">Ulterius</h1>
-                    <UserWidget />
-                    <ul className="nav nav-pills nav-stacked">
-                        <NavItem 
-                            className={
-                                (this.getActive("/tasks") ||
-                                    this.getActive("/"))  ?  "active": ""} 
-                            path="/tasks"
-                            glyph="tasks"
-                            label="Task Manager"/>
-                        <NavItem 
-                            className={this.getActiveClassName("/info")} 
-                            path="/info"
-                            glyph="stats"
-                            label="System Info"/>
-                        <NavItem 
-                            className={this.getActiveClassName("/cameras")} 
-                            path="/cameras"
-                            glyph="facetime-video"
-                            label="Cameras"/>
-                        <NavItem 
-                            className={this.getActiveClassName("/filesystem")} 
-                            path="/filesystem"
-                            glyph="hdd"
-                            label="Filesystem"/>
-                        {/*<NavItem 
-                            className={this.getActiveClassName("/plugin")} 
-                            path="/plugin"
-                            glyph="plus-sign"
-                            label="Plugins"/>*/}
-                        <NavItem 
-                            className={this.getActiveClassName("/settings")} 
-                            path="/settings"
-                            glyph="cog"
-                            label="Settings"/>
-                    </ul>
-                </div>
+                <Sidebar activePath={this.props.location.pathname} />
                 <div className="page">
                     <FadeTransition>
                         <div className="page-content container-fluid">
@@ -143,11 +111,109 @@ export default class App extends React.Component<{
             </div>
         )
     }
-    getActive(path: string) {
-        return this.props.location.pathname == path
+}
+
+function Overlay(props: any) {
+    const style = {
+        zIndex: 10,
+        position: "fixed",
+        width: "100%",
+        height: "100%",
+        opacity: 0.5,
+        backgroundColor: "black"
+    }
+    return <FadeTransition>
+        <div style={style} {...props}>
+        </div>
+    </FadeTransition>
+}
+
+class Sidebar extends React.Component<{activePath: string}, {
+    open: boolean
+}> {
+    constructor(props) {
+        super(props)
+        this.state = {open: false}
+    }
+    componentDidMount() {
+        this.setState({open: false})
     }
     getActiveClassName(path: string) {
-        return this.props.location.pathname == path ? "active" : ""
+          return this.props.activePath == path ? "active" : ""
     }
-    
+    getActive(path: string) {
+        return this.props.activePath == path
+    }
+    sidebarContent() {
+        return <div className="sidebar col-md-4" data-spy="affix">
+            <h1 className="text-center">Ulterius</h1>
+            <UserWidget />
+            <ul className="nav nav-pills nav-stacked">
+                <NavItem 
+                    className={
+                        (this.getActive("/tasks") ||
+                            this.getActive("/"))  ?  "active": ""} 
+                    path="/tasks"
+                    glyph="tasks"
+                    label="Task Manager"/>
+                <NavItem 
+                    className={this.getActiveClassName("/info")} 
+                    path="/info"
+                    glyph="stats"
+                    label="System Info"/>
+                <NavItem 
+                    className={this.getActiveClassName("/cameras")} 
+                    path="/cameras"
+                    glyph="facetime-video"
+                    label="Cameras"/>
+                <NavItem 
+                    className={this.getActiveClassName("/filesystem")} 
+                    path="/filesystem"
+                    glyph="hdd"
+                    label="Filesystem"/>
+                {/*<NavItem 
+                    className={this.getActiveClassName("/plugin")} 
+                    path="/plugin"
+                    glyph="plus-sign"
+                    label="Plugins"/>*/}
+                <NavItem 
+                    className={this.getActiveClassName("/settings")} 
+                    path="/settings"
+                    glyph="cog"
+                    label="Settings"/>
+            </ul>
+        </div>
+    }
+    modalSidebar = () => {
+        let toggleOpen = () => this.setState({open: !this.state.open})
+        let contents
+        if (this.state.open) {
+            
+            contents = <div>
+                <Overlay onClick={toggleOpen}/>
+                {this.sidebarContent()}
+            </div>
+            
+            //contents = this.sidebarContent()
+        }
+        else {
+            contents = <div className="btn btn-default" style={{position: "fixed", zIndex: 10000, opacity: 0.6}} onClick={toggleOpen}>
+                <Glyphicon glyph="menu-hamburger" />
+            </div>
+        }
+        return contents
+
+    }
+    render() {
+        return <div>
+            <MediaQuery minWidth={786}>
+                {this.sidebarContent()}
+            </MediaQuery>
+            <MediaQuery maxWidth={785}>
+                <FadeTransition>
+                    {this.modalSidebar()}
+                </FadeTransition>
+            </MediaQuery>
+        </div>
+    }
 }

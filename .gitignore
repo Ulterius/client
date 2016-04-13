@@ -4,3 +4,5 @@ node_modules/**
 .DS_Store
 src/config.ts
 npm-debug.log
+public/bundle.js*
+public/spec.js*

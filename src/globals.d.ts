@@ -73,7 +73,7 @@ declare interface SystemInfo {
     totalMemory: number,
     availableMemory: number,
     usedMemory: number,
-    runningProceses: number,
+    runningProcesses: number,
     upTime: number,
     runningAsAdmin: boolean,
     drives: DriveInfo[],

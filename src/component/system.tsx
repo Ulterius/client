@@ -30,6 +30,32 @@ let graphOptions = {
     }
 }
 
+function StatContainer(props: {
+    headLeft: any,
+    headRight: any,
+    children?: any
+}) {
+    let {headLeft, headRight, children} = props
+    return <div style={{marginBottom: 10}}>
+        <div className="clearfix">
+            <div style={{float: "left"}}>{headLeft}</div>
+            <div style={{float: "right"}}>{headRight}</div>
+        </div>
+        {children}
+    </div>
+}
+
+function StatItem(props: {head: string, children?: any}) {
+    return <div style={{
+            display: "inline-block",
+            marginRight: 10
+        }}>
+            <span style={{color: "grey"}}>{props.head}</span>
+            <br />
+            {props.children}
+        </div>
+}
+
 export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: SystemInfo[] }> {
     componentDidMount() {
         this.onChange(systemStore.getState())
@@ -46,6 +72,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
     onChange = (stats) => {
         this.setState(stats)
     }
+    
 
     render() {
         if (!(this.state.stats && this.state.stats.cpuUsage)) {
@@ -76,10 +103,17 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
             return (stats.usedMemory/stats.totalMemory)*100
         })
         ramSeries = _(ramSeries).reverse().value()
-
+        let {stats} = this.state
         return <div>
             <br />
-            <h4>CPU Usage</h4>
+            <StatContainer headLeft={<h4>CPU</h4>} headRight={<h4>Ayylmao</h4>}>
+                <StatItem head="Usage">
+                    {cpuSeries[cpuSeries.length-1].toFixed(0)}%
+                </StatItem>
+                <StatItem head="Processes">
+                    {this.state.stats.runningProcesses}
+                </StatItem>
+            </StatContainer>
             <Graph
                 data={{
                     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
@@ -87,7 +121,17 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
                 }}
                 options={graphOptions}
                 type={"Line"} />
-            <h4>RAM Usage</h4>
+            <StatContainer headLeft={<h4>RAM</h4>} headRight={<h4>{bytesToSize(this.state.stats.totalMemory)}</h4>}>
+                <StatItem head="Usage">
+                    {ramSeries[ramSeries.length-1].toFixed(0)}%
+                </StatItem>
+                <StatItem head="In Use">
+                    {bytesToSize(stats.usedMemory)}
+                </StatItem>
+                <StatItem head="Free">
+                    {bytesToSize(stats.availableMemory)}
+                </StatItem>
+            </StatContainer>
             <Graph
                 data={{
                     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
