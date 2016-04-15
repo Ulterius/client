@@ -2,8 +2,10 @@ import React = require("react")
 import {taskStore, appStore} from "../store"
 import {createSortOnProperty, bytesToSize} from "../util"
 import {socket, sendCommandToDefault} from "../socket"
-import {Stats} from "./"
+import {Stats, LoadingScreen} from "./"
 import {Button, Input, Glyphicon} from "react-bootstrap"
+import setIntervals from "../interval"
+import {intervals} from "../api-layer"
 
 export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}> {
     startProcess = () => {
@@ -48,12 +50,16 @@ export class TaskList extends React.Component<
     componentDidMount() {
         taskStore.listen(this.onChange)
         if (appStore.getState().auth.loggedIn) {
-            //sendCommandToDefault("requestProcessInformation")
+            _.assign(intervals, setIntervals())
             this.setState(taskStore.getState())
         }
     }
     componentWillUnmount() {
         taskStore.unlisten(this.onChange)
+        console.log(intervals)
+        _.forEach(intervals, (v: number, k) => {
+            clearInterval(v)
+        })
     }
     getName(property: string) {
         if (this.state.sortProperty == property) {
@@ -80,9 +86,14 @@ export class TaskList extends React.Component<
     }
     render() {
         if (this.state.tasks.length == 0) {
+            return <LoadingScreen>
+                Loading task list
+            </LoadingScreen>
+            /*
             return (
                 <p>Loading task list; hang on pleaaase...</p>
             )
+            */
         }
         if (this.state.sortProperty.length > 0) {
             this.state.tasks.sort(createSortOnProperty<TaskInfo>(this.state.sortProperty, this.state.sortType))
@@ -170,7 +181,7 @@ export function TaskPage(props: any) {
             
         </div>
         <div className="row">
-            <div className="col-md-8">
+            <div className="col-md-8" style={{minHeight: "600px"}}>
                 <ProcessCreator />
                 <TaskList />
             </div>

@@ -50,6 +50,7 @@ export class CameraPage extends React.Component<{}, CameraState> {
             <ButtonToolbar>
                 {cameras.map(cam => {
                     return <Button 
+                            key={cam.Id}
                             onClick={() => this.toggleCamera(cam.Id)} 
                             bsStyle={this.getButtonStyle(cam.Id)}>
                         {this.getIcon(cam.Id)} {cam.Name}
@@ -58,7 +59,7 @@ export class CameraPage extends React.Component<{}, CameraState> {
                 <Button bsStyle="primary" disabled={this.state.activeCameras.length > 0} onClick={this.refresh}><Glyphicon glyph="refresh" /></Button>
             </ButtonToolbar>
             {activeCameras.map(cam => {
-                 return <img src={cam.URL} width="640" height="480" />
+                 return <img key={cam.cameraId} src={cam.URL} width="640" height="480" />
             })}
         </div>
     }

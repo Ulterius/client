@@ -2,7 +2,7 @@ import React = require("react")
 import {EntryBox} from "./"
 import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input} from "react-bootstrap"
 import {FileSystemState, fileSystemStore} from "../store"
-import {fileSystemActions} from "../action"
+import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment} from "../util"
 import {sendCommandToDefault} from "../socket"
 
@@ -35,6 +35,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
         let reader = new FileReader()
         
         reader.onload = ee => {
+            messageActions.message({style: "success", text: "File upload started."})
             sendCommandToDefault("uploadFile", [
                 this.state.tree.RootFolder.Name + "\\" + readerAny.name,
                 [].slice.call(new Int8Array((ee.target as any).result))
@@ -101,7 +102,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                         </thead>
                         <tbody>
                             {tree.RootFolder.ChildFolders.map(folder => {
-                                return <tr>
+                                return <tr key={folder.Name}>
                                     <td width="16"><Glyphicon glyph="folder-close"/></td>
                                     <td>
                                         <span
@@ -114,11 +115,14 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                 </tr>
                             })}
                             {tree.RootFolder.Files.map(file => {
-                                return <tr>
+                                return <tr key={file.Path}>
                                     <td><Glyphicon glyph="file" /></td>
                                     <td>
                                         <span
-                                        onClick={() => sendCommandToDefault("downloadFile", file.Path)} 
+                                        onClick={() => {
+                                            sendCommandToDefault("downloadFile", file.Path)
+                                            messageActions.message({style: "success", text: "File download started."})
+                                        }} 
                                         style={{cursor: "pointer"}}>
                                             {lastPathSegment(file.Path)}
                                         </span>

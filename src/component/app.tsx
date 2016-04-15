@@ -18,7 +18,8 @@ import {
     Messages,
     FadeTransition,
     SlideTransition,
-    LoadingScreen
+    LoadingScreen,
+    ConnectScreen
 } from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
@@ -79,10 +80,18 @@ export default class App extends React.Component<{
         this.setState({user: userState.user})
     }
     render() {
+        if (!this.state || !this.state.app || !this.state.app.connection.host) {
+            return <div className="main">
+                <Messages />
+                <ConnectScreen />
+            </div>
+        }
         if (!this.state || !this.state.app || !this.state.user) {
             console.log(this.state)
             //return <div className="main">Connecting to server...</div>
-            return <LoadingScreen caption="connecting to server"/>
+            return <LoadingScreen>
+                Connecting to server
+            </LoadingScreen>
         }
         if (!this.state.app.auth.loggedIn) {
             return <div className="main">

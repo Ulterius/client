@@ -14,9 +14,6 @@ let injectTapEventPlugin = require('react-tap-event-plugin')
 injectTapEventPlugin()
 
 $(document).ready(function() {
-    
-    (window as any).send = sendCommandToDefault
-    connect()
     ReactDOM.render(
         <RootRouter />,
         window.document.getElementById("app")

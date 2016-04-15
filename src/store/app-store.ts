@@ -22,10 +22,21 @@ export interface AppState {
 }
 
 class AppStore extends AbstractStoreModel<AppState> {
+    connection: {
+        host: string,
+        port: string,
+        terminalPort: string,
+        vncPort: string
+    } = {
+        host: "",
+        port: "",
+        terminalPort: "",
+        vncPort: ""
+    }
     auth: {
         loggedIn: boolean,
         password: string
-    }
+    } = {loggedIn: false, password: ""}
     crypto: {
         shook?: boolean,
         key?: string,
@@ -33,12 +44,12 @@ class AppStore extends AbstractStoreModel<AppState> {
     } = {}
     constructor() {
         super()
-        this.auth = {loggedIn: false, password: ""}
         this.bindListeners({
             handleLogin: appActions.login,
             handleSetPassword: appActions.setPassword,
             handleSetKey: appActions.setKey,
-            handleSetShake: appActions.setShake
+            handleSetShake: appActions.setShake,
+            handleSetHost: appActions.setHost
         })
     }
     handleLogin(loggedIn: boolean) {
@@ -52,6 +63,9 @@ class AppStore extends AbstractStoreModel<AppState> {
     }
     handleSetShake(shook: boolean) {
         this.crypto.shook = shook
+    }
+    handleSetHost(host: HostInfo) {
+        _.assign(this.connection, host)
     }
 }
 

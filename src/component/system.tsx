@@ -5,6 +5,7 @@ import {GpuAvailability, bytesToSize} from "../util"
 import {sendCommandToDefault} from "../socket"
 import {helpers} from "../api-layer"
 import Graph = require("react-chartist")
+import {LoadingScreen} from "./"
 import * as _ from  "lodash"
 
 let graphOptions = {
@@ -166,15 +167,19 @@ export class SystemPage extends React.Component<{}, {
     }
     render() {
         if (!this.state) {
-            return <div>Loading store...</div>
+            return <LoadingScreen>
+                Loading store
+            </LoadingScreen>
         }    
         
         let {os, cpu, network, gpu, stats} = this.state
         if (!(os && cpu && network && gpu && stats)) {
-            return <div>Loading system information...</div>
+            let percent = [os, cpu, network, gpu, stats].map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20
+            return <LoadingScreen percentage={percent}>
+                Loading system information
+            </LoadingScreen>
         }
 
-        //stats.cpuTemps.push(25, 67, 2, 1000)
         return (
             <div 
             className="animated fadeInDown" 
@@ -192,7 +197,7 @@ export class SystemPage extends React.Component<{}, {
                     {cpu.cores} cores and {cpu.threads} threads
                     <br />
                     {stats.cpuTemps.map((temp, i) => {
-                        return <span>
+                        return <span key={i}>
                             {i == stats.cpuTemps.length - 1 ? " Package: " : " "}
                             <Temperature>{temp.toFixed(1)}</Temperature>
                         </span>
@@ -216,7 +221,7 @@ export class SystemPage extends React.Component<{}, {
                     <h4 className="media-heading">{gpu.gpus.length > 1 ? "GPUs" : "GPU"}</h4>
                     {gpu.gpus.map((gpu, i) => {
                         return (
-                            <p>
+                            <p key={gpu.Name}>
                                 {gpu.Name} <br />
                                 Driver version {gpu.DriverVersion} <br />
                                 <span
@@ -237,12 +242,13 @@ export class SystemPage extends React.Component<{}, {
                     <h4 className="media-heading">Drives</h4>
                     {stats.drives.map((drive, i) => {
                         return (
-                            <div>
+                            <div key={drive.RootDirectory}>
                                 {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"}, {drive.RootDirectory}
                                 <br />
                                 <Bar
                                     value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
-                                    style={{width: "100%"}} />
+                                    style={{width: "100%"}} 
+                                    color={true}/>
                                 {bytesToSize(drive.FreeSpace)} free of {bytesToSize(drive.TotalSize)}
                             </div>
                         )

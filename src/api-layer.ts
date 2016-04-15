@@ -13,14 +13,14 @@ import {
 } 
 from "./action"
 import {appStore} from "./store"
-import {socket, sendCommandToDefault} from "./socket"
+import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
 import {generateHexString, events} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
 import CryptoJS = require("crypto-js")
-let intervals: {[key:string]: number} = {}
+export let intervals: {[key:string]: number} = {}
 export * from "./api"
 
 const resLog = false
@@ -90,20 +90,15 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
-        intervals = setIntervals()
         sendCommandToDefault("requestsysteminformation")
         helpers.requestAuxillarySystemInformation()
         helpers.requestAuxillarySystemInformation()
-        //sendCommandToDefault("getEventLogs")
         onAuthenticate()
         
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("getCurrentSettings")
-        //sendCommandToDefault("getPlugins")
-        //sendCommandToDefault("getBadPlugins")
         sendCommandToDefault("checkForUpdate")
-        
         appActions.login(true)
     }
     else {

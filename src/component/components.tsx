@@ -7,6 +7,16 @@ import * as _ from "lodash"
 
 
 export function Bar(props: {value?: number, color?: boolean, style?: any}) {
+    let color = function(colored: boolean) {
+        if (colored) {
+            return "progress-bar-" +
+            (percent < 60 ? "primary":
+                (percent < 80 ? "warning" : "danger"))
+        }
+        else {
+            return "progress-bar-primary"
+        }
+    }
     if (!props.value) {
         return <div className="progress" style={props.style || {}}>
             <div 
@@ -25,9 +35,7 @@ export function Bar(props: {value?: number, color?: boolean, style?: any}) {
     return <div className="progress" style={props.style || {}}>
         <div
         className={
-            "progress-bar progress-bar-" +
-            (percent < 60 ? "primary":
-                (percent < 80 ? "warning" : "danger"))
+            "progress-bar " + color(props.color)
         }
         aria-valuenow={percent.toString()}
         aria-valuemin="0"
@@ -230,11 +238,11 @@ export class EntryBox extends React.Component<
     }
 }
 
-export function LoadingScreen(props: {percentage?: number, caption?: string}) {
+export function LoadingScreen(props: {percentage?: number, children?: string}) {
     return <div style={{width: "100%", height: "100%"}}>
         <div style={{position: "absolute", top: "calc(50% - 20px)", left:"calc(50% - 60px)", height: 40, width: 120, textAlign: "center"}}>
-            <Bar value={props.percentage} /> <br />
-            {props.caption}
+            <Bar value={props.percentage} color={false}/> <br />
+            {props.children}
         </div>
     </div>
 }

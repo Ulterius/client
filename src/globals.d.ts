@@ -211,7 +211,8 @@ declare interface GpuInfo {
 
 declare interface ApiMessage {
     endpoint: string,
-    results: any
+    results: any,
+    syncKey: any
 }
 
 declare interface KilledProcessInfo {
@@ -419,4 +420,9 @@ declare interface DialogContent {
 declare interface KeyInfo {
     key: string, 
     iv: string
+}
+
+declare interface HostInfo {
+    host: string, 
+    port: string
 }

@@ -100,6 +100,7 @@ export class SettingsPage extends React.Component<{}, {
             if (typeof v === "boolean") {
                 page.push(
                     <RadioGroup 
+                        key={k}
                         onChange={(val) => {
                             this.setState({newSettings: _.assign(this.state.newSettings, {[k]: (val=="yes")})})
                         }}
@@ -111,6 +112,7 @@ export class SettingsPage extends React.Component<{}, {
             else {
                 page.push(
                     <Input 
+                        key={k}
                         type="text" 
                         label={this.settingNames[k]} 
                         defaultValue={String(v)}

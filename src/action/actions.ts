@@ -53,6 +53,7 @@ interface AppActionFunctions {
     setPassword(password: string): string
     setKey(key: string, iv: string): KeyInfo
     setShake(shook: boolean): boolean
+    setHost(host: HostInfo): HostInfo
 }
 
 class AppActions extends AbstractActions implements AppActionFunctions{
@@ -67,6 +68,9 @@ class AppActions extends AbstractActions implements AppActionFunctions{
     }
     setShake(shook: boolean) {
         return shook
+    }
+    setHost(host: HostInfo) {
+        return host
     }
 }
 
