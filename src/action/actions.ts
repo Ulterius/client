@@ -174,6 +174,7 @@ interface FileSystemActionFunctions {
     updateFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
     goBack(): boolean
     goForward(): boolean
+    reloadFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
 }
 
 class FileSystemActions extends AbstractActions {
@@ -196,6 +197,9 @@ class FileSystemActions extends AbstractActions {
             })
         }
         */
+        return tree
+    }
+    reloadFileTree(tree: FileSystemInfo.FileTree) {
         return tree
     }
     goBack() {

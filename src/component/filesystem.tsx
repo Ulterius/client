@@ -4,7 +4,7 @@ import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input} from "react
 import {FileSystemState, fileSystemStore} from "../store"
 import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment} from "../util"
-import {sendCommandToDefault} from "../socket"
+import {sendCommandToDefault, sendCommandAsync} from "../socket"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
@@ -30,6 +30,9 @@ export class FileList extends React.Component<{}, FileSystemState> {
             fileSystemActions.goBack()
             //this.openFolder(this.state.pathStack[0].RootFolder.Name)
         }
+    }
+    refresh = (path: string) => {
+        sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
     }
     handleUpload = (e) => {
         let reader = new FileReader()
@@ -77,6 +80,11 @@ export class FileList extends React.Component<{}, FileSystemState> {
                         <ButtonGroup>
                             <Button bsStyle="primary" onClick={() => this.upload.click()}>
                                 <Glyphicon glyph="export" />
+                            </Button>
+                        </ButtonGroup>
+                        <ButtonGroup>
+                            <Button bsStyle="primary" onClick={() => this.refresh(this.state.tree.RootFolder.Name)}>
+                                <Glyphicon glyph="refresh" />
                             </Button>
                         </ButtonGroup>
                     </ButtonGroup>

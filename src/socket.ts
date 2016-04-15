@@ -19,28 +19,7 @@ function getSyncKey() {
 
 let callbacks: {[key: string]: Function} = {}
 
-function encrypt(packet) {
-    let appState = appStore.getState()
-    let packetString = ""
-    if (appState.crypto && appState.crypto.key && appState.crypto.iv) {
-        let utf8Key = CryptoJS.enc.Utf8.parse(appState.crypto.key)
-        let utf8Iv = CryptoJS.enc.Utf8.parse(appState.crypto.iv)
-        packetString = CryptoJS.AES.encrypt(
-            CryptoJS.enc.Utf8.parse(JSON.stringify(packet)),
-            utf8Key, 
-            {
-                keySize: 128 / 8,
-                iv: utf8Iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            }
-        ).toString()
-    }
-    else {
-        packetString = JSON.stringify(packet)
-    }
-    return packetString
-}
+
 
 export function sendCommandAsync(action: string, ...rest) {
     let key = getSyncKey()
@@ -128,32 +107,8 @@ export function connect(host: string, port: string) {
         
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
-                let dataObject = {}
-                try {
-                    dataObject = JSON.parse(e.data)
-                }
-                catch (err) {
-                    let decrypted = CryptoJS.AES.decrypt(
-                        e.data, 
-                        CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)), 
-                        {
-                            iv: CryptoJS.enc.Hex.parse(toHex(appStore.getState().crypto.iv))
-                        }
-                    )
-                    try {
-                        dataObject = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
-                    }
-                    catch (errr) {
-                        console.log("Failed to parse a message!")
-                        dataObject = {
-                            endpoint: "error",
-                            results: {
-                                message: "Failed to parse a message!",
-                                exception: errr
-                            }
-                        }
-                    }
-                }
+                let dataObject = decrypt(e.data)
+                
                 let message = (dataObject as ApiMessage)
                 if (message.endpoint != "getcameraframe") {
                     //console.log(message.endpoint)
@@ -194,6 +149,59 @@ export function connect(host: string, port: string) {
     finally {
         return socket
     }
+}
+
+function encrypt(packet) {
+    let appState = appStore.getState()
+    let packetString = ""
+    if (appState.crypto && appState.crypto.key && appState.crypto.iv) {
+        let utf8Key = CryptoJS.enc.Utf8.parse(appState.crypto.key)
+        let utf8Iv = CryptoJS.enc.Utf8.parse(appState.crypto.iv)
+        packetString = CryptoJS.AES.encrypt(
+            CryptoJS.enc.Utf8.parse(JSON.stringify(packet)),
+            utf8Key, 
+            {
+                keySize: 128 / 8,
+                iv: utf8Iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            }
+        ).toString()
+    }
+    else {
+        packetString = JSON.stringify(packet)
+    }
+    return packetString
+}
+
+function decrypt(data: string) {
+    let ret
+    try {
+        ret = JSON.parse(data)
+    }
+    catch (err) {
+        let decrypted = CryptoJS.AES.decrypt(
+            data,
+            CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)),
+            {
+                iv: CryptoJS.enc.Hex.parse(toHex(appStore.getState().crypto.iv))
+            }
+        )
+        try {
+            ret = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
+        }
+        catch (errr) {
+            console.log("Failed to parse a message!")
+            ret = {
+                endpoint: "error",
+                results: {
+                    message: "Failed to parse a message!",
+                    exception: errr
+                }
+            }
+        }
+    }
+    return ret
 }
 
 function defaultHandleMessage(message: ApiMessage) {

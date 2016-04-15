@@ -19,8 +19,15 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
         this.bindListeners({
             handleUpdateFileTree: fileSystemActions.updateFileTree,
             handleBack: fileSystemActions.goBack,
-            handleForward: fileSystemActions.goForward
+            handleForward: fileSystemActions.goForward,
+            handleReload: fileSystemActions.reloadFileTree
         })
+    }
+    handleReload(tree: FileSystemInfo.FileTree) {
+        this.tree = tree
+        console.log("refreshed")
+        console.log(tree)
+        //don't do anything to the history, right
     }
     handleUpdateFileTree(tree: FileSystemInfo.FileTree) {
         console.log(this.currentTreeIndex())
