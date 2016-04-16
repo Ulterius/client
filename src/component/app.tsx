@@ -13,7 +13,8 @@ import {
     SettingsPage,
     FilePage,
     PluginPage,
-    Dialog,
+    Dialogs,
+    dialogEvents,
     LoginScreen,
     Messages,
     FadeTransition,
@@ -83,6 +84,7 @@ export default class App extends React.Component<{
         if (!this.state || !this.state.app || !this.state.app.connection.host) {
             return <div className="main">
                 <Messages />
+                <Dialogs />
                 <ConnectScreen />
             </div>
         }
@@ -96,6 +98,7 @@ export default class App extends React.Component<{
         if (!this.state.app.auth.loggedIn) {
             return <div className="main">
                 <Messages />
+                <Dialogs />
                 <LoginScreen 
                     username={this.state.user.username} 
                     avatar = {this.state.user.avatar}
@@ -108,7 +111,7 @@ export default class App extends React.Component<{
         return (
             <div className="main animated fadeIn">
                 <Messages />
-                <Dialog />
+                <Dialogs />
                 <Sidebar activePath={this.props.location.pathname} />
                 <div className="page">
                     <FadeTransition>
@@ -190,6 +193,12 @@ class Sidebar extends React.Component<{activePath: string}, {
                     path="/settings"
                     glyph="cog"
                     label="Settings"/>
+                <li>
+                    <a style={{cursor: "pointer"}} onClick={() => appActions.login(false)}>
+                        <Glyphicon glyph="log-out" />
+                        <span className="tab-label">&nbsp; Logout</span>
+                    </a>
+                </li>
             </ul>
         </div>
     }

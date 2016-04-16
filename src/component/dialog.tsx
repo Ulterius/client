@@ -3,6 +3,8 @@ import {Modal, Button} from "react-bootstrap"
 import Component = React.Component
 import {dialogStore, DialogState} from "../store"
 import {dialogActions} from "../action"
+import events = require("events")
+import * as _ from "lodash"
 
 export class Dialog extends React.Component<{}, DialogState> {
     componentDidMount() {
@@ -36,5 +38,74 @@ export class Dialog extends React.Component<{}, DialogState> {
                 <Button bsStyle="primary" onClick={this.close}>Close</Button>
             </Modal.Footer>
         </Modal>
+    }
+}
+
+export interface dialogContent {
+    title: string, 
+    body: React.ReactNode,
+    buttons: any[]
+}
+
+//use this pattern instead of an event emitter because I want to keep type safety
+export let dialogEvents = {
+    dialog(content: dialogContent) {}
+}
+
+export class Dialogs extends React.Component<{}, {
+    dialogs: dialogContent[]
+}> {
+    lastDialog: dialogContent
+    constructor(props) {
+        super(props)
+        this.state = {dialogs: []}
+    }
+    componentDidMount() {
+        dialogEvents.dialog = this.addDialog
+    }
+    componentWillUnmount() {
+        dialogEvents.dialog = () => {}
+    }
+    addDialog = (content: dialogContent) => {
+        this.setState((prevState, props) => {
+            return {dialogs: _.flatten([content, prevState.dialogs])}
+        })
+    }
+    closeFirstDialog() {
+        let {dialogs} = this.state
+        if (dialogs.length == 1) {
+            this.lastDialog = dialogs[0]
+        }
+        if (dialogs.length > 0) {
+            this.setState({dialogs: _.tail(dialogs)})
+        }
+    }
+    render() {
+        /*
+        if (this.state.dialogs.length == 0) {
+            return <div style={{display: "none"}}></div>
+        }
+        */
+        
+        let {dialogs} = this.state
+        let dialog = dialogs[0] || this.lastDialog //the things I do for proper animations...
+        return <div>
+            <Modal show={dialogs.length > 0} onHide={() => {}}>
+                <Modal.Header>
+                    <Modal.Title>{dialog ? dialog.title : ""}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {dialog? dialog.body : ""}
+                </Modal.Body>
+                <Modal.Footer>
+                    {dialog? dialog.buttons.map((props, i) => {
+                        return <Button {...props} key={i} onClick={() => {
+                            props.onClick()
+                            this.closeFirstDialog()
+                        }} />
+                    }): ""}
+                </Modal.Footer>
+            </Modal>
+        </div>
     }
 }

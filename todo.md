@@ -12,10 +12,10 @@ Todo
 * ~~getBadPlugins~~
 * ~~refreshCameras~~
 * restart button
-* refresh filesystem
-* and refresh on upload
+* ~~refresh filesystem~~
+* ~~and refresh on upload~~
 * don't allow downloading a file while the same file is downloading
-* download and upload progress, maybe
+* ~~download and upload progress, maybe~~ Nope, api doesn't allow this.
 * ~~loading animations~~
 * ~~make the task manager actually responsive~~
 * make cameras movable
@@ -23,8 +23,3 @@ Todo
 * log out
 * try to fix camera closing
 * ~~totals on graphs~~
-
-Plugin Permissions
-------
-
-When a plugin is run for the first time, present the user with the permissions it uses.

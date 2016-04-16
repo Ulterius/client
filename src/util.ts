@@ -89,3 +89,5 @@ export function toHex(str: string) {
     }
     return hex
 }
+
+export function noOp() {}
