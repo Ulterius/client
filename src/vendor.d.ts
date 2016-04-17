@@ -22,6 +22,24 @@ declare module "react-responsive" {
     const Query: MediaQuery
     export = Query
 }
+
+declare module "react-sortable-pane" {
+    interface SortablePaneI extends __React.ComponentClass<{
+        direction?: string, 
+        margin?: number,
+        onResize?: (id: number | string, direction: string, size: any, rect: any) => any,
+        onOrderChange?: (panes: any) => any,
+        [key: string]: any //fudge it for all the shit I left out
+    }> {}
+    interface PaneI extends __React.ComponentClass<{
+        width: number,
+        height: number,
+        style?: __React.CSSProperties
+    }> {}
+    export const SortablePane: SortablePaneI
+    export const Pane: PaneI
+    
+}
 /*
 declare namespace ReactBootstrap {
 

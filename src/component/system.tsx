@@ -151,6 +151,10 @@ export class SystemPage extends React.Component<{}, {
     stats?: SystemInfo,
     gpu?: GpusInfo
 }> {
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
     componentDidMount() {
         helpers.requestAuxillarySystemInformation()
         systemStore.listen(this.onChange)
@@ -166,12 +170,6 @@ export class SystemPage extends React.Component<{}, {
         this.setState(info)
     }
     render() {
-        if (!this.state) {
-            return <LoadingScreen>
-                Loading store
-            </LoadingScreen>
-        }    
-        
         let {os, cpu, network, gpu, stats} = this.state
         if (!(os && cpu && network && gpu && stats)) {
             let percent = [os, cpu, network, gpu, stats].map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20

@@ -100,7 +100,10 @@ export class Dialogs extends React.Component<{}, {
                 <Modal.Footer>
                     {dialog? dialog.buttons.map((props, i) => {
                         return <Button {...props} key={i} onClick={() => {
-                            props.onClick()
+                            if (typeof props.onClick == "function") {
+                                props.onClick()
+                            }
+                            
                             this.closeFirstDialog()
                         }} />
                     }): ""}

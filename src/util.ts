@@ -1,8 +1,6 @@
 import * as _ from "lodash"
 
 //global event emitter for components that shouldn't need stores
-import EventEmitter = require("events")
-export let events = new EventEmitter.EventEmitter()
 
 export function createSortOnProperty<T>(prop: string, how: string) {
     return function(a: T, b: T) {

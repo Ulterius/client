@@ -111,7 +111,7 @@ export function connect(host: string, port: string) {
                 
                 let message = (dataObject as ApiMessage)
                 if (message.endpoint != "getcameraframe") {
-                    //console.log(message.endpoint)
+                    console.log(message.endpoint)
                 }
                 if ( !message.syncKey || (message.syncKey as string).indexOf("override") == -1 ) {
                     defaultHandleMessage(message)

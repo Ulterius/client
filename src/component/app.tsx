@@ -64,6 +64,10 @@ export default class App extends React.Component<{
     app?: AppState,
     user?: UserInfo
 }> {
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
     componentDidMount() {
         this.onAppChange(appStore.getState())
         this.onUserChange(userStore.getState())
@@ -80,48 +84,41 @@ export default class App extends React.Component<{
     onUserChange = (userState: UserState) => {
         this.setState({user: userState.user})
     }
-    render() {
-        if (!this.state || !this.state.app || !this.state.app.connection.host) {
-            return <div className="main">
-                <Messages />
-                <Dialogs />
-                <ConnectScreen />
-            </div>
+    mainContent() {
+        if (!this.state.app || !this.state.app.connection.host) {
+            return <ConnectScreen />
         }
-        if (!this.state || !this.state.app || !this.state.user) {
-            console.log(this.state)
-            //return <div className="main">Connecting to server...</div>
+        if (!this.state.user) {
             return <LoadingScreen>
                 Connecting to server
             </LoadingScreen>
         }
         if (!this.state.app.auth.loggedIn) {
-            return <div className="main">
-                <Messages />
-                <Dialogs />
-                <LoginScreen 
-                    username={this.state.user.username} 
-                    avatar = {this.state.user.avatar}
-                    onLogin = {pwd => {
-                        socket.sendCommandToDefault("authenticate", pwd)
-                        appActions.setPassword(pwd)
-                    }} />
-            </div>
+            return <LoginScreen
+                username={this.state.user.username} 
+                avatar = {this.state.user.avatar}
+                onLogin = {pwd => {
+                    socket.sendCommandToDefault("authenticate", pwd)
+                    appActions.setPassword(pwd)
+                }} />
         }
-        return (
-            <div className="main animated fadeIn">
-                <Messages />
-                <Dialogs />
-                <Sidebar activePath={this.props.location.pathname} />
-                <div className="page">
+        return <div>
+            <Sidebar activePath={this.props.location.pathname} />
+            <div className="page">
                     <FadeTransition>
-                        <div className="page-content container-fluid">
-                            {this.props.children}
-                        </div>
-                    </FadeTransition>
-                </div>
+                    <div className="page-content container-fluid">
+                        {this.props.children}
+                    </div>
+                </FadeTransition>
             </div>
-        )
+        </div>
+    }
+    render() {
+        return <div className="main">
+            <Messages />
+            <Dialogs />
+            {this.mainContent()}
+        </div>
     }
 }
 
@@ -194,9 +191,18 @@ class Sidebar extends React.Component<{activePath: string}, {
                     glyph="cog"
                     label="Settings"/>
                 <li>
-                    <a style={{cursor: "pointer"}} onClick={() => appActions.login(false)}>
+                    <a style={{cursor: "pointer"}} onClick={() => {
+                        dialogEvents.dialog({
+                            title: "Disconnect?",
+                            body: <p>Are you sure you want to disconnect?</p>,
+                            buttons: [
+                                {bsStyle: "primary", children: "Yes", onClick: socket.disconnect},
+                                {bsStyle: "default", children: "No"}
+                            ]
+                        })
+                    }}>
                         <Glyphicon glyph="log-out" />
-                        <span className="tab-label">&nbsp; Logout</span>
+                        <span className="tab-label">&nbsp; Disconnect</span>
                     </a>
                 </li>
             </ul>

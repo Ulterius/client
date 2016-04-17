@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 
     let wpops = {
         entry: "./src/index.tsx",
-        devtool: "#source-map",
+        devtool: "#eval-source-map",
         output: {
             path: __dirname + "/public",
             filename: "bundle.js"
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
             bundle: "./src/index.tsx",
             spec: "./test/spec.ts"
         },
-        devtool: "#source-map",
+        devtool: "#eval-source-map",
         output: {
             path: __dirname + "/public",
             filename: "[name].js"

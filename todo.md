@@ -18,8 +18,8 @@ Todo
 * ~~download and upload progress, maybe~~ Nope, api doesn't allow this.
 * ~~loading animations~~
 * ~~make the task manager actually responsive~~
-* make cameras movable
+* ~~make cameras movable~~
 * file context menu
-* log out
+* ~~log out~~
 * try to fix camera closing
 * ~~totals on graphs~~

@@ -15,7 +15,7 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
-import {generateHexString, events} from "./util"
+import {generateHexString} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
@@ -104,6 +104,7 @@ export function authenticate(info: AuthInfo) {
     else {
         appActions.login(false)
         appActions.setPassword("") //because it's obviously invalid
+        messageActions.message({style: "danger", text: "Invalid password."})
     }
 }
 

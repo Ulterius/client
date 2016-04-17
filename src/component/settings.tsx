@@ -56,6 +56,10 @@ export class SettingsPage extends React.Component<{}, {
         VncPass: "VNC password",
         AllowTerminal: "Enable Terminal"
     }
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
     componentDidMount() {
         this.getSettings(settingsStore.getState())
         this.setState({newSettings: {}})
@@ -88,7 +92,7 @@ export class SettingsPage extends React.Component<{}, {
         })
     }
     render() {
-        if (!this.state) {
+        if (!this.state.currentSettings) {
             return <div>Loading settings...</div>
         }
             

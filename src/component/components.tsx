@@ -1,5 +1,6 @@
 
 import React = require("react")
+import ReactDOM = require("react-dom")
 import {GpuAvailability, bytesToSize} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
 import {listen} from "../api-layer"
@@ -245,4 +246,107 @@ export function LoadingScreen(props: {percentage?: number, children?: string}) {
             {props.children}
         </div>
     </div>
+}
+
+
+export class DragElement extends React.Component<{
+    orderKey?: number,
+    children?: any,
+    [key: string]: any
+}, {}> {
+    child: HTMLDivElement
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        const passDown = _.omit(this.props, "orderKey")
+        return <div {...passDown} ref={ref => this.child = ref}>
+            {this.props.children}
+        </div>
+    }
+}
+
+/*
+export function DragElement(props: {orderKey?: number, children?: any, [key:string]: any}) {
+    const passDown = _.omit(props, "orderKey")
+    return <div {...passDown} >
+        {props.children}
+    </div>
+}
+*/
+
+
+export class DragGroup extends React.Component<{children?: React.ReactElement<any>[]}, {
+    order: number[]
+}> {
+    references: React.ReactElement<any>[]
+    
+    dragging: number
+    constructor(props) {
+        super(props)
+        this.state = {
+            order: React.Children.toArray(props.children).map((child, i) => {
+                return i
+            })
+        }
+    }
+    componentWillReceiveProps(nextProps) {
+        //reset everything if there is a different number of children than before
+        //otherwise do not
+        
+        if (React.Children.toArray(nextProps.children).length != this.state.order.length) {
+            console.log("Refreshing the shit")
+            this.setState({order: React.Children.toArray(nextProps.children).map((child, i) => {
+                return i
+            })})
+        }
+    }
+    componentDidMount() {
+        document.addEventListener("dragover", (e) => e.preventDefault(), false)
+    }
+    handleDragStart = (child, i, {target, pageX, pageY}) => {
+        //this.dragging = this.childArray[this.indexOfKey(target.props.orderKey)]
+        this.dragging = i
+    }
+    handleDrop = ({target,pageX, pageY}) => {
+        //console.log([target, pageX, pageY])
+        
+    }
+    swapChildren(key1: number, key2: number) {
+        
+    }
+    indexOfKey(key: number) {
+        
+    }
+    handleDropTwo = (child, i, e) => {
+        e.preventDefault()
+        let newOrder = this.state.order.slice()
+        let oldI = _.indexOf(newOrder, this.dragging)
+        let newI = _.indexOf(newOrder, i)
+        newOrder[newI] = this.state.order[oldI]
+        newOrder[oldI] = this.state.order[newI]
+        console.log(this.state.order)
+        console.log(newOrder)
+        this.setState({order: newOrder})
+    }
+    render() {
+        let childArray = React.Children.toArray(this.props.children).map((child, i) => {
+            let ch = child as any
+            return React.cloneElement(ch, {
+                style: _.assign({}, ch.props.style, {display: "inline-block"}),
+                draggable: true, 
+                onDragStart: e => {
+                    this.handleDragStart(child, i, e)
+                },
+                onDrop: e => {
+                    this.handleDropTwo(child, i, e)
+                }
+            })
+        })
+        return <div>
+            {this.state.order.map(i => {
+                return childArray[i]
+            })}
+        </div>
+    }
 }
