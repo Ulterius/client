@@ -7,3 +7,5 @@ npm-debug.log
 public/bundle.js*
 public/spec.js*
 .vscode
+.jshintrc
+public.zip
