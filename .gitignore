@@ -6,3 +6,4 @@ src/config.ts
 npm-debug.log
 public/bundle.js*
 public/spec.js*
+.vscode

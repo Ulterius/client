@@ -54,6 +54,20 @@ export class FileList extends React.Component<{}, FileSystemState> {
         readerAny.name = e.target.files[0].name
         reader.readAsArrayBuffer(e.target.files[0])
     }
+    download = (path: string) => {
+        if (this.fileDownloading == path) {
+            messageActions.message({ style: "danger", text: "That file is already downloading." })
+        }
+        else {
+            messageActions.message({ style: "success", text: "File download started." })
+            this.fileDownloading = path
+            sendCommandAsync("downloadFile", path, (result: FileSystemInfo.FileDownload) => {
+                console.log(result)
+                downloadFile(result)
+                this.fileDownloading = ""
+            })
+        }
+    }
     render() {
         if (!this.state) {
             return <div>loading files...</div>
@@ -128,31 +142,9 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                 return <tr key={file.Path}>
                                     <td><Glyphicon glyph="file" /></td>
                                     <td>
-                                        {/*<span
-                                        onClick={() => {
-                                            //sendCommandToDefault("downloadFile", file.Path)
-                                            
-                                            if (this.fileDownloading == file.Path) {
-                                                messageActions.message({style: "danger", text: "That file is already downloading."})
-                                            }
-                                            else {
-                                                messageActions.message({ style: "success", text: "File download started." })
-                                                this.fileDownloading = file.Path
-                                                sendCommandAsync("downloadFile", file.Path, (result: FileSystemInfo.FileDownload) => {
-                                                    console.log(result)
-                                                    downloadFile(result)
-                                                    this.fileDownloading = ""
-                                                })
-                                            }
-                                            
-                                        }} 
-                                        style={{cursor: "pointer"}}>
-                                            {lastPathSegment(file.Path)}
-                                        </span>*/}
-                                        <Dropdown text={lastPathSegment(file.Path)}>
+                                        <Dropdown text={lastPathSegment(file.Path)} dropStyle={{width: 150}}>
                                             <ListGroup>
-                                                <ListGroupItem>Ayy</ListGroupItem>
-                                                <ListGroupItem>Lmao</ListGroupItem>
+                                                <ListGroupItem onClick={() => this.download(file.Path)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
                                             </ListGroup>
                                         </Dropdown>
                                     </td>

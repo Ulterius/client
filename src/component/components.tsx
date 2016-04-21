@@ -355,6 +355,7 @@ import {stringIf} from "../util"
 
 export class Dropdown extends React.Component<{
     text: React.ReactNode,
+    dropStyle?: React.CSSProperties,
     children?: any
 }, {
     visible?: boolean,
@@ -368,10 +369,15 @@ export class Dropdown extends React.Component<{
         }
     }
     componentDidMount() {
-        //document.addEventListener("click", this.hide)
+        document.addEventListener("click", this.clickHide)
     }
     componentWillUnmount() {
-        //document.removeEventListener("click", this.hide)
+        document.removeEventListener("click", this.clickHide)
+    }
+    clickHide = ({target}) => {
+        if (target != this.refs["span"]) {
+            this.hide()
+        }
     }
     hide = () => {
         this.setState({visible: false})
@@ -384,30 +390,19 @@ export class Dropdown extends React.Component<{
     }
     render() {
         return <span>
-            <span style={{cursor: "pointer"}} onClick={({pageX, pageY}) => {
+            <span ref="span" style={{cursor: "pointer"}} onClick={({pageX, pageY}) => {
                 //this.moveTo([pageX, pageY])
                 //this.show()
                 this.setState({visible: !this.state.visible})
             }}>
                 {this.props.text}
             </span> <br />
-            <div style={{height: 0}}>
+            <div style={{height: 0, width: "auto"}}>
                 <SlideDownTransition show={this.state.visible}>
-                    <div style={{zIndex: 2}}>
+                    <div style={_.assign({}, {zIndex: 2}, this.props.dropStyle)}>
                         {this.props.children}
                     </div>
                 </SlideDownTransition>
-                {/*
-                <div style={{
-                    //display: this.state.visible? "block": "none", 
-                    zIndex: 2,
-                    transform: this.state.visible ? "scale(1, 1)" : "scale(1, 0)",
-                    transition: "transform ease 250ms",
-                    transformOrigin: "left top"
-                }}>
-                    {this.props.children}
-                </div>
-                */}
             </div>
         </span>
     }
