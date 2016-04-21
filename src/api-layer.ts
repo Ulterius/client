@@ -23,8 +23,7 @@ import CryptoJS = require("crypto-js")
 export let intervals: {[key:string]: number} = {}
 export * from "./api"
 
-const resLog = false
-
+const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
         sendCommandToDefault("requestCpuInformation")
@@ -136,12 +135,15 @@ export function startCameraStream(status: CameraStatus.StreamStarted) {
 export function stopCameraStream(status: CameraStatus.StreamStopped) {
     if (status.cameraStreamStopped) {
         cameraActions.stopCameraStream(status.cameraId)
-        sendCommandToDefault("stopCamera", status.cameraId)
+        //sendCommandToDefault("stopCamera", status.cameraId)
     }
 }
 
 export function stopCamera(status: CameraStatus.Stopped) {
     if (resLog) console.log(status)
+    if (!status.cameraRunning) {
+        cameraActions.stopCameraStream(status.cameraId)
+    }
 }
 
 export function getCameraFrame(frame: CameraFrame) {

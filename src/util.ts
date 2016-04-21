@@ -89,3 +89,14 @@ export function toHex(str: string) {
 }
 
 export function noOp() {}
+
+//for jamming classes
+export function stringIf(condition: boolean, subject: string) {
+    return condition ? subject : ""
+}
+
+//now this is just pure autism
+//arcane sigil ternaries make my eyes bleed, so maybe I'll use this instead
+export function ternary(condition, result1, result2) {
+    return condition ? result1 : result2
+}

@@ -350,3 +350,172 @@ export class DragGroup extends React.Component<{children?: React.ReactElement<an
         </div>
     }
 }
+
+import {stringIf} from "../util"
+
+export class Dropdown extends React.Component<{
+    text: React.ReactNode,
+    children?: any
+}, {
+    visible?: boolean,
+    position?: [number, number]
+}> {
+    constructor(props) {
+        super(props)
+        this.state = {
+            visible: false,
+            position: [0, 0]
+        }
+    }
+    componentDidMount() {
+        //document.addEventListener("click", this.hide)
+    }
+    componentWillUnmount() {
+        //document.removeEventListener("click", this.hide)
+    }
+    hide = () => {
+        this.setState({visible: false})
+    }
+    show = () => {
+        this.setState({visible: true})
+    }
+    moveTo = (position: [number, number]) => {
+        this.setState({position})
+    }
+    render() {
+        return <span>
+            <span style={{cursor: "pointer"}} onClick={({pageX, pageY}) => {
+                //this.moveTo([pageX, pageY])
+                //this.show()
+                this.setState({visible: !this.state.visible})
+            }}>
+                {this.props.text}
+            </span> <br />
+            <div style={{height: 0}}>
+                <SlideDownTransition show={this.state.visible}>
+                    <div style={{zIndex: 2}}>
+                        {this.props.children}
+                    </div>
+                </SlideDownTransition>
+                {/*
+                <div style={{
+                    //display: this.state.visible? "block": "none", 
+                    zIndex: 2,
+                    transform: this.state.visible ? "scale(1, 1)" : "scale(1, 0)",
+                    transition: "transform ease 250ms",
+                    transformOrigin: "left top"
+                }}>
+                    {this.props.children}
+                </div>
+                */}
+            </div>
+        </span>
+    }
+    
+}
+
+export class Transition extends React.Component<{
+    style?: React.CSSProperties,
+    styleHere: React.CSSProperties,
+    styleGone: React.CSSProperties,
+    timeOut: number,
+    show: boolean,
+    children?: React.ReactChild
+}, {
+    visible?: boolean,
+    leaving?: boolean,
+    entering?: boolean
+}> {
+    constructor(props) {
+        super(props)
+        this.state = {
+            visible: props.show,
+            leaving: false,
+            entering: false
+        }
+    }
+    componentWillReceiveProps({show}) {
+        //entering is true at the very moment of entering
+        //in order to prime transitions, it first makes the element styled like it's gone
+        if (show) {
+            this.setState({entering: true})
+            setTimeout(() => {this.setState({visible:true, entering: false})}, 5)
+        }
+        if (!show && this.props.show) {
+            this.setState({leaving: true})
+            setTimeout(() => {this.setState({visible: false, leaving: false})}, this.props.timeOut)
+        }
+    }
+    render() {
+        if (!this.state.visible && !this.state.entering) {
+            return null
+        }
+        const childArray = React.Children.toArray(this.props.children).map(ch => {
+            let child = ch as any
+            let style = _.assign(
+                {},
+                child.props.style,
+                this.props.style,
+                this.state.leaving||this.state.entering? 
+                    this.props.styleGone : 
+                    this.props.styleHere
+            )
+            return React.cloneElement(child, {style})
+        })
+        if (childArray.length > 1) {
+            return <div>{childArray}</div>
+        }
+        return childArray[0]
+    }
+}
+
+
+export function TransformTransition(props: {
+    show: boolean,
+    length?: number, 
+    here: string, 
+    gone: string,
+    easing?: string,
+    origin?: string,
+    children?: React.ReactNode
+}) {
+    return <Transition
+    show={props.show}
+    style={{
+        transition: "transform " + (props.easing || "ease ") + (props.length || "250") + "ms",
+        transformOrigin: props.origin || "left top"
+    }}
+    styleHere={{transform: props.here}}
+    styleGone={{transform: props.gone}}
+    timeOut={length || 250}>
+        {props.children}
+    </Transition>
+}
+
+export function SlideDownTransition(props: {show: boolean, children?: React.ReactNode}) {
+    return <TransformTransition 
+    show={props.show}
+    here="scale(1, 1)"
+    gone="scale(1, 0)">
+        {props.children}
+    </TransformTransition>
+}
+
+export function MoveRightTransition(props: {show: boolean, children?: React.ReactNode}) {
+    /*
+    return <Transition
+    show={props.show}
+    style={{transition: "transform ease 250ms", transformOrigin: "left top"}}
+    styleHere={{transform: "translateX(0px)"}}
+    styleGone={{transform: "translateX(-200px)"}}
+    timeOut={250}>
+        {props.children}
+    </Transition>
+    */
+    return <TransformTransition
+    show={props.show}
+    here={"translateX(0px)"}
+    gone={"translateX(-200px)"}>
+        {props.children}
+    </TransformTransition>
+}

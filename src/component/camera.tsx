@@ -1,6 +1,6 @@
 import {cameraStore, CameraState, cameraUtil as cu} from "../store/camera-store"
 import {Button, ButtonToolbar, Glyphicon} from "react-bootstrap"
-import {sendCommandToDefault as sendCommand} from "../socket"
+import {sendCommandToDefault as sendCommand, sendCommandAsync} from "../socket"
 import {helpers as api} from "../api-layer"
 import React = require("react")
 import * as _ from "lodash"
@@ -34,7 +34,14 @@ export class CameraPage extends React.Component<{}, CameraState> {
     }
     toggleCamera(id: string) {
         if (cu(this.state).cameraIsActive(id)) {
-            api.stopCamera(id)
+            //api.stopCamera(id)
+            /*
+            sendCommandAsync("stopCamera", id, (result) => {
+                console.log(result)
+                //sendCommandAsync("stopCamera", id, () => {})
+            })
+            */
+            sendCommand("stopCamera", id)
         }
         else {
             api.startCamera(id)
@@ -60,7 +67,6 @@ export class CameraPage extends React.Component<{}, CameraState> {
         
         if (active) {
             return <img key={active.cameraId} 
-            onClick={() => this.toggleCamera(active.cameraId)} 
             src={active.URL} 
             style={{display: "inline",margin: 0, padding: 0, width: "100%", verticalAlign: "top"}}/>
         }
@@ -121,18 +127,6 @@ export class CameraPage extends React.Component<{}, CameraState> {
                         {this.getCam(cam.Id)}
                     </div>
                 })}
-                {/*
-                <DragElement style={{width: "50%", height: 100}}>
-                    hello
-                </DragElement>
-                <DragElement style={{width: 100, height: 100}}>
-                    hi
-                </DragElement>
-               
-                
-                <div style={{width: 100, height: 100}}><span>hello</span></div>
-                <div style={{width: 100, height: 100}}>hi</div>
-                */}
                 
             </DragGroup>
             

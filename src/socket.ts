@@ -41,6 +41,9 @@ export function sendCommandAsync(action: string, ...rest) {
     if (typeof rest[rest.length-1] === "function") {
         callbacks[key] = rest[rest.length-1]
     }
+    else {
+        callbacks[key] = console.log.bind(console)
+    }
     try {
         socket.send(encrypt(packet))
     }

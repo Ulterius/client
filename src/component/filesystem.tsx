@@ -1,14 +1,16 @@
 import React = require("react")
-import {EntryBox} from "./"
-import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input} from "react-bootstrap"
+import {EntryBox, Dropdown} from "./"
+import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input, ListGroup, ListGroupItem} from "react-bootstrap"
 import {FileSystemState, fileSystemStore} from "../store"
 import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
+import {downloadFile} from "../api/filesystem"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
     upload: any
+    fileDownloading: string = ""
     componentDidMount() {
         this.updateState(fileSystemStore.getState())
         fileSystemStore.listen(this.updateState)
@@ -126,14 +128,33 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                 return <tr key={file.Path}>
                                     <td><Glyphicon glyph="file" /></td>
                                     <td>
-                                        <span
+                                        {/*<span
                                         onClick={() => {
-                                            sendCommandToDefault("downloadFile", file.Path)
-                                            messageActions.message({style: "success", text: "File download started."})
+                                            //sendCommandToDefault("downloadFile", file.Path)
+                                            
+                                            if (this.fileDownloading == file.Path) {
+                                                messageActions.message({style: "danger", text: "That file is already downloading."})
+                                            }
+                                            else {
+                                                messageActions.message({ style: "success", text: "File download started." })
+                                                this.fileDownloading = file.Path
+                                                sendCommandAsync("downloadFile", file.Path, (result: FileSystemInfo.FileDownload) => {
+                                                    console.log(result)
+                                                    downloadFile(result)
+                                                    this.fileDownloading = ""
+                                                })
+                                            }
+                                            
                                         }} 
                                         style={{cursor: "pointer"}}>
                                             {lastPathSegment(file.Path)}
-                                        </span>
+                                        </span>*/}
+                                        <Dropdown text={lastPathSegment(file.Path)}>
+                                            <ListGroup>
+                                                <ListGroupItem>Ayy</ListGroupItem>
+                                                <ListGroupItem>Lmao</ListGroupItem>
+                                            </ListGroup>
+                                        </Dropdown>
                                     </td>
                                     <td>{bytesToSize(file.FileSize)}</td>
                                 </tr>

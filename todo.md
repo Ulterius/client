@@ -5,13 +5,14 @@ Todo
 * ~~uploadFile~~
 * ~~(generateNewApiKey)~~
 * startVncServer
+* terminal
 * ~~checkForUpdate~~
 * ~~restartServer~~
 * ~~plugin~~
 * ~~getPlugins~~
 * ~~getBadPlugins~~
 * ~~refreshCameras~~
-* restart button
+* restart button color (?)
 * ~~refresh filesystem~~
 * ~~and refresh on upload~~
 * don't allow downloading a file while the same file is downloading
@@ -21,5 +22,5 @@ Todo
 * ~~make cameras movable~~
 * file context menu
 * ~~log out~~
-* try to fix camera closing
+* ~~fix camera closing~~
 * ~~totals on graphs~~

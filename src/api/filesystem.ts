@@ -10,7 +10,6 @@ export function createFileTree(tree: FileSystemInfo.FileTree) {
 
 export function downloadFile(file: FileSystemInfo.FileDownload) {
     let url = frameBufferToImageURL(file.fileBytes)
-    
     let a = document.createElement("a")
     a.href = url
     let as = (a as any)

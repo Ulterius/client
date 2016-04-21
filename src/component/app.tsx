@@ -18,7 +18,8 @@ import {
     LoginScreen,
     Messages,
     FadeTransition,
-    SlideTransition,
+    SlideDownTransition,
+    MoveRightTransition,
     LoadingScreen,
     ConnectScreen
 } from "./"
@@ -105,7 +106,7 @@ export default class App extends React.Component<{
         return <div>
             <Sidebar activePath={this.props.location.pathname} />
             <div className="page">
-                    <FadeTransition>
+                <FadeTransition>
                     <div className="page-content container-fluid">
                         {this.props.children}
                     </div>
@@ -123,18 +124,18 @@ export default class App extends React.Component<{
 }
 
 function Overlay(props: any) {
-    const style = {
+    const style = _.assign({}, props.style, {
         zIndex: 10,
         position: "fixed",
         width: "100%",
         height: "100%",
         opacity: 0.5,
         backgroundColor: "black"
-    }
-    return <FadeTransition>
-        <div style={style} {...props}>
-        </div>
-    </FadeTransition>
+    })
+    
+    return <div {...props} style={style}>
+    </div>
+    
 }
 
 class Sidebar extends React.Component<{activePath: string}, {
@@ -211,13 +212,12 @@ class Sidebar extends React.Component<{activePath: string}, {
     modalSidebar = () => {
         let toggleOpen = () => this.setState({open: !this.state.open})
         let contents
+        /*
         if (this.state.open) {
-            
             contents = <div>
                 <Overlay onClick={toggleOpen}/>
                 {this.sidebarContent()}
             </div>
-            
             //contents = this.sidebarContent()
         }
         else {
@@ -225,6 +225,17 @@ class Sidebar extends React.Component<{activePath: string}, {
                 <Glyphicon glyph="menu-hamburger" />
             </div>
         }
+        
+        */
+        contents = <div>
+            <div className="btn btn-default" style={{position: "fixed", zIndex: 10000, opacity: 0.6}} onClick={toggleOpen}>
+                <Glyphicon glyph="menu-hamburger" />
+            </div>
+            {this.state.open ? <Overlay onClick={toggleOpen}/> : null}
+            <MoveRightTransition show={this.state.open}>
+                {this.sidebarContent()}
+            </MoveRightTransition>
+        </div>
         return contents
 
     }
@@ -234,9 +245,7 @@ class Sidebar extends React.Component<{activePath: string}, {
                 {this.sidebarContent()}
             </MediaQuery>
             <MediaQuery maxWidth={785}>
-                <FadeTransition>
-                    {this.modalSidebar()}
-                </FadeTransition>
+                {this.modalSidebar()}
             </MediaQuery>
         </div>
     }

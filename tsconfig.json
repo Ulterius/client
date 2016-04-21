@@ -4,7 +4,8 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": true,
-        "jsx": "react"
+        "jsx": "react",
+        "experimentalDecorators": true
     },
     "atom": {
         "rewriteTsconfig": true
