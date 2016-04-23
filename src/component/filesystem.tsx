@@ -55,6 +55,8 @@ export class FileList extends React.Component<{}, FileSystemState> {
         reader.readAsArrayBuffer(e.target.files[0])
     }
     download = (path: string) => {
+        sendCommandToDefault("requestFile", path)
+        /*
         if (this.fileDownloading == path) {
             messageActions.message({ style: "danger", text: "That file is already downloading." })
         }
@@ -67,6 +69,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                 this.fileDownloading = ""
             })
         }
+        */
     }
     render() {
         if (!this.state) {
@@ -78,6 +81,11 @@ export class FileList extends React.Component<{}, FileSystemState> {
         return <div>
             {/* this.state.pathStack.map(tree => tree.RootFolder.Name) */}
             {/* this.state.pathStack.indexOf(this.state.tree) */}
+            {_.map(this.state.downloads, (v, k) => {
+                return <div>
+                    {k}: {v.downloaded} / {v.total}
+                </div>
+            })}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
             <div className="row">
                 <div className="col-sm-3">

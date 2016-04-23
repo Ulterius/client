@@ -3,6 +3,18 @@ import {fileSystemStore} from "../store"
 import {frameBufferToImageURL} from "../util"
 import {sendCommandAsync} from "../socket"
 
+let FsWorker = require("worker!./filesystem-worker")
+let fsWorker: Worker = new FsWorker
+
+fsWorker.onmessage = ({data}) => {
+    let message = data as WorkerMessage<any>
+    if (message.type == "downloadData") {
+        if (message.content.downloaded || message.content.data) {
+            fileSystemActions.downloadData(message.content)
+        }
+    }
+}
+
 export function createFileTree(tree: FileSystemInfo.FileTree) {
     console.log(tree)
     fileSystemActions.updateFileTree(tree)
@@ -21,6 +33,24 @@ export function downloadFile(file: FileSystemInfo.FileDownload) {
     URL.revokeObjectURL(url)
     //you didn't see anything
     //please forget this ever happened
+}
+
+export function requestFile(file: FileSystemInfo.InitialDownload) {
+    let message: WorkerMessage<FileSystemInfo.InitialDownload> = {
+        type: "requestFile",
+        content: file
+    }
+    fsWorker.postMessage(message)
+    fileSystemActions.addDownload(file)
+}
+
+export function downloadData(data: FileSystemInfo.Data) {
+    let message: WorkerMessage<FileSystemInfo.Data> = {
+        type: "downloadData",
+        content: data
+    }
+    fsWorker.postMessage(message)
+    //fileSystemActions.downloadData(data)
 }
 
 export function uploadFile(file: FileSystemInfo.FileUpload) {

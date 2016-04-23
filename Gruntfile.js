@@ -20,7 +20,14 @@ module.exports = function(grunt) {
             loader: "json-loader"
         }
     ]
-
+    /*
+    let worker = {
+        output: {
+            filename: "hash.worker.js",
+            chunkFilename: "[id].hash.worker.js"
+        }
+    }
+    */
     let wpops = {
         entry: "./src/index.tsx",
         devtool: "#eval-source-map",
@@ -33,6 +40,7 @@ module.exports = function(grunt) {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
         module: {loaders}
+        //worker
     }
 
     let wptestops = {
@@ -50,6 +58,7 @@ module.exports = function(grunt) {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
         module: {loaders}
+        //worker
     }
 
     grunt.initConfig({

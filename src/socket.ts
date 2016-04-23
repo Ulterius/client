@@ -7,6 +7,9 @@ import CryptoJS = require("crypto-js")
 import {toHex} from "./util"
 import {appActions, messageActions} from "./action"
 
+let SocketWorker = require("worker!./socket-worker")
+let socketWorker: Worker = new SocketWorker
+
 export let socket: WebSocket
 
 let connectInterval = undefined
@@ -44,12 +47,13 @@ export function sendCommandAsync(action: string, ...rest) {
     else {
         callbacks[key] = console.log.bind(console)
     }
-    try {
-        socket.send(encrypt(packet))
-    }
-    catch (exception) {
-        console.log(exception)
-    }
+    socketWorker.postMessage({
+        type: "serialize",
+        content: {
+            appState: appStore.getState(),
+            data: packet
+        }
+    })
 }
 
 export function sendCommand(sock: WebSocket, action, args?) {
@@ -65,12 +69,13 @@ export function sendCommand(sock: WebSocket, action, args?) {
             packet.args = [args]
         }
     }
-    try {
-        sock.send(encrypt(packet))
-    } 
-    catch (exception) {
-        console.log(exception);
-    }
+    socketWorker.postMessage({
+        type: "serialize",
+        content: {
+            appState: appStore.getState(),
+            data: packet
+        }
+    })
 }
 //jank ass curry
 export function sendCommandToDefault(action, args?) {
@@ -110,21 +115,13 @@ export function connect(host: string, port: string) {
         
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
-                let dataObject = decrypt(e.data)
-                
-                let message = (dataObject as ApiMessage)
-                if (message.endpoint != "getcameraframe") {
-                    console.log(message.endpoint)
-                }
-                if ( !message.syncKey || (message.syncKey as string).indexOf("override") == -1 ) {
-                    defaultHandleMessage(message)
-                }
-                else {
-                    if (callbacks[message.syncKey] && typeof callbacks[message.syncKey] == "function") {
-                        callbacks[message.syncKey](message.results)
-                        callbacks[message.syncKey] = undefined
+                socketWorker.postMessage({
+                    type: "deserialize",
+                    content: {
+                        appState: appStore.getState(),
+                        data: e.data
                     }
-                }
+                })
             }
             else if (e.data instanceof ArrayBuffer) {
                 console.log("ArrayBuffer get (for some reason): " + e.data)
@@ -232,4 +229,34 @@ function defaultHandleMessage(message: ApiMessage) {
 export function disconnect() {
     socket.close()
     appActions.setHost({host: "", port: ""})
+}
+
+socketWorker.onmessage = ({data}) => {
+    let wmessage = data as WorkerMessage<any>
+    if (wmessage.type == "deserialize") {
+        //let dataObject = decrypt(e.data)
+        let dataObject = wmessage.content
+
+        let message = (dataObject as ApiMessage)
+        if (message.endpoint != "getcameraframe") {
+            console.log(message.endpoint)
+        }
+        if (!message.syncKey || (message.syncKey as string).indexOf("override") == -1) {
+            defaultHandleMessage(message)
+        }
+        else {
+            if (callbacks[message.syncKey] && typeof callbacks[message.syncKey] == "function") {
+                callbacks[message.syncKey](message.results)
+                callbacks[message.syncKey] = undefined
+            }
+        }
+    }
+    else if (wmessage.type == "serialize") {
+        try {
+            socket.send(wmessage.content)
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
 }

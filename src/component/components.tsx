@@ -28,7 +28,7 @@ export function Bar(props: {value?: number, color?: boolean, style?: any}) {
             style={{
                 width: `${100}%`,
                 minWidth: "0%"
-            }}>>
+            }}>
             </div>
         </div>
     }
@@ -144,7 +144,8 @@ export function FadeTransition(props: {children?: any}) {
         transitionAppear={false} 
         transitionEnterTimeout={300} 
         transitionAppearTimeout={300} 
-        transitionLeaveTimeout={300}>
+        transitionLeaveTimeout={300}
+    >
         {props.children}
     </ReactCSSTransitionGroup>
 }
@@ -155,7 +156,8 @@ export function SlideTransition(props: {children?: any}) {
         transitionAppear={true} 
         transitionEnterTimeout={300} 
         transitionAppearTimeout={300} 
-        transitionLeaveTimeout={300}>
+        transitionLeaveTimeout={300}
+    >
         {props.children}
     </ReactCSSTransitionGroup>
 }
@@ -188,12 +190,10 @@ export class Messages extends React.Component<{}, MessageState> {
             right: 10
         }}>
             <FadeTransition>
-            {
-                this.state.messages.map((msg, i) => {
+                {this.state.messages.map((msg, i) => {
                     return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
                 
-                })
-            }
+                })}
             </FadeTransition>
         </div>
     }
@@ -222,8 +222,7 @@ export class EntryBox extends React.Component<
             onClick={() => {this.props.onConfirmation(this.state.text)}}>
                 <Glyphicon glyph={this.props.glyph} />
             </Button>
-        return ( 
-            <Input
+        return <Input
             type={this.props.type || "text"}
             placeholder={this.props.placeholder || ""}
             buttonAfter={confirmButton}
@@ -233,9 +232,8 @@ export class EntryBox extends React.Component<
                 if (e.keyCode == 13) {
                     this.props.onConfirmation(this.state.text)
                 }
-            }} />
-        )
-        
+            }} 
+        />
     }
 }
 
@@ -265,16 +263,6 @@ export class DragElement extends React.Component<{
         </div>
     }
 }
-
-/*
-export function DragElement(props: {orderKey?: number, children?: any, [key:string]: any}) {
-    const passDown = _.omit(props, "orderKey")
-    return <div {...passDown} >
-        {props.children}
-    </div>
-}
-*/
-
 
 export class DragGroup extends React.Component<{children?: React.ReactElement<any>[]}, {
     order: number[]
@@ -475,42 +463,35 @@ export function TransformTransition(props: {
     children?: React.ReactNode
 }) {
     return <Transition
-    show={props.show}
-    style={{
-        transition: "transform " + (props.easing || "ease ") + (props.length || "250") + "ms",
-        transformOrigin: props.origin || "left top"
-    }}
-    styleHere={{transform: props.here}}
-    styleGone={{transform: props.gone}}
-    timeOut={length || 250}>
+        show={props.show}
+        style={{
+            transition: "transform " + (props.easing || "ease ") + (props.length || "250") + "ms",
+            transformOrigin: props.origin || "left top"
+        }}
+        styleHere={{transform: props.here}}
+        styleGone={{transform: props.gone}}
+        timeOut={length || 250}
+    >
         {props.children}
     </Transition>
 }
 
 export function SlideDownTransition(props: {show: boolean, children?: React.ReactNode}) {
     return <TransformTransition 
-    show={props.show}
-    here="scale(1, 1)"
-    gone="scale(1, 0)">
+        show={props.show}
+        here="scale(1, 1)"
+        gone="scale(1, 0)"
+    >
         {props.children}
     </TransformTransition>
 }
 
 export function MoveRightTransition(props: {show: boolean, children?: React.ReactNode}) {
-    /*
-    return <Transition
-    show={props.show}
-    style={{transition: "transform ease 250ms", transformOrigin: "left top"}}
-    styleHere={{transform: "translateX(0px)"}}
-    styleGone={{transform: "translateX(-200px)"}}
-    timeOut={250}>
-        {props.children}
-    </Transition>
-    */
     return <TransformTransition
-    show={props.show}
-    here={"translateX(0px)"}
-    gone={"translateX(-200px)"}>
+        show={props.show}
+        here={"translateX(0px)"}
+        gone={"translateX(-200px)"}
+    >
         {props.children}
     </TransformTransition>
 }

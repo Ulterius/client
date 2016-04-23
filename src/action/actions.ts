@@ -175,33 +175,39 @@ interface FileSystemActionFunctions {
     goBack(): boolean
     goForward(): boolean
     reloadFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
+    addDownload(file: FileSystemInfo.InitialDownload): FileSystemInfo.InitialDownload
+    downloadData(data: FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress): FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress
+    removeDownload(path: string): string
 }
 
 class FileSystemActions extends AbstractActions {
     constructor(alt: AltJS.Alt) {
         super(alt)
+        this.generateActions(
+            "removeDownload",
+            "updateFileTree",
+            "addDownload",
+            "downloadData",
+            "reloadFileTree"
+        )
+    }
+    /*
+    removeDownload(path: string) {
+        return path
     }
     updateFileTree(tree: FileSystemInfo.FileTree) {
-        /*
-        let newTree: FileSystemInfo.Processed.FileTree
-        newTree.DeepWalk = tree.DeepWalk
-        newTree.RootFolder = {
-            Name: tree.RootFolder.Name.substr(tree.RootFolder.Name.lastIndexOf("\\")),
-            Path: tree.RootFolder.Name,
-            ChildFolders: tree.RootFolder.ChildFolders.map(folder => {
-                return {
-                    Name: folder.Name.substr(folder.Name.lastIndexOf("\\")),
-                    Path: folder.Name,
-                    
-                }
-            })
-        }
-        */
         return tree
+    }
+    addDownload(file: FileSystemInfo.InitialDownload) {
+        return file
+    }
+    downloadData(data: FileSystemInfo.Data) {
+        return data
     }
     reloadFileTree(tree: FileSystemInfo.FileTree) {
         return tree
     }
+    */
     goBack() {
         return true
     }

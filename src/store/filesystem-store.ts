@@ -6,22 +6,78 @@ import * as _ from "lodash"
 export interface FileSystemState {
     tree: FileSystemInfo.FileTree,
     pathStack: FileSystemInfo.FileTree[]
+    downloads: Files
+}
+
+export interface FileProgress {
+    data?: number[],
+    downloaded: number,
+    total: number,
+    complete: boolean
+}
+
+//key them by file path, since you can't download two of those at once
+export interface Files {
+    [key: string]: FileProgress
+}
+
+function isLoaded(obj: any): obj is FileSystemInfo.LoadedFile {
+    return ("data" in obj)
 }
 
 class FileSystemStore extends AbstractStoreModel<FileSystemState> {
     tree: FileSystemInfo.FileTree
     pathStack: FileSystemInfo.FileTree[]
+    downloads: Files
     goingBack: boolean
     constructor() {
         super()
         this.pathStack = []
         this.goingBack = false
+        this.downloads = {}
         this.bindListeners({
             handleUpdateFileTree: fileSystemActions.updateFileTree,
             handleBack: fileSystemActions.goBack,
             handleForward: fileSystemActions.goForward,
-            handleReload: fileSystemActions.reloadFileTree
+            handleReload: fileSystemActions.reloadFileTree,
+            handleAddDownload: fileSystemActions.addDownload,
+            handleDownloadData: fileSystemActions.downloadData,
+            handleRemoveDownload: fileSystemActions.removeDownload
         })
+    }
+    handleRemoveDownload(path: string) {
+        if (this.downloads[path]) {
+            this.downloads[path] = null
+        }
+    }
+    handleDownloadData(data: FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress) {
+        let download = this.downloads[data.path]
+        if (!download) {
+            console.log("Got data for a file that was never started!")
+            return false
+        }
+        
+        if (isLoaded(data)) {
+            download.data = data.data
+            download.downloaded = data.total
+            download.complete = true
+        }
+        else {
+            download.downloaded = data.downloaded
+        }
+        /*
+        for (let byte of data.fileData) {
+            this.downloads[data.path].data.push(byte)
+        }
+        */
+        //this.downloads[data.path].data.push(...data.fileData)
+    }
+    handleAddDownload(file: FileSystemInfo.InitialDownload) {
+        this.downloads[file.path] = {
+            downloaded: 0,
+            total: file.size,
+            complete: false
+        }
     }
     handleReload(tree: FileSystemInfo.FileTree) {
         this.tree = tree

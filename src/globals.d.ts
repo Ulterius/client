@@ -351,6 +351,28 @@ declare namespace FileSystemInfo {
         path: string,
         size: number
     }
+    interface InitialDownload {
+        path: string,
+        fileValid: boolean,
+        fileName: string,
+        size: number
+    }
+    interface BareProgress {
+        path: string,
+        downloaded: number,
+        total: number
+    }
+    interface LoadedFile {
+        path: string,
+        data: number[],
+        total: number
+    }
+    interface Data {
+        complete: boolean,
+        fileData: number[],
+        path: string,
+        totalSize: number
+    }
     interface FileUpload {
         fileName: string,
         fileUploaded: boolean,
@@ -425,4 +447,9 @@ declare interface KeyInfo {
 declare interface HostInfo {
     host: string, 
     port: string
+}
+
+declare interface WorkerMessage<T> {
+    type: string,
+    content: T
 }
