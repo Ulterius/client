@@ -100,3 +100,48 @@ export function stringIf(condition: boolean, subject: string) {
 export function ternary(condition, result1, result2) {
     return condition ? result1 : result2
 }
+
+export function workerAsync<T>(worker: Worker, type: string, content: T, callback: (any) => any ) {
+    const listener = (e) => {
+        if (e.data.type == type) {
+            callback(e.data.content)
+            worker.removeEventListener("message", listener)
+        }
+    }
+    worker.addEventListener("message", listener)
+    worker.postMessage({
+        type,
+        content
+    })
+}
+
+export function getHandler(postMessage: typeof window.postMessage, addEventListener: typeof window.addEventListener) {
+    let pm = postMessage as (any) => any
+    let ae = addEventListener
+    return (type: string, fn: (any) => any) => {
+        const listener = ({data}) => {
+            if (data.type == type) {
+                let content = fn(data.content)
+                if (content) {
+                    pm({type,content})
+                }
+            }
+        }
+        ae("message", listener)
+    }
+}
+
+export function downloadFile(file: FileSystemInfo.LoadedFile) {
+    let url = frameBufferToImageURL(file.data)
+    let a = document.createElement("a")
+    a.href = url
+    let as = (a as any)
+    as.download = lastPathSegment(file.path)
+    document.body.appendChild(a)
+    a.style.display = "none"
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    //you didn't see anything
+    //please forget this ever happened
+}

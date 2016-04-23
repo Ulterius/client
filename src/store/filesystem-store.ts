@@ -21,7 +21,7 @@ export interface Files {
     [key: string]: FileProgress
 }
 
-function isLoaded(obj: any): obj is FileSystemInfo.LoadedFile {
+export function isLoaded(obj: any): obj is FileSystemInfo.LoadedFile {
     return ("data" in obj)
 }
 

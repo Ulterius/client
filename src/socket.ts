@@ -4,7 +4,7 @@ import * as _ from "lodash"
 import * as apiLayer from "./api-layer"
 import {appStore} from "./store"
 import CryptoJS = require("crypto-js")
-import {toHex} from "./util"
+import {toHex, workerAsync} from "./util"
 import {appActions, messageActions} from "./action"
 
 let SocketWorker = require("worker!./socket-worker")
@@ -115,6 +115,25 @@ export function connect(host: string, port: string) {
         
         socket.onmessage = function(e) {
             if (typeof e.data === "string") {
+                workerAsync(
+                    socketWorker,
+                    "deserialize",
+                    {appState: appStore.getState(), data: e.data},
+                    (message: ApiMessage) => {
+                        if (message.endpoint != "getcameraframe") {
+                            console.log(message.endpoint)
+                        }
+                        if (!message.syncKey || (message.syncKey as string).indexOf("override") == -1) {
+                            defaultHandleMessage(message)
+                        }
+                        else {
+                            if (callbacks[message.syncKey] && typeof callbacks[message.syncKey] == "function") {
+                                callbacks[message.syncKey](message.results)
+                                callbacks[message.syncKey] = undefined
+                            }
+                        }
+                    }
+                )
                 socketWorker.postMessage({
                     type: "deserialize",
                     content: {
@@ -231,9 +250,11 @@ export function disconnect() {
     appActions.setHost({host: "", port: ""})
 }
 
-socketWorker.onmessage = ({data}) => {
+socketWorker.addEventListener("message", ({data}) => {
     let wmessage = data as WorkerMessage<any>
+    
     if (wmessage.type == "deserialize") {
+        /*
         //let dataObject = decrypt(e.data)
         let dataObject = wmessage.content
 
@@ -250,6 +271,7 @@ socketWorker.onmessage = ({data}) => {
                 callbacks[message.syncKey] = undefined
             }
         }
+        */
     }
     else if (wmessage.type == "serialize") {
         try {
@@ -259,4 +281,4 @@ socketWorker.onmessage = ({data}) => {
             console.log(e)
         }
     }
-}
+})

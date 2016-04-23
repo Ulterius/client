@@ -1,11 +1,10 @@
 import React = require("react")
 import {EntryBox, Dropdown} from "./"
 import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input, ListGroup, ListGroupItem} from "react-bootstrap"
-import {FileSystemState, fileSystemStore} from "../store"
+import {FileSystemState, fileSystemStore, isLoaded} from "../store"
 import {fileSystemActions, messageActions} from "../action"
-import {bytesToSize, lastPathSegment} from "../util"
+import {bytesToSize, lastPathSegment, downloadFile} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
-import {downloadFile} from "../api/filesystem"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
@@ -23,6 +22,12 @@ export class FileList extends React.Component<{}, FileSystemState> {
         if (this.box) {
             this.box.setState({customized: false})
         }
+        _.forOwn(state.downloads, (v: FileSystemInfo.LoadedFile, k) => {
+            if (isLoaded(v)) {
+                v.path = k
+                downloadFile(v)
+            }
+        })
     }
     openFolder = (path: string) => {
         sendCommandToDefault("createFileTree", path)
