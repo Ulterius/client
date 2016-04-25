@@ -1,4 +1,5 @@
 import * as _ from "lodash"
+import React = require("react")
 
 //global event emitter for components that shouldn't need stores
 
@@ -60,6 +61,34 @@ export function frameBufferToImageURL(buffer: number[]) {
     return urlCreator.createObjectURL(blob)
 }
 
+export function byteArraysToBlobURL(buffers: Uint8Array[]) {
+    let blob = new Blob(buffers, {type: "image/jpeg"})
+    let urlCreator = window.URL || (window as any).webkitURL
+    return urlCreator.createObjectURL(blob)
+}
+
+
+export const media = {
+    xs: {
+        max: 767
+    },
+    sm: {
+        min: 768,
+        max: 991
+    },
+    lg: {
+        min: 992,
+        max: 1199
+    },
+    xl: {
+        min: 1200,
+    }
+}
+
+export function px(pixels: number) {
+    return `{number}px`
+}
+
 //return true if bootstrap will match the size, give a string like "xs", "sm", "md", "lg"
 export function bootstrapSizeMatches(size: string) {
     return (  size == "xs" ||
@@ -117,7 +146,6 @@ export function workerAsync<T>(worker: Worker, type: string, content: T, callbac
 
 export function getHandler(postMessage: typeof window.postMessage, addEventListener: typeof window.addEventListener) {
     let pm = postMessage as (any) => any
-    let ae = addEventListener
     return (type: string, fn: (any) => any) => {
         const listener = ({data}) => {
             if (data.type == type) {
@@ -127,7 +155,7 @@ export function getHandler(postMessage: typeof window.postMessage, addEventListe
                 }
             }
         }
-        ae("message", listener)
+        addEventListener("message", listener)
     }
 }
 
@@ -144,4 +172,66 @@ export function downloadFile(file: FileSystemInfo.LoadedFile) {
     URL.revokeObjectURL(url)
     //you didn't see anything
     //please forget this ever happened
+}
+
+export function downloadBlobURL(blob: string) {
+    let a = document.createElement("a")
+    a.href = blob
+    let as = (a as any)
+    as.download = "fuckyou.txt"
+    document.body.appendChild(a)
+    a.style.display = "none"
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(blob)
+}
+
+export function percentToNumber(percent: string) {
+    return ( Number(percent.slice(0, -1))/100 )
+} 
+
+export function numberToPercent(num: number) {
+    return String(num*100)+"%"
+}
+
+export function verticalCenter(width: number|string, height: number|string) {
+    let negativeWidthOverTwo
+    let negativeHeightOverTwo
+    if (typeof width == "string") {
+        negativeWidthOverTwo = numberToPercent(-percentToNumber(width)/2)
+    }
+    else {
+        negativeWidthOverTwo = -width/2
+    }
+    if (typeof height == "string") {
+        negativeHeightOverTwo = numberToPercent(-percentToNumber(height)/2)
+    }
+    else {
+        negativeHeightOverTwo = -height/2
+    }
+    const style: React.CSSProperties = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        height,
+        width,
+        marginTop: negativeHeightOverTwo,
+        marginLeft: negativeWidthOverTwo
+    }
+    return style
+}
+
+export function delay(ms: number, ...functions: Function[]) {
+    functions.forEach((fn, i) => {
+        setTimeout(fn, ms*(i+1))
+    })
+}
+
+export function b64toArray(b64string: string) {
+    let chars = atob(b64string)
+    let numbers = new Array(chars.length)
+    for (let i = 0; i < chars.length; i++) {
+        numbers[i] = chars.charCodeAt(i);
+    }
+    return new Uint8Array(numbers)
 }

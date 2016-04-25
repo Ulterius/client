@@ -1,4 +1,5 @@
 "use strict"
+let path = require("path")
 module.exports = function(grunt) {
 
     let nodeops = {
@@ -9,7 +10,9 @@ module.exports = function(grunt) {
     let loaders = [
         {
             test: /\.tsx?$/,
-            loader: 'ts-loader'
+            loader: 'awesome-typescript-loader',
+            include: path.resolve("./src"),
+            exclude: /node_modules/
         },
         {
             test: /\.s(c|a)ss$/,
@@ -29,8 +32,9 @@ module.exports = function(grunt) {
     }
     */
     let wpops = {
+        cache: false,
         entry: "./src/index.tsx",
-        devtool: "#eval-source-map",
+        //devtool: "#inline-source-map",
         output: {
             path: __dirname + "/public",
             filename: "bundle.js"
@@ -39,16 +43,23 @@ module.exports = function(grunt) {
         resolve: {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
-        module: {loaders}
-        //worker
+        module: {loaders},
+        ts: {
+            transpileOnly: true
+        }
     }
-
+    let id = 0
+    function hash() {
+        id++
+        return id
+    }
     let wptestops = {
+        cache: false,
         entry: {
             bundle: "./src/index.tsx",
             spec: "./test/spec.ts"
         },
-        devtool: "#eval-source-map",
+        //devtool: "#inline-source-map",
         output: {
             path: __dirname + "/public",
             filename: "[name].js"
@@ -58,7 +69,6 @@ module.exports = function(grunt) {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
         module: {loaders}
-        //worker
     }
 
     grunt.initConfig({
@@ -71,7 +81,10 @@ module.exports = function(grunt) {
             options: {
                 keepalive: true,
                 watch: true,
-                contentBase: "public/"
+                contentBase: "public/",
+                stats: {
+                    exclude: ["node_modules"]
+                }
             },
             default: {
                 webpack: wpops

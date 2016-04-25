@@ -85,3 +85,10 @@ declare module "react-bootstrap" {
     export let Button: ReactBootstrap.Button
 }
 */
+
+declare module "react-overlays" {
+    interface AffixI extends __React.ComponentClass<{[key: string]: any}> {}
+    interface AutoAffixI extends __React.ComponentClass<{[key: string]: any}> {}
+    export const AutoAffix: AutoAffixI
+    export const Affix: AffixI
+}

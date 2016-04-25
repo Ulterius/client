@@ -1,10 +1,11 @@
 import React = require("react")
-import {EntryBox, Dropdown} from "./"
+import {EntryBox, Dropdown, Bar} from "./"
 import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input, ListGroup, ListGroupItem} from "react-bootstrap"
 import {FileSystemState, fileSystemStore, isLoaded} from "../store"
 import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment, downloadFile} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
+import {AutoAffix} from "react-overlays"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
@@ -61,72 +62,53 @@ export class FileList extends React.Component<{}, FileSystemState> {
     }
     download = (path: string) => {
         sendCommandToDefault("requestFile", path)
-        /*
-        if (this.fileDownloading == path) {
-            messageActions.message({ style: "danger", text: "That file is already downloading." })
-        }
-        else {
-            messageActions.message({ style: "success", text: "File download started." })
-            this.fileDownloading = path
-            sendCommandAsync("downloadFile", path, (result: FileSystemInfo.FileDownload) => {
-                console.log(result)
-                downloadFile(result)
-                this.fileDownloading = ""
-            })
-        }
-        */
     }
     render() {
-        if (!this.state) {
+        if (!this.state || !this.state.tree) {
+            console.log(this.state)
             return <div>loading files...</div>
         }
-            
             
         let {tree} = this.state
         return <div>
             {/* this.state.pathStack.map(tree => tree.RootFolder.Name) */}
             {/* this.state.pathStack.indexOf(this.state.tree) */}
-            {_.map(this.state.downloads, (v, k) => {
-                return <div>
-                    {k}: {v.downloaded} / {v.total}
-                </div>
-            })}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
-            <div className="row">
-                <div className="col-sm-3">
-                    <ButtonToolbar>
-                    <ButtonGroup justified>
-                        <ButtonGroup>
-                            <Button onClick={fileSystemActions.goBack}>
-                                <Glyphicon glyph="arrow-left" />
-                            </Button>
+                <div className="row" style={{position: "fixed", zIndex: 2}}>
+                    <div className="col-sm-3">
+                        <ButtonToolbar>
+                        <ButtonGroup justified>
+                            <ButtonGroup>
+                                <Button onClick={fileSystemActions.goBack}>
+                                    <Glyphicon glyph="arrow-left" />
+                                </Button>
+                            </ButtonGroup>
+                            <ButtonGroup>
+                                <Button onClick={fileSystemActions.goForward}>
+                                    <Glyphicon glyph="arrow-right" />
+                                </Button>
+                            </ButtonGroup>
+                            <ButtonGroup>
+                                <Button bsStyle="primary" onClick={() => this.upload.click()}>
+                                    <Glyphicon glyph="export" />
+                                </Button>
+                            </ButtonGroup>
+                            <ButtonGroup>
+                                <Button bsStyle="primary" onClick={() => this.refresh(this.state.tree.RootFolder.Name)}>
+                                    <Glyphicon glyph="refresh" />
+                                </Button>
+                            </ButtonGroup>
                         </ButtonGroup>
-                        <ButtonGroup>
-                            <Button onClick={fileSystemActions.goForward}>
-                                <Glyphicon glyph="arrow-right" />
-                            </Button>
-                        </ButtonGroup>
-                        <ButtonGroup>
-                            <Button bsStyle="primary" onClick={() => this.upload.click()}>
-                                <Glyphicon glyph="export" />
-                            </Button>
-                        </ButtonGroup>
-                        <ButtonGroup>
-                            <Button bsStyle="primary" onClick={() => this.refresh(this.state.tree.RootFolder.Name)}>
-                                <Glyphicon glyph="refresh" />
-                            </Button>
-                        </ButtonGroup>
-                    </ButtonGroup>
-                    </ButtonToolbar>
+                        </ButtonToolbar>
+                    </div>
+                    <div className="col-sm-9">
+                        <EntryBox 
+                        ref={box => this.box = box}
+                        onConfirmation={this.openFolder}
+                        defaultValue={tree.RootFolder.Name}
+                        glyph="chevron-right" />
+                    </div>
                 </div>
-                <div className="col-sm-9">
-                    <EntryBox 
-                    ref={box => this.box = box}
-                    onConfirmation={this.openFolder}
-                    defaultValue={tree.RootFolder.Name}
-                    glyph="chevron-right" />
-                </div>
-            </div>
             <div className="row">
                 <div className="col-xs-12">
                     <Table>
@@ -160,6 +142,14 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                                 <ListGroupItem onClick={() => this.download(file.Path)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
                                             </ListGroup>
                                         </Dropdown>
+                                        {_.map(this.state.downloads, (v, k) => {
+                                            if (v && k == file.Path && !v.complete) {
+                                                return <Bar value={ Number(((v.downloaded/v.total) * 100).toFixed(0))}/>
+                                            }
+                                            else {
+                                                return null
+                                            }
+                                        })}
                                     </td>
                                     <td>{bytesToSize(file.FileSize)}</td>
                                 </tr>

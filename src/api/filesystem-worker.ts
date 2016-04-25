@@ -20,7 +20,12 @@ handle("requestFile", (file: FileSystemInfo.InitialDownload) => {
 handle("downloadData", (chunk: FileSystemInfo.Data) => {
     let file = files[chunk.path]
     file.data = file.data.concat(chunk.fileData)
+    file.total = chunk.totalSize
+    console.log(chunk.fileData[600])
+    console.log(chunk.fileData[20000])
     let newLen = file.data.length
+    console.log(file.data.length)
+    console.log(file.total)
     if (newLen < file.total) {
         pm(getBareProgress(file))
     }
@@ -29,7 +34,7 @@ handle("downloadData", (chunk: FileSystemInfo.Data) => {
             type: "downloadData",
             content: file
         })
-        files[chunk.path] = null
+        //files[chunk.path] = null
     }
     return false
 })

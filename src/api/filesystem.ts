@@ -3,7 +3,7 @@ import {fileSystemStore} from "../store"
 import {frameBufferToImageURL} from "../util"
 import {sendCommandAsync} from "../socket"
 
-let FsWorker = require("worker!./filesystem-worker")
+let FsWorker = require("worker?name=filesystem.worker.js!./filesystem-worker")
 let fsWorker: Worker = new FsWorker
 
 fsWorker.onmessage = ({data}) => {
@@ -11,6 +11,9 @@ fsWorker.onmessage = ({data}) => {
     if (message.type == "downloadData") {
         if (message.content.downloaded || message.content.data) {
             fileSystemActions.downloadData(message.content)
+        }
+        if (message.content.data) {
+            fileSystemActions.removeDownload(message.content.path)
         }
     }
 }
@@ -30,12 +33,15 @@ export function downloadFile(file: FileSystemInfo.FileDownload) {
     a.style.display = "none"
     a.click()
     document.body.removeChild(a)
+    
+    
     URL.revokeObjectURL(url)
     //you didn't see anything
     //please forget this ever happened
 }
 
 export function requestFile(file: FileSystemInfo.InitialDownload) {
+    console.log(file)
     let message: WorkerMessage<FileSystemInfo.InitialDownload> = {
         type: "requestFile",
         content: file

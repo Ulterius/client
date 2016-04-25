@@ -15,7 +15,7 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
-import {generateHexString} from "./util"
+import {generateHexString, delay} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
@@ -26,10 +26,12 @@ export * from "./api"
 const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
-        sendCommandToDefault("requestCpuInformation")
-        sendCommandToDefault("requestNetworkInformation")
-        sendCommandToDefault("requestOSInformation")
-        sendCommandToDefault("requestgpuinformation")
+        delay(500, 
+            () => sendCommandToDefault("requestCpuInformation"),
+            () => sendCommandToDefault("requestNetworkInformation"),
+            () => sendCommandToDefault("requestOSInformation"),
+            () => sendCommandToDefault("requestgpuinformation")
+        )
     },
     startCamera: function(id: string) {
         sendCommandToDefault("startCamera", id)

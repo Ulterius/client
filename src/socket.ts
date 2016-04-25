@@ -4,10 +4,10 @@ import * as _ from "lodash"
 import * as apiLayer from "./api-layer"
 import {appStore} from "./store"
 import CryptoJS = require("crypto-js")
-import {toHex, workerAsync} from "./util"
+import {toHex, workerAsync, byteArraysToBlobURL, downloadBlobURL} from "./util"
 import {appActions, messageActions} from "./action"
 
-let SocketWorker = require("worker!./socket-worker")
+let SocketWorker = require("worker?name=socket.worker.js!./socket-worker")
 let socketWorker: Worker = new SocketWorker
 
 export let socket: WebSocket
@@ -21,8 +21,6 @@ function getSyncKey() {
 }
 
 let callbacks: {[key: string]: Function} = {}
-
-
 
 export function sendCommandAsync(action: string, ...rest) {
     let key = getSyncKey()
@@ -134,6 +132,7 @@ export function connect(host: string, port: string) {
                         }
                     }
                 )
+                /*
                 socketWorker.postMessage({
                     type: "deserialize",
                     content: {
@@ -141,12 +140,25 @@ export function connect(host: string, port: string) {
                         data: e.data
                     }
                 })
+                */
             }
             else if (e.data instanceof ArrayBuffer) {
                 console.log("ArrayBuffer get (for some reason): " + e.data)
             }
             else if (e.data instanceof Blob) {
                 console.log("Blob get " + e.data)
+                let reader = new FileReader()
+                reader.readAsDataURL(e.data)
+                reader.onloadend = () => {
+                    workerAsync(socketWorker, "decrypt", {
+                        appState: appStore.getState(),
+                        data: reader.result
+                    }, (data: Uint8Array) => {
+                        //console.log(data)
+                        downloadBlobURL(byteArraysToBlobURL([data]))
+                    })
+                    //console.log(reader.result)
+                }
             }
             
             socket.onclose = function(e) {

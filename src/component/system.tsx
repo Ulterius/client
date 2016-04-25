@@ -174,7 +174,10 @@ export class SystemPage extends React.Component<{}, {
         if (!(os && cpu && network && gpu && stats)) {
             let percent = [os, cpu, network, gpu, stats].map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20
             return <LoadingScreen percentage={percent}>
-                Loading system information
+                Loading system information <br />
+                {_.map(_.omit(this.state, "statStack") as any, (v, k) => {
+                    return k + " "
+                })}
             </LoadingScreen>
         }
 

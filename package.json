@@ -4,6 +4,7 @@
   "description": "Client for Ulterius task manager server.",
   "main": "public/index.html",
   "scripts": {
+    "dev": "node ./webpack/dev-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Frob the Builder",
@@ -24,6 +25,7 @@
     "react-bootstrap": "^0.28.2",
     "react-chartist": "^0.10.1",
     "react-dom": "^0.14.8",
+    "react-overlays": "^0.6.3",
     "react-responsive": "^1.1.2",
     "react-router": "^1.0.3",
     "react-sortable-pane": "^0.2.5",
@@ -31,18 +33,20 @@
     "resolve-url-loader": "^1.4.3",
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
-    "typescript": "^1.9.0-dev.20160414"
+    "typescript": "^1.9.0-dev.20160424"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^0.17.0",
     "eslint-plugin-react": "^4.2.3",
     "grunt": "^0.4.5",
     "grunt-webpack": "^1.0.11",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "json-loader": "^0.5.4",
+    "sass-loader": "^3.2.0",
     "ts-loader": "^0.7.2",
-    "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1",
     "worker-loader": "^0.7.0"
   }
 }

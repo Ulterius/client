@@ -6,6 +6,7 @@ import {Stats, LoadingScreen} from "./"
 import {Button, Input, Glyphicon} from "react-bootstrap"
 import setIntervals from "../interval"
 import {intervals} from "../api-layer"
+import {AutoAffix} from "react-overlays"
 
 export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}> {
     startProcess = () => {
@@ -185,8 +186,13 @@ export function TaskPage(props: any) {
                 <ProcessCreator />
                 <TaskList />
             </div>
+            
             <div className="col-md-4">
-                <Stats />
+                {/*<AutoAffix viewportOffsetTop={15} container={this}>*/}
+                    <div style={{position: "fixed", width: "25%"}}>
+                    <Stats />
+                    </div>
+                {/*</AutoAffix>*/}
             </div>
         </div>
     </div>
