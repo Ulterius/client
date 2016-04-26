@@ -15,15 +15,18 @@ export let socket: WebSocket
 let connectInterval = undefined
 
 let overrideCounter = 0
-function getSyncKey() {
+function getSyncKey(prepend: string) {
     overrideCounter++
-    return "override" + String(overrideCounter)
+    return prepend + String(overrideCounter)
 }
+
+let promiseChain: Promise<any>
+let resolves: {[key: string]: any}  = {}
 
 let callbacks: {[key: string]: Function} = {}
 
 export function sendCommandAsync(action: string, ...rest) {
-    let key = getSyncKey()
+    let key = getSyncKey("override")
     let packet: any = {
         endpoint: action,
         syncKey: key
@@ -45,19 +48,13 @@ export function sendCommandAsync(action: string, ...rest) {
     else {
         callbacks[key] = console.log.bind(console)
     }
-    socketWorker.postMessage({
-        type: "serialize",
-        content: {
-            appState: appStore.getState(),
-            data: packet
-        }
-    })
+    return promiseToSendPacket(packet)
 }
 
 export function sendCommand(sock: WebSocket, action, args?) {
     var packet: any = {
         endpoint: action,
-        syncKey: "anus"
+        syncKey: getSyncKey("normal")
     }
     if (typeof args !== "undefined") {
         if (args instanceof Array) {
@@ -67,6 +64,32 @@ export function sendCommand(sock: WebSocket, action, args?) {
             packet.args = [args]
         }
     }
+    return promiseToSendPacket(packet)
+}
+
+function promiseToSendPacket(packet) {
+    let promise = new Promise((resolve, reject) => {
+        resolves[packet.syncKey] = resolve
+        setTimeout(() => {
+            //still resolve so we don't break the chain
+            resolve({endpoint: "error", message: "A request " + packet.endpoint + " timed out!"})
+        }, 5000)
+    })
+    if (promiseChain) {
+        promiseChain = promiseChain.then(() => {
+            sendPacket(packet)
+            return promise
+        })
+        return promiseChain
+    }
+    else {
+        sendPacket(packet)
+        promiseChain = promise
+        return promise
+    }
+}
+
+function sendPacket(packet) {
     socketWorker.postMessage({
         type: "serialize",
         content: {
@@ -75,9 +98,10 @@ export function sendCommand(sock: WebSocket, action, args?) {
         }
     })
 }
+
 //jank ass curry
 export function sendCommandToDefault(action, args?) {
-    sendCommand(socket, action, args)
+    return sendCommand(socket, action, args)
 }
 
 (window as any).sendCommandToDefault = sendCommandToDefault
@@ -112,35 +136,32 @@ export function connect(host: string, port: string) {
         }
         
         socket.onmessage = function(e) {
+            
             if (typeof e.data === "string") {
-                workerAsync(
-                    socketWorker,
-                    "deserialize",
-                    {appState: appStore.getState(), data: e.data},
-                    (message: ApiMessage) => {
-                        if (message.endpoint != "getcameraframe") {
-                            console.log(message.endpoint)
-                        }
-                        if (!message.syncKey || (message.syncKey as string).indexOf("override") == -1) {
-                            defaultHandleMessage(message)
-                        }
-                        else {
-                            if (callbacks[message.syncKey] && typeof callbacks[message.syncKey] == "function") {
-                                callbacks[message.syncKey](message.results)
-                                callbacks[message.syncKey] = undefined
-                            }
+                workerAsync(socketWorker, "deserialize", {
+                    appState: appStore.getState(),
+                    data: e.data
+                },
+                (message: ApiMessage) => {
+                    let {syncKey, results, endpoint} = message
+                    if (endpoint != "getcameraframe") {
+                        console.log(endpoint)
+                    }
+                    if (!syncKey || (syncKey as string).indexOf("override") == -1) {
+                        defaultHandleMessage(message)
+                    }
+                    else {
+                        if (callbacks[syncKey] && 
+                            typeof callbacks[syncKey] == "function") {
+                            callbacks[syncKey](results)
+                            callbacks[syncKey] = undefined
                         }
                     }
-                )
-                /*
-                socketWorker.postMessage({
-                    type: "deserialize",
-                    content: {
-                        appState: appStore.getState(),
-                        data: e.data
+                    if (syncKey && resolves[syncKey]) {
+                        resolves[syncKey](results)
+                        resolves[syncKey] = null
                     }
                 })
-                */
             }
             else if (e.data instanceof ArrayBuffer) {
                 console.log("ArrayBuffer get (for some reason): " + e.data)
@@ -180,59 +201,6 @@ export function connect(host: string, port: string) {
     finally {
         return socket
     }
-}
-
-function encrypt(packet) {
-    let appState = appStore.getState()
-    let packetString = ""
-    if (appState.crypto && appState.crypto.key && appState.crypto.iv) {
-        let utf8Key = CryptoJS.enc.Utf8.parse(appState.crypto.key)
-        let utf8Iv = CryptoJS.enc.Utf8.parse(appState.crypto.iv)
-        packetString = CryptoJS.AES.encrypt(
-            CryptoJS.enc.Utf8.parse(JSON.stringify(packet)),
-            utf8Key, 
-            {
-                keySize: 128 / 8,
-                iv: utf8Iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            }
-        ).toString()
-    }
-    else {
-        packetString = JSON.stringify(packet)
-    }
-    return packetString
-}
-
-function decrypt(data: string) {
-    let ret
-    try {
-        ret = JSON.parse(data)
-    }
-    catch (err) {
-        let decrypted = CryptoJS.AES.decrypt(
-            data,
-            CryptoJS.enc.Base64.parse(btoa(appStore.getState().crypto.key)),
-            {
-                iv: CryptoJS.enc.Hex.parse(toHex(appStore.getState().crypto.iv))
-            }
-        )
-        try {
-            ret = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
-        }
-        catch (errr) {
-            console.log("Failed to parse a message!")
-            ret = {
-                endpoint: "error",
-                results: {
-                    message: "Failed to parse a message!",
-                    exception: errr
-                }
-            }
-        }
-    }
-    return ret
 }
 
 function defaultHandleMessage(message: ApiMessage) {

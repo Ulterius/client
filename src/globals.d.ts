@@ -383,6 +383,10 @@ declare namespace FileSystemInfo {
         Name: string
         Files: File[]
     }
+    interface Link {
+        tempWebPath: string,
+        totalSize: number
+    }
     interface FileTree {
         DeepWalk: boolean,
         RootFolder: Folder

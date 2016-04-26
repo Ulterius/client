@@ -15,7 +15,7 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
-import {generateHexString, delay} from "./util"
+import {generateHexString, delay, promiseChain} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
@@ -23,15 +23,16 @@ import CryptoJS = require("crypto-js")
 export let intervals: {[key:string]: number} = {}
 export * from "./api"
 
+
 const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
-        delay(500, 
-            () => sendCommandToDefault("requestCpuInformation"),
-            () => sendCommandToDefault("requestNetworkInformation"),
-            () => sendCommandToDefault("requestOSInformation"),
-            () => sendCommandToDefault("requestgpuinformation")
-        )
+        return promiseChain([
+            sendCommandToDefault("requestCpuInformation"),
+            sendCommandToDefault("requestNetworkInformation"),
+            sendCommandToDefault("requestOSInformation"),
+            sendCommandToDefault("requestgpuinformation")
+        ])
     },
     startCamera: function(id: string) {
         sendCommandToDefault("startCamera", id)
@@ -91,15 +92,36 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
+        /*
+        promiseChain([
+            sendCommandToDefault("requestsysteminformation"),
+            sendCommandToDefault("getCameras"),
+            sendCommandToDefault("createFileTree", "C:\\"),
+            sendCommandToDefault("checkForUpdate"),
+            sendCommandToDefault("getcurrentsettings")
+        ]).then(() => {
+            return helpers.requestAuxillarySystemInformation()
+        })
+        */
         sendCommandToDefault("requestsysteminformation")
-        helpers.requestAuxillarySystemInformation()
-        helpers.requestAuxillarySystemInformation()
-        onAuthenticate()
-        
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
-        sendCommandToDefault("getCurrentSettings")
         sendCommandToDefault("checkForUpdate")
+        sendCommandToDefault("getcurrentsettings")
+        /*
+        sendCommandToDefault("requestsysteminformation").then(() => {
+            return sendCommandToDefault("getCameras")
+        }).then(() => {
+            return sendCommandToDefault("createFileTree", "C:\\")
+        }).then(() => {
+            return sendCommandToDefault("checkForUpdate")
+        }).then(() => {
+            return sendCommandToDefault("getcurrentsettings")
+        }).then(() => {
+            
+        })
+        */
+        onAuthenticate()
         appActions.login(true)
     }
     else {

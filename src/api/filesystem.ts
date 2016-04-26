@@ -1,8 +1,8 @@
 import {fileSystemActions, messageActions} from "../action"
-import {fileSystemStore} from "../store"
+import {fileSystemStore, appStore, settingsStore} from "../store"
 import {frameBufferToImageURL} from "../util"
 import {sendCommandAsync} from "../socket"
-
+import FS = FileSystemInfo
 let FsWorker = require("worker?name=filesystem.worker.js!./filesystem-worker")
 let fsWorker: Worker = new FsWorker
 
@@ -40,14 +40,22 @@ export function downloadFile(file: FileSystemInfo.FileDownload) {
     //please forget this ever happened
 }
 
-export function requestFile(file: FileSystemInfo.InitialDownload) {
+export function requestFile(file: FileSystemInfo.Link) {
     console.log(file)
+    let path = file.tempWebPath.split("/").slice(3).join("/")
+    let fullPath = "http://" + 
+        appStore.getState().connection.host + ":"
+        settingsStore.getState().settings.WebServerPort
+        "/" + path
+    console.log(fullPath)
+    /*
     let message: WorkerMessage<FileSystemInfo.InitialDownload> = {
         type: "requestFile",
         content: file
     }
     fsWorker.postMessage(message)
     fileSystemActions.addDownload(file)
+    */
 }
 
 export function downloadData(data: FileSystemInfo.Data) {

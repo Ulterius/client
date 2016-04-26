@@ -235,3 +235,18 @@ export function b64toArray(b64string: string) {
     }
     return new Uint8Array(numbers)
 }
+
+export function promiseChain(promises: Promise<any>[]) {
+    let currentPromise
+    console.log(promises)
+    promises.forEach((promise, i) => {
+        if (i == 0) {
+            currentPromise = promise
+        }
+        else if (i > 0) {
+            currentPromise = currentPromise.then(promise)
+        }
+        console.log(currentPromise)
+    })
+    return currentPromise
+}
