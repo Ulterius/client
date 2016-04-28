@@ -1,4 +1,5 @@
 import CryptoJS = require("crypto-js")
+
 import {toHex, getHandler, b64toArray} from "./util"
 
 let pm = postMessage as (any) => void

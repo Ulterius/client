@@ -6,6 +6,7 @@ import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment, downloadFile} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
 import {AutoAffix} from "react-overlays"
+import {fsHelpers} from "../api"
 
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
@@ -61,7 +62,8 @@ export class FileList extends React.Component<{}, FileSystemState> {
         reader.readAsArrayBuffer(e.target.files[0])
     }
     download = (path: string) => {
-        sendCommandToDefault("requestFile", path)
+        fsHelpers.requestFile(path)
+        //sendCommandToDefault("requestFile", [path, "1234567891234567"])
     }
     render() {
         if (!this.state || !this.state.tree) {

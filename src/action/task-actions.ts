@@ -11,12 +11,12 @@ class TaskActions extends AbstractActions implements Actions {
     updateTasks(tasks: TaskInfo[]) {
         //discard processes that are not meaningful
         //and give a default icon to any process missing one.
-        return tasks.filter(task => task.name != "Idle" &&
-                                    task.name != "System" &&
-                                    task.name != "_Total" )
+        return tasks.filter(task => task.Name != "Idle" &&
+                                    task.Name != "System" &&
+                                    task.Name != "_Total" )
                     .map(task => {
-                        if (task.icon === "null") {
-                            task.icon = defaultIcon
+                        if (task.Icon === "null") {
+                            task.Icon = defaultIcon
                         }
                         return task
                     })

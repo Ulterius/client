@@ -92,3 +92,8 @@ declare module "react-overlays" {
     export const AutoAffix: AutoAffixI
     export const Affix: AffixI
 }
+
+declare module "aes" {
+    let aesClass: any
+    export = aesClass
+}

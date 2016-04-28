@@ -44,9 +44,9 @@ export class TaskList extends React.Component<
     columns: {[key:string]: string}
     constructor(props) {
         super(props)
-        this.state = {tasks: [], sortProperty: "id", sortType: "asc"}
+        this.state = {tasks: [], sortProperty: "Id", sortType: "asc"}
         this.onChange = this.onChange.bind(this)
-        this.columns = {name: "Name", id: "ID", cpuUsage: "CPU", ramUsage: "Memory"}
+        this.columns = {Name: "Name", Id: "ID", CpuUsage: "CPU", RamUsage: "Memory"}
     }
     componentDidMount() {
         taskStore.listen(this.onChange)
@@ -104,17 +104,17 @@ export class TaskList extends React.Component<
                 <thead>
                     <tr>
                         <th>Icon</th>
-                        <th className="task-name-head" onClick={() => this.setSort("name")}>{this.getName("name")}</th>
-                        <th className="task-id-head" onClick={() => this.setSort("id")}>{this.getName("id")}</th>
-                        <th className="task-cpu-head" onClick={() => this.setSort("cpuUsage")}>{this.getName("cpuUsage")}</th>
-                        <th className="task-memory-head" onClick={() => this.setSort("ramUsage")}>{this.getName("ramUsage")}</th>
+                        <th className="task-name-head" onClick={() => this.setSort("Name")}>{this.getName("Name")}</th>
+                        <th className="task-id-head" onClick={() => this.setSort("Id")}>{this.getName("Id")}</th>
+                        <th className="task-cpu-head" onClick={() => this.setSort("CpuUsage")}>{this.getName("CpuUsage")}</th>
+                        <th className="task-memory-head" onClick={() => this.setSort("RamUsage")}>{this.getName("RamUsage")}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {
                         this.state.tasks.map(task => {
-                            return (<Task key={task.id} info={task} />)
+                            return (<Task key={task.Id} info={task} />)
                         })
                     }
                 </tbody>
@@ -131,7 +131,7 @@ export class Task extends React.Component<
         this.state = {expanded: false, gonnaDie: false}
     }
     killSelf = () => {
-        sendCommandToDefault("killProcess", this.props.info.id.toString())
+        sendCommandToDefault("killProcess", this.props.info.Id.toString())
     }
     closeButton() {
         return (this.state.gonnaDie ?
@@ -149,12 +149,12 @@ export class Task extends React.Component<
                 //<button className="btn btn-danger">confirm</button>
                 <tr>
                     <td style={{width: "39px"}}>
-                        <img src={"data:image/png;base64," + this.props.info.icon} />
+                        <img src={"data:image/png;base64," + this.props.info.Icon} />
                     </td>
-                    <td className="task-name">{this.props.info.name}</td>
-                    <td className="task-id" style={{width: 20}}>{this.props.info.id}</td>
-                    <td className="task-cpu" style={{width: 20}}>{this.props.info.cpuUsage + "%"}</td>
-                    <td className="task-memory">{bytesToSize(this.props.info.ramUsage)}</td>
+                    <td className="task-name">{this.props.info.Name}</td>
+                    <td className="task-id" style={{width: 20}}>{this.props.info.Id}</td>
+                    <td className="task-cpu" style={{width: 20}}>{this.props.info.CpuUsage + "%"}</td>
+                    <td className="task-memory">{bytesToSize(this.props.info.RamUsage)}</td>
                     <td
                     className="close-button"
                     onClick={() => this.setState({gonnaDie: !this.state.gonnaDie})}

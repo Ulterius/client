@@ -1,16 +1,16 @@
 
 
 declare interface TaskInfo {
-    id: number,
-    path: string,
-    icon: string,
-    name: string,
-    cpuUsage: number,
-    ramUsage: number,
-    threads: number,
-    handles: number,
-    ioWriteOperationsPerSec: number,
-    ioReadOperationsPerSec: number
+    Id: number,
+    Path: string,
+    Icon: string,
+    Name: string,
+    CpuUsage: number,
+    RamUsage: number,
+    Threads: number,
+    Handles: number,
+    IoWriteOperationsPerSec: number,
+    IoReadOperationsPerSec: number
 }
 
 /*{
@@ -212,7 +212,7 @@ declare interface GpuInfo {
 declare interface ApiMessage {
     endpoint: string,
     results: any,
-    syncKey: any
+    synckey: any
 }
 
 declare interface KilledProcessInfo {

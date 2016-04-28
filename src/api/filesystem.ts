@@ -1,10 +1,20 @@
 import {fileSystemActions, messageActions} from "../action"
 import {fileSystemStore, appStore, settingsStore} from "../store"
-import {frameBufferToImageURL} from "../util"
+import {frameBufferToImageURL, workerAsync, downloadBlobURL, byteArraysToBlobURL} from "../util"
 import {sendCommandAsync} from "../socket"
+import * as _ from "lodash"
 import FS = FileSystemInfo
 let FsWorker = require("worker?name=filesystem.worker.js!./filesystem-worker")
 let fsWorker: Worker = new FsWorker
+
+export const fsHelpers = {
+    requestFile(location: string) {
+        let password = "1234567891234567"
+        sendCommandAsync("requestFile", [location, password], (file) => {
+            handleRequestFile(file, password)
+        })
+    }
+}
 
 fsWorker.onmessage = ({data}) => {
     let message = data as WorkerMessage<any>
@@ -40,14 +50,24 @@ export function downloadFile(file: FileSystemInfo.FileDownload) {
     //please forget this ever happened
 }
 
-export function requestFile(file: FileSystemInfo.Link) {
+export function handleRequestFile(file: FileSystemInfo.Link, password: string) {
     console.log(file)
+    let segs = file.tempWebPath.split("/")
+    let fileName = _.last(segs)
+    let port = segs[2].split(":")[1]
     let path = file.tempWebPath.split("/").slice(3).join("/")
     let fullPath = "http://" + 
-        appStore.getState().connection.host + ":"
-        settingsStore.getState().settings.WebServerPort
+        appStore.getState().connection.host + ":" +
+        port +
         "/" + path
     console.log(fullPath)
+    workerAsync(fsWorker, "requestFile", {
+        password,
+        location: fullPath
+    }, (result) => {
+        console.log("fuck")
+        downloadBlobURL(byteArraysToBlobURL([result]), fileName)
+    })
     /*
     let message: WorkerMessage<FileSystemInfo.InitialDownload> = {
         type: "requestFile",

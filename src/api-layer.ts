@@ -27,12 +27,18 @@ export * from "./api"
 const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
+        sendCommandToDefault("requestCpuInformation")
+        sendCommandToDefault("requestNetworkInformation")
+        sendCommandToDefault("requestOSInformation")
+        return sendCommandToDefault("requestgpuinformation")
+        /*
         return promiseChain([
             sendCommandToDefault("requestCpuInformation"),
             sendCommandToDefault("requestNetworkInformation"),
             sendCommandToDefault("requestOSInformation"),
             sendCommandToDefault("requestgpuinformation")
         ])
+        */
     },
     startCamera: function(id: string) {
         sendCommandToDefault("startCamera", id)
@@ -108,6 +114,7 @@ export function authenticate(info: AuthInfo) {
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
+        helpers.requestAuxillarySystemInformation()
         /*
         sendCommandToDefault("requestsysteminformation").then(() => {
             return sendCommandToDefault("getCameras")

@@ -14,6 +14,8 @@ export let socket: WebSocket
 
 let connectInterval = undefined
 
+
+
 let overrideCounter = 0
 function getSyncKey(prepend: string) {
     overrideCounter++
@@ -25,11 +27,30 @@ let resolves: {[key: string]: any}  = {}
 
 let callbacks: {[key: string]: Function} = {}
 
+let requestQueue = []
+
+let timeoutInterval;
+function resetTimeout() {
+    if (typeof timeoutInterval != "undefined") {
+        clearInterval(timeoutInterval)
+    }
+    
+    timeoutInterval = setInterval(() => {
+        if (requestQueue.length) {
+            console.log("Queue has been held up for a while. Discarding first request.")
+            requestQueue.shift()
+            sendPacket(requestQueue[0])
+        }
+    }, 5000)
+    
+    
+}
+
 export function sendCommandAsync(action: string, ...rest) {
     let key = getSyncKey("override")
     let packet: any = {
         endpoint: action,
-        syncKey: key
+        synckey: key
     }
     let args = []
     let callback = undefined
@@ -51,10 +72,10 @@ export function sendCommandAsync(action: string, ...rest) {
     return promiseToSendPacket(packet)
 }
 
-export function sendCommand(sock: WebSocket, action, args?) {
+export function sendCommandPromise(override: boolean, action: string, args?) {
     var packet: any = {
-        endpoint: action,
-        syncKey: getSyncKey("normal")
+        endpoint: action.toLowerCase(),
+        synckey: getSyncKey(override ? "override" : "normal")
     }
     if (typeof args !== "undefined") {
         if (args instanceof Array) {
@@ -64,32 +85,66 @@ export function sendCommand(sock: WebSocket, action, args?) {
             packet.args = [args]
         }
     }
-    return promiseToSendPacket(packet)
+    return new Promise((resolve, reject) => {
+        resolves[packet.synckey] = resolve
+    })
+}
+
+export function sendCommand(sock: WebSocket, action, args?) {
+    var packet: any = {
+        endpoint: action.toLowerCase(),
+        synckey: getSyncKey("normal")
+    }
+    if (typeof args !== "undefined") {
+        if (args instanceof Array) {
+            packet.args = args
+        }
+        else {
+            packet.args = [args]
+        }
+    }
+    promiseToSendPacket(packet)
 }
 
 function promiseToSendPacket(packet) {
+    /*
+    console.log("promising to send " + packet.endpoint)
     let promise = new Promise((resolve, reject) => {
         resolves[packet.syncKey] = resolve
         setTimeout(() => {
             //still resolve so we don't break the chain
             resolve({endpoint: "error", message: "A request " + packet.endpoint + " timed out!"})
-        }, 5000)
+        }, 10000)
     })
     if (promiseChain) {
         promiseChain = promiseChain.then(() => {
             sendPacket(packet)
             return promise
         })
-        return promiseChain
     }
     else {
         sendPacket(packet)
         promiseChain = promise
-        return promise
     }
+    return promiseChain
+    */
+    console.groupCollapsed("Queueing packet: " + packet.endpoint)
+    console.log(packet)
+    requestQueue.push(packet)
+    if (requestQueue.length == 1) {
+        console.log("Queue empty, sending packet now")
+        console.groupEnd()
+        sendPacket(packet)
+    }
+    console.groupEnd()
 }
 
 function sendPacket(packet) {
+    console.groupEnd()
+    console.groupCollapsed("Sending packet: " + packet.endpoint)
+    console.log(packet)
+    console.log("Waiting messages: " + requestQueue.length)
+    console.groupEnd()
     socketWorker.postMessage({
         type: "serialize",
         content: {
@@ -97,6 +152,15 @@ function sendPacket(packet) {
             data: packet
         }
     })
+    setTimeout(() => {
+        if (requestQueue.indexOf(packet) != -1) {
+            console.log("Packet still here, discarding manually.")
+            if (requestQueue[requestQueue.indexOf(packet) + 1]) {
+                sendPacket(requestQueue[requestQueue.indexOf(packet) + 1])
+            }
+            _.pull(requestQueue, packet)
+        }
+    }, 5000)
 }
 
 //jank ass curry
@@ -143,24 +207,54 @@ export function connect(host: string, port: string) {
                     data: e.data
                 },
                 (message: ApiMessage) => {
-                    let {syncKey, results, endpoint} = message
-                    if (endpoint != "getcameraframe") {
-                        console.log(endpoint)
+                    let {synckey, results, endpoint} = message
+                    if (endpoint.toLowerCase() == "connectedtoulterius".toLowerCase()) {
+                        requestQueue = []
+                        //flush it all
                     }
-                    if (!syncKey || (syncKey as string).indexOf("override") == -1) {
+                    let packet =_.find(requestQueue, m => m.synckey == synckey || 
+                                        (endpoint && endpoint.toLowerCase() == "aeshandshake" && 
+                                            m.endpoint.toLowerCase() == "aeshandshake"))
+                    
+                    if (endpoint != "getcameraframe") {
+                        console.groupCollapsed("Got packet: " + endpoint)
+                        console.log(message)
+                        if (packet) {
+                            console.log("matching request found")
+                            console.log("pending requests left: " + (requestQueue.length ? requestQueue.length-1 : 0))
+                            console.log(requestQueue)
+                        }
+                        console.groupEnd()
+                    }
+                    
+                    if (packet) {
+                        if (requestQueue[requestQueue.indexOf(packet)+1]) {
+                            sendPacket(requestQueue[requestQueue.indexOf(packet)+1])
+                        }
+                        _.pull(requestQueue, packet)
+                    }
+                    
+                    if (endpoint == "connectedToUlterius") {
+                        promiseChain = null
+                    }
+                    if (!synckey || (synckey as string).indexOf("override") == -1) {
                         defaultHandleMessage(message)
                     }
                     else {
-                        if (callbacks[syncKey] && 
-                            typeof callbacks[syncKey] == "function") {
-                            callbacks[syncKey](results)
-                            callbacks[syncKey] = undefined
+                        if (callbacks[synckey] && 
+                            typeof callbacks[synckey] == "function") {
+                            callbacks[synckey](results)
+                            callbacks[synckey] = undefined
                         }
                     }
-                    if (syncKey && resolves[syncKey]) {
-                        resolves[syncKey](results)
-                        resolves[syncKey] = null
+                    
+                    if (synckey && resolves[synckey]) {
+                        resolves[synckey](results)
+                        resolves[synckey] = null
                     }
+                    
+                    
+                    
                 })
             }
             else if (e.data instanceof ArrayBuffer) {
@@ -168,6 +262,7 @@ export function connect(host: string, port: string) {
             }
             else if (e.data instanceof Blob) {
                 console.log("Blob get " + e.data)
+                /*
                 let reader = new FileReader()
                 reader.readAsDataURL(e.data)
                 reader.onloadend = () => {
@@ -176,10 +271,11 @@ export function connect(host: string, port: string) {
                         data: reader.result
                     }, (data: Uint8Array) => {
                         //console.log(data)
-                        downloadBlobURL(byteArraysToBlobURL([data]))
+                        downloadBlobURL(byteArraysToBlobURL([data]), "anus.exe")
                     })
                     //console.log(reader.result)
                 }
+                */
             }
             
             socket.onclose = function(e) {
