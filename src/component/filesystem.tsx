@@ -6,8 +6,9 @@ import {fileSystemActions, messageActions} from "../action"
 import {bytesToSize, lastPathSegment, downloadFile} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
 import {AutoAffix} from "react-overlays"
-import {fsHelpers} from "../api"
-
+//import {api} from "../api"
+import {fsApi} from "../api-layer"
+console.log(fsApi)
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
     upload: any
@@ -32,7 +33,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
         })
     }
     openFolder = (path: string) => {
-        sendCommandToDefault("createFileTree", path)
+        fsApi.createFileTree(path)
     }
     goBack = () => {
         if (this.state.pathStack.length > 1) {
@@ -41,7 +42,8 @@ export class FileList extends React.Component<{}, FileSystemState> {
         }
     }
     refresh = (path: string) => {
-        sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
+        fsApi.reloadFileTree(path)
+        //sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
     }
     handleUpload = (e) => {
         let reader = new FileReader()
@@ -62,8 +64,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
         reader.readAsArrayBuffer(e.target.files[0])
     }
     download = (path: string) => {
-        fsHelpers.requestFile(path)
-        //sendCommandToDefault("requestFile", [path, "1234567891234567"])
+        fsApi.requestFile(path)
     }
     render() {
         if (!this.state || !this.state.tree) {

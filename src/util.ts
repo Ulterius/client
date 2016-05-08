@@ -144,6 +144,16 @@ export function workerAsync<T>(worker: Worker, type: string, content: T, callbac
     })
 }
 
+export function wrapPostMessage(postMessage: typeof window.postMessage) {
+    const pm = postMessage as (any) => void
+    return (type: string, content: any) => {
+        pm({
+            type,
+            content
+        })
+    }
+}
+
 export function getHandler(postMessage: typeof window.postMessage, addEventListener: typeof window.addEventListener) {
     let pm = postMessage as (any) => any
     return (type: string, fn: (any) => any) => {
@@ -219,12 +229,6 @@ export function verticalCenter(width: number|string, height: number|string) {
         marginLeft: negativeWidthOverTwo
     }
     return style
-}
-
-export function delay(ms: number, ...functions: Function[]) {
-    functions.forEach((fn, i) => {
-        setTimeout(fn, ms*(i+1))
-    })
 }
 
 export function b64toArray(b64string: string) {
@@ -320,4 +324,13 @@ export function convertFromHex(hex) {
     for (var i = 0; i < hex.length; i += 2)
         str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
     return str;
+}
+
+export function generatePassword() {
+    let password = ""
+    for (let i = 0; i < 16; i++) {
+        password += String(_.random(0, 9, false))
+    }
+    console.log(password)
+    return password
 }

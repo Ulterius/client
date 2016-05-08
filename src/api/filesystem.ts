@@ -1,30 +1,32 @@
 import {fileSystemActions, messageActions} from "../action"
 import {fileSystemStore, appStore, settingsStore} from "../store"
-import {frameBufferToImageURL, workerAsync, downloadBlobURL, byteArraysToBlobURL} from "../util"
-import {sendCommandAsync} from "../socket"
+import {frameBufferToImageURL, workerAsync, downloadBlobURL, byteArraysToBlobURL, generatePassword} from "../util"
+import {sendCommandAsync, sendCommandToDefault} from "../socket"
 import * as _ from "lodash"
 import FS = FileSystemInfo
 let FsWorker = require("worker?name=filesystem.worker.js!./filesystem-worker")
 let fsWorker: Worker = new FsWorker
 
-export const fsHelpers = {
+export const fsApi = {
     requestFile(location: string) {
-        let password = "1234567891234567"
+        let password = generatePassword()
         sendCommandAsync("requestFile", [location, password], (file) => {
             handleRequestFile(file, password)
         })
+    },
+    reloadFileTree(path: string) {
+        sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
+    },
+    createFileTree(path: string) {
+        sendCommandToDefault("createFileTree", path)
     }
 }
 
 fsWorker.onmessage = ({data}) => {
     let message = data as WorkerMessage<any>
-    if (message.type == "downloadData") {
-        if (message.content.downloaded || message.content.data) {
-            fileSystemActions.downloadData(message.content)
-        }
-        if (message.content.data) {
-            fileSystemActions.removeDownload(message.content.path)
-        }
+    if (message.type == "progress") {
+        console.log("We get progres")
+        fileSystemActions.downloadProgress(message.content)
     }
 }
 
@@ -63,8 +65,10 @@ export function handleRequestFile(file: FileSystemInfo.Link, password: string) {
     console.log(fullPath)
     workerAsync(fsWorker, "requestFile", {
         password,
-        location: fullPath
+        location: fullPath,
+        path
     }, (result) => {
+        
         console.log("fuck")
         downloadBlobURL(byteArraysToBlobURL([result]), fileName)
     })

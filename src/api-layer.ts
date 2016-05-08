@@ -15,15 +15,14 @@ from "./action"
 import {appStore} from "./store"
 import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
-import {generateHexString, delay, promiseChain} from "./util"
+import {generateHexString} from "./util"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
 import CryptoJS = require("crypto-js")
 export let intervals: {[key:string]: number} = {}
+
 export * from "./api"
-
-
 const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
@@ -31,14 +30,6 @@ export let helpers = {
         sendCommandToDefault("requestNetworkInformation")
         sendCommandToDefault("requestOSInformation")
         return sendCommandToDefault("requestgpuinformation")
-        /*
-        return promiseChain([
-            sendCommandToDefault("requestCpuInformation"),
-            sendCommandToDefault("requestNetworkInformation"),
-            sendCommandToDefault("requestOSInformation"),
-            sendCommandToDefault("requestgpuinformation")
-        ])
-        */
     },
     startCamera: function(id: string) {
         sendCommandToDefault("startCamera", id)
@@ -56,6 +47,24 @@ export function listen(endpoint: string, callback: (result: any) => any) {
         listeners[lowerEndpoint] = []
     }
     listeners[lowerEndpoint].push(callback)
+}
+
+export let processApi = {
+    getProcesses() {
+        sendCommandToDefault("requestProcessInformation")
+    }
+}
+
+export let systemApi = {
+    getStats() {
+        return sendCommandToDefault("requestsysteminformation")
+    },
+    getAuxillaryStats() {
+        sendCommandToDefault("requestCpuInformation")
+        sendCommandToDefault("requestNetworkInformation")
+        sendCommandToDefault("requestOSInformation")
+        return sendCommandToDefault("requestgpuinformation")
+    }
 }
 
 export function requestProcessInformation(tasks: TaskInfo[]) {
@@ -98,36 +107,12 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
-        /*
-        promiseChain([
-            sendCommandToDefault("requestsysteminformation"),
-            sendCommandToDefault("getCameras"),
-            sendCommandToDefault("createFileTree", "C:\\"),
-            sendCommandToDefault("checkForUpdate"),
-            sendCommandToDefault("getcurrentsettings")
-        ]).then(() => {
-            return helpers.requestAuxillarySystemInformation()
-        })
-        */
         sendCommandToDefault("requestsysteminformation")
         sendCommandToDefault("getCameras")
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
         helpers.requestAuxillarySystemInformation()
-        /*
-        sendCommandToDefault("requestsysteminformation").then(() => {
-            return sendCommandToDefault("getCameras")
-        }).then(() => {
-            return sendCommandToDefault("createFileTree", "C:\\")
-        }).then(() => {
-            return sendCommandToDefault("checkForUpdate")
-        }).then(() => {
-            return sendCommandToDefault("getcurrentsettings")
-        }).then(() => {
-            
-        })
-        */
         onAuthenticate()
         appActions.login(true)
     }
@@ -211,10 +196,11 @@ export function aesHandshake(status: {shook: boolean}) {
         if (config.auth.password) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
-        if (appStore.getState().auth.password) {
-            sendCommandToDefault("authenticate", appStore.getState().auth.password)
-        }
         */
+        let password
+        if (password = appStore.getState().auth.password) {
+            sendCommandToDefault("authenticate", password)
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 import {settingsActions, messageActions} from "../action"
 import {sendCommandToDefault} from "../socket"
 
+
+
 export function getCurrentSettings(settings: SettingsInfo.Settings) {
     console.log(settings)
     settingsActions.getAllSettings(settings)
@@ -18,5 +20,19 @@ export let changeTaskServerPort = settingsActions.updateTaskServerPort
 export function restartServer(status: {serverRestarting: boolean}) {
     if (status.serverRestarting) {
         messageActions.message({style: "success", text: "Server is restarting."})
+    }
+}
+
+export let settingsApi = {
+    getEndpoint(property: string) {
+        if (property == "UseWebServer") return "changeWebServerUse"
+        if (property == "SkipHostNameResolve") return "changeNetworkResolve"
+        return "change" + property
+    },
+    changeSetting(setting: string, newValue: any) {
+        sendCommandToDefault(settingsApi.getEndpoint(setting), newValue)
+    },
+    restartServer() {
+        sendCommandToDefault("restartServer")
     }
 }

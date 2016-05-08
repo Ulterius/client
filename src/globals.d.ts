@@ -339,6 +339,24 @@ declare namespace SettingsInfo {
     }
 }
 
+declare namespace FileTransfer {
+    interface Initial {
+        path: string,
+        fileValid: boolean,
+        fileName: string,
+        size: number
+    }
+    interface Progress {
+        path: string,
+        downloaded: number,
+        total: number
+    }
+    interface Complete {
+        path: string,
+        data: number[]
+    }
+}
+
 declare namespace FileSystemInfo {
     interface File {
         FileSize: number,

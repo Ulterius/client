@@ -176,7 +176,8 @@ interface FileSystemActionFunctions {
     goForward(): boolean
     reloadFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
     addDownload(file: FileSystemInfo.InitialDownload): FileSystemInfo.InitialDownload
-    downloadData(data: FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress): FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress
+    downloadProgress(data: FileTransfer.Progress): FileTransfer.Progress
+    downloadComplete(data: FileTransfer.Complete): FileTransfer.Complete
     removeDownload(path: string): string
 }
 
@@ -187,7 +188,8 @@ class FileSystemActions extends AbstractActions {
             "removeDownload",
             "updateFileTree",
             "addDownload",
-            "downloadData",
+            "downloadProgress",
+            "downloadComplete",
             "reloadFileTree"
         )
     }

@@ -2,8 +2,9 @@ import React = require("react")
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
 import {Bars, Bar, IconMedia, Temperature} from "./components"
 import {GpuAvailability, bytesToSize} from "../util"
-import {sendCommandToDefault} from "../socket"
 import {helpers} from "../api-layer"
+//import {api} from "../api"
+import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
 import {LoadingScreen} from "./"
 import * as _ from  "lodash"
@@ -74,7 +75,6 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
         this.setState(stats)
     }
     
-
     render() {
         if (!(this.state.stats && this.state.stats.cpuUsage)) {
             return <p>Loading stats...</p>
@@ -156,7 +156,7 @@ export class SystemPage extends React.Component<{}, {
         this.state = {}
     }
     componentDidMount() {
-        helpers.requestAuxillarySystemInformation()
+        systemApi.getAuxillaryStats()
         systemStore.listen(this.onChange)
         auxillarySystemStore.listen(this.onChange)
         this.setState(auxillarySystemStore.getState())

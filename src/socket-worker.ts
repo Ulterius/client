@@ -14,9 +14,6 @@ handle("serialize", ({appState, data}) => {
     return encrypt(appState, data)
 })
 
-handle("decrypt", ({appState, data}) => {
-    return decryptData(appState, data)
-})
 
 /*
 addEventListener("message", ({data}) => {
@@ -93,15 +90,4 @@ function decrypt(appState, data: string) {
         }
     }
     return ret
-}
-
-function decryptData(appState, data: string) {
-    let decrypted = CryptoJS.AES.decrypt(
-        data,
-        CryptoJS.enc.Base64.parse(btoa(appState.crypto.key)),
-        {
-            iv: CryptoJS.enc.Hex.parse(toHex(appState.crypto.iv))
-        }
-    ).toString(CryptoJS.enc.Base64)
-    return b64toArray(decrypted)
 }

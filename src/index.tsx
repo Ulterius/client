@@ -4,7 +4,7 @@ require("../style/style.sass")
 
 import React = require("react")
 import ReactDOM = require("react-dom")
-import {connect, socket, sendCommandToDefault} from "./socket"
+//import {connect, socket, sendCommandToDefault} from "./socket"
 import {RootRouter} from "./component"
 import TaskStore from "./store/task-store"
 import setIntervals from "./interval"

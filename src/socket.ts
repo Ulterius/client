@@ -14,12 +14,12 @@ export let socket: WebSocket
 
 let connectInterval = undefined
 
+const logPackets = false
 
-
-let overrideCounter = 0
+let keyCounter = 0
 function getSyncKey(prepend: string) {
-    overrideCounter++
-    return prepend + String(overrideCounter)
+    keyCounter++
+    return prepend + String(keyCounter)
 }
 
 let promiseChain: Promise<any>
@@ -107,44 +107,31 @@ export function sendCommand(sock: WebSocket, action, args?) {
 }
 
 function promiseToSendPacket(packet) {
-    /*
-    console.log("promising to send " + packet.endpoint)
-    let promise = new Promise((resolve, reject) => {
-        resolves[packet.syncKey] = resolve
-        setTimeout(() => {
-            //still resolve so we don't break the chain
-            resolve({endpoint: "error", message: "A request " + packet.endpoint + " timed out!"})
-        }, 10000)
-    })
-    if (promiseChain) {
-        promiseChain = promiseChain.then(() => {
-            sendPacket(packet)
-            return promise
-        })
+    if (logPackets) {
+        console.groupCollapsed("Queueing packet: " + packet.endpoint)
+        console.log(packet)
     }
-    else {
-        sendPacket(packet)
-        promiseChain = promise
-    }
-    return promiseChain
-    */
-    console.groupCollapsed("Queueing packet: " + packet.endpoint)
-    console.log(packet)
     requestQueue.push(packet)
     if (requestQueue.length == 1) {
-        console.log("Queue empty, sending packet now")
-        console.groupEnd()
+        if (logPackets) {
+            console.log("Queue empty, sending packet now")
+            console.groupEnd()
+        }
         sendPacket(packet)
     }
-    console.groupEnd()
+    if (logPackets)
+        console.groupEnd()
 }
 
 function sendPacket(packet) {
-    console.groupEnd()
-    console.groupCollapsed("Sending packet: " + packet.endpoint)
-    console.log(packet)
-    console.log("Waiting messages: " + requestQueue.length)
-    console.groupEnd()
+    if (logPackets) {
+        console.groupEnd()
+        console.groupCollapsed("Sending packet: " + packet.endpoint)
+        console.log(packet)
+        console.log("Waiting messages: " + requestQueue.length)
+        console.groupEnd()
+    }
+    
     socketWorker.postMessage({
         type: "serialize",
         content: {
@@ -154,7 +141,7 @@ function sendPacket(packet) {
     })
     setTimeout(() => {
         if (requestQueue.indexOf(packet) != -1) {
-            console.log("Packet still here, discarding manually.")
+            if (logPackets) console.log("Packet " + packet.endpoint + " timed out, discarding manually.")
             if (requestQueue[requestQueue.indexOf(packet) + 1]) {
                 sendPacket(requestQueue[requestQueue.indexOf(packet) + 1])
             }
@@ -217,14 +204,16 @@ export function connect(host: string, port: string) {
                                             m.endpoint.toLowerCase() == "aeshandshake"))
                     
                     if (endpoint != "getcameraframe") {
-                        console.groupCollapsed("Got packet: " + endpoint)
-                        console.log(message)
-                        if (packet) {
-                            console.log("matching request found")
-                            console.log("pending requests left: " + (requestQueue.length ? requestQueue.length-1 : 0))
-                            console.log(requestQueue)
+                        if (logPackets) {
+                            console.groupCollapsed("Got packet: " + endpoint)
+                            console.log(message)
+                            if (packet) {
+                                console.log("matching request found")
+                                console.log("pending requests left: " + (requestQueue.length ? requestQueue.length - 1 : 0))
+                                console.log(requestQueue)
+                            }
+                            console.groupEnd()
                         }
-                        console.groupEnd()
                     }
                     
                     if (packet) {
@@ -262,20 +251,6 @@ export function connect(host: string, port: string) {
             }
             else if (e.data instanceof Blob) {
                 console.log("Blob get " + e.data)
-                /*
-                let reader = new FileReader()
-                reader.readAsDataURL(e.data)
-                reader.onloadend = () => {
-                    workerAsync(socketWorker, "decrypt", {
-                        appState: appStore.getState(),
-                        data: reader.result
-                    }, (data: Uint8Array) => {
-                        //console.log(data)
-                        downloadBlobURL(byteArraysToBlobURL([data]), "anus.exe")
-                    })
-                    //console.log(reader.result)
-                }
-                */
             }
             
             socket.onclose = function(e) {
@@ -301,6 +276,7 @@ export function connect(host: string, port: string) {
 
 function defaultHandleMessage(message: ApiMessage) {
     let caught = false
+    console.log(apiLayer)
     for (let endpoint of Object.keys(apiLayer)) {
         if (message.endpoint &&
             message.endpoint.toLowerCase() == endpoint.toLowerCase() &&

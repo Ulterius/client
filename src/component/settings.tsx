@@ -1,7 +1,8 @@
 import React = require("react")
 import {settingsStore, SettingsState} from "../store"
 import {Input, Button, ButtonGroup, ButtonToolbar} from "react-bootstrap"
-import {sendCommandToDefault} from "../socket"
+//import {api} from "../api"
+import {settingsApi} from "../api-layer"
 import * as _ from "lodash"
 
 class RadioGroup extends React.Component<{
@@ -71,24 +72,19 @@ export class SettingsPage extends React.Component<{}, {
     getSettings = (state: SettingsState) => {
         this.setState({currentSettings: state})
     }
-    getEndpoint(property: string) {
-        if (property == "UseWebServer") return "changeWebServerUse"
-        if (property == "SkipHostNameResolve") return "changeNetworkResolve"
-        return "change" + property
-    }
     restart = () => {
         if (this.state.restartConfirm) {
-            sendCommandToDefault("restartServer")
+            //sendCommandToDefault("restartServer")
+            settingsApi.restartServer()
             this.state.restartConfirm = false
         }
         else {
             this.setState({restartConfirm: true})
         }
-        
     }
     finalizeSettings = () => {
         _.forIn(this.state.newSettings, (v, k) => {
-            sendCommandToDefault(this.getEndpoint(k), v)
+            settingsApi.changeSetting(k, v)
         })
     }
     render() {

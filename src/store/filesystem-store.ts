@@ -41,7 +41,7 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
             handleForward: fileSystemActions.goForward,
             handleReload: fileSystemActions.reloadFileTree,
             handleAddDownload: fileSystemActions.addDownload,
-            handleDownloadData: fileSystemActions.downloadData,
+            handleDownloadProgress: fileSystemActions.downloadProgress,
             handleRemoveDownload: fileSystemActions.removeDownload
         })
     }
@@ -50,7 +50,8 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
             this.downloads[path] = null
         }
     }
-    handleDownloadData(data: FileSystemInfo.LoadedFile | FileSystemInfo.BareProgress) {
+    handleDownloadProgress(data: FileTransfer.Progress) {
+        /*
         let download = this.downloads[data.path]
         if (!download) {
             console.log("Got data for a file that was never started!")
@@ -65,7 +66,6 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
         else {
             download.downloaded = data.downloaded
         }
-        /*
         for (let byte of data.fileData) {
             this.downloads[data.path].data.push(byte)
         }
