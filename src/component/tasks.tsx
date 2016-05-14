@@ -153,7 +153,7 @@ export class Task extends React.Component<
                     </td>
                     <td className="task-name">{this.props.info.Name}</td>
                     <td className="task-id" style={{width: 20}}>{this.props.info.Id}</td>
-                    <td className="task-cpu" style={{width: 20}}>{this.props.info.CpuUsage + "%"}</td>
+                    <td className="task-cpu" style={{width: 20}}>{this.props.info.CpuUsage.toFixed(0) + "%"}</td>
                     <td className="task-memory">{bytesToSize(this.props.info.RamUsage)}</td>
                     <td
                     className="close-button"

@@ -97,3 +97,15 @@ declare module "aes" {
     let aesClass: any
     export = aesClass
 }
+
+declare module "react-grid-layout" {
+    interface ResponsiveReactGridLayoutI extends __React.ComponentClass<{
+        className?: string,
+        layouts: any,
+        breakpoints?: any,
+        cols?: any,
+        [key: string]: any
+    }> {}
+    export const Responsive: ResponsiveReactGridLayoutI
+    export const WidthProvider: (ResponsiveReactGridLayoutI) => ResponsiveReactGridLayoutI
+}

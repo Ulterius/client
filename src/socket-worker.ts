@@ -1,6 +1,6 @@
 import CryptoJS = require("crypto-js")
 
-import {toHex, getHandler, b64toArray} from "./util"
+import {toHex, getHandler, base64toArray} from "./util"
 
 let pm = postMessage as (any) => void
 
@@ -13,31 +13,6 @@ handle("deserialize", ({appState, data}) => {
 handle("serialize", ({appState, data}) => {
     return encrypt(appState, data)
 })
-
-
-/*
-addEventListener("message", ({data}) => {
-    let message = data as WorkerMessage<any>
-    
-    if (message.type == "deserialize") {
-        
-        let {appState, data} = message.content
-        pm({
-            type: "deserialize",
-            content: decrypt(appState, data)
-        })
-        
-    }
-    else if (message.type == "serialize") {
-        let {appState, data} = message.content
-        pm({
-            type: "serialize",
-            content: encrypt(appState, data)
-        })
-    }
-    
-})
-*/
 
 function encrypt(appState, packet) {
     //let appState = appStore.getState()

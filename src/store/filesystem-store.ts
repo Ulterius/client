@@ -4,9 +4,12 @@ import {fileSystemActions} from "../action"
 import * as _ from "lodash"
 
 export interface FileSystemState {
-    tree: FileSystemInfo.FileTree,
-    pathStack: FileSystemInfo.FileTree[]
-    downloads: Files
+    tree?: FileSystemInfo.FileTree,
+    pathStack?: FileSystemInfo.FileTree[]
+    downloads?: {
+        inProgress: {[key: string]: FileTransfer.Progress},
+        complete: {[key: string]: FileTransfer.Complete}
+    }
 }
 
 export interface FileProgress {
@@ -28,13 +31,19 @@ export function isLoaded(obj: any): obj is FileSystemInfo.LoadedFile {
 class FileSystemStore extends AbstractStoreModel<FileSystemState> {
     tree: FileSystemInfo.FileTree
     pathStack: FileSystemInfo.FileTree[]
-    downloads: Files
+    downloads: {
+        inProgress: {[key: string]: FileTransfer.Progress},
+        complete: {[key: string]: FileTransfer.Complete}
+    }
     goingBack: boolean
     constructor() {
         super()
         this.pathStack = []
         this.goingBack = false
-        this.downloads = {}
+        this.downloads = {
+            inProgress: {},
+            complete: {}
+        }
         this.bindListeners({
             handleUpdateFileTree: fileSystemActions.updateFileTree,
             handleBack: fileSystemActions.goBack,
@@ -42,15 +51,24 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
             handleReload: fileSystemActions.reloadFileTree,
             handleAddDownload: fileSystemActions.addDownload,
             handleDownloadProgress: fileSystemActions.downloadProgress,
+            handleDownloadComplete: fileSystemActions.downloadComplete,
             handleRemoveDownload: fileSystemActions.removeDownload
         })
     }
     handleRemoveDownload(path: string) {
-        if (this.downloads[path]) {
-            this.downloads[path] = null
+        if (this.downloads.complete[path]) {
+            delete this.downloads.complete[path]
+        }
+        if (this.downloads.inProgress[path]) {
+            delete this.downloads.inProgress[path]
         }
     }
+    handleDownloadComplete(data: FileTransfer.Complete) {
+        delete this.downloads.inProgress[data.path]
+        this.downloads.complete[data.path] = data
+    }
     handleDownloadProgress(data: FileTransfer.Progress) {
+        
         /*
         let download = this.downloads[data.path]
         if (!download) {
@@ -71,12 +89,13 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
         }
         */
         //this.downloads[data.path].data.push(...data.fileData)
+        this.downloads.inProgress[data.path] = data
     }
-    handleAddDownload(file: FileSystemInfo.InitialDownload) {
-        this.downloads[file.path] = {
+    handleAddDownload(file: FileTransfer.Initial) {
+        this.downloads.inProgress[file.path] = {
+            path: file.path,
             downloaded: 0,
-            total: file.size,
-            complete: false
+            total: file.size
         }
     }
     handleReload(tree: FileSystemInfo.FileTree) {

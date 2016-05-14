@@ -353,7 +353,11 @@ declare namespace FileTransfer {
     }
     interface Complete {
         path: string,
-        data: number[]
+        data: Uint8Array
+    }
+    interface Approved {
+        fileApproved: boolean,
+        message: string
     }
 }
 

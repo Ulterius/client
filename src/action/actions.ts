@@ -175,7 +175,7 @@ interface FileSystemActionFunctions {
     goBack(): boolean
     goForward(): boolean
     reloadFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
-    addDownload(file: FileSystemInfo.InitialDownload): FileSystemInfo.InitialDownload
+    addDownload(file: FileTransfer.Initial): FileTransfer.Initial
     downloadProgress(data: FileTransfer.Progress): FileTransfer.Progress
     downloadComplete(data: FileTransfer.Complete): FileTransfer.Complete
     removeDownload(path: string): string

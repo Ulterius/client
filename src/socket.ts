@@ -195,7 +195,7 @@ export function connect(host: string, port: string) {
                 },
                 (message: ApiMessage) => {
                     let {synckey, results, endpoint} = message
-                    if (endpoint.toLowerCase() == "connectedtoulterius".toLowerCase()) {
+                    if (endpoint.toLowerCase() == "connectedtoulterius") {
                         requestQueue = []
                         //flush it all
                     }
@@ -255,6 +255,7 @@ export function connect(host: string, port: string) {
             
             socket.onclose = function(e) {
                 if (e.code !== 1000) {
+                    socket.close()
                     console.log("Socket... died? Trying to reconnect in a sec...")
                     apiLayer.disconnectedFromUlterius()
                     connectInterval = setInterval(() => {
@@ -276,7 +277,6 @@ export function connect(host: string, port: string) {
 
 function defaultHandleMessage(message: ApiMessage) {
     let caught = false
-    console.log(apiLayer)
     for (let endpoint of Object.keys(apiLayer)) {
         if (message.endpoint &&
             message.endpoint.toLowerCase() == endpoint.toLowerCase() &&

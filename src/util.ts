@@ -101,6 +101,10 @@ export function lastPathSegment(path: string) {
     return path.substr(path.lastIndexOf("\\")+1)
 }
 
+export function untilLastPathSegment(path: string) {
+    return path.substr(0, path.lastIndexOf("\\"))
+}
+
 export function generateHexString(length: number) {
     let ret = ""
     while (ret.length < length) {
@@ -231,14 +235,6 @@ export function verticalCenter(width: number|string, height: number|string) {
     return style
 }
 
-export function b64toArray(b64string: string) {
-    let chars = atob(b64string)
-    let numbers = new Array(chars.length)
-    for (let i = 0; i < chars.length; i++) {
-        numbers[i] = chars.charCodeAt(i);
-    }
-    return new Uint8Array(numbers)
-}
 
 export function promiseChain(promises: Promise<any>[]) {
     let currentPromise
@@ -253,6 +249,15 @@ export function promiseChain(promises: Promise<any>[]) {
         console.log(currentPromise)
     })
     return currentPromise
+}
+
+export function base64toArray(b64string: string) {
+    let chars = atob(b64string)
+    let numbers = new Array(chars.length)
+    for (let i = 0; i < chars.length; i++) {
+        numbers[i] = chars.charCodeAt(i);
+    }
+    return new Uint8Array(numbers)
 }
 
 //credit to jonleighton

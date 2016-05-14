@@ -1,6 +1,14 @@
 import {fileSystemActions, messageActions} from "../action"
 import {fileSystemStore, appStore, settingsStore} from "../store"
-import {frameBufferToImageURL, workerAsync, downloadBlobURL, byteArraysToBlobURL, generatePassword} from "../util"
+import {
+    frameBufferToImageURL,
+    workerAsync,
+    downloadBlobURL,
+    byteArraysToBlobURL,
+    generatePassword,
+    lastPathSegment,
+    untilLastPathSegment
+} from "../util"
 import {sendCommandAsync, sendCommandToDefault} from "../socket"
 import * as _ from "lodash"
 import FS = FileSystemInfo
@@ -11,48 +19,72 @@ export const fsApi = {
     requestFile(location: string) {
         let password = generatePassword()
         sendCommandAsync("requestFile", [location, password], (file) => {
-            handleRequestFile(file, password)
+            handleRequestFile(file, password, location)
         })
+    },
+    uploadFile(path: string, data: ArrayBuffer) {
+        let password = generatePassword()
+        sendCommandAsync("approveFile", 
+            [password, path, password], 
+            (response: FileTransfer.Approved) => {
+                if (response.fileApproved) {
+                    handleUploadFile(path, password, data)
+                }
+            }
+        )
     },
     reloadFileTree(path: string) {
         sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
+    },
+    removeFile(path: string) {
+        const name = lastPathSegment(path)
+        sendCommandAsync("removeFile", 
+            settingsStore.getState().settings.WebFilePath + "temp/" + name, 
+            (response) => {
+                if (response.deleted) {
+                    fileSystemActions.removeDownload(path)
+                }
+            }
+        )
     },
     createFileTree(path: string) {
         sendCommandToDefault("createFileTree", path)
     }
 }
 
-fsWorker.onmessage = ({data}) => {
+function handleUploadFile(path: string, password: string, data: ArrayBuffer) {
+    let {host} = appStore.getState().connection
+    let port = settingsStore.getState().settings.WebServerPort
+    let destination =  "http://" + 
+        appStore.getState().connection.host + ":" +
+        port +
+        "/upload/"
+    workerAsync(fsWorker, "uploadFile", {
+        password,
+        path,
+        destination,
+        data
+    }, ({sent}) => {
+        messageActions.message({style: "success", text: "File uploaded."})
+        fsApi.reloadFileTree(untilLastPathSegment(path))
+    })
+}
+
+fsWorker.addEventListener("message", ({data}) => {
+    console.log(data)
     let message = data as WorkerMessage<any>
     if (message.type == "progress") {
         console.log("We get progres")
         fileSystemActions.downloadProgress(message.content)
     }
-}
+})
 
 export function createFileTree(tree: FileSystemInfo.FileTree) {
     console.log(tree)
     fileSystemActions.updateFileTree(tree)
 }
 
-export function downloadFile(file: FileSystemInfo.FileDownload) {
-    let url = frameBufferToImageURL(file.fileBytes)
-    let a = document.createElement("a")
-    a.href = url
-    let as = (a as any)
-    as.download = file.fileName
-    document.body.appendChild(a)
-    a.style.display = "none"
-    a.click()
-    document.body.removeChild(a)
-    
-    
-    URL.revokeObjectURL(url)
-    //you didn't see anything
-    //please forget this ever happened
-}
-
-export function handleRequestFile(file: FileSystemInfo.Link, password: string) {
+export function handleRequestFile(file: FileSystemInfo.Link, password: string, location: string) {
     console.log(file)
     let segs = file.tempWebPath.split("/")
     let fileName = _.last(segs)
@@ -66,11 +98,10 @@ export function handleRequestFile(file: FileSystemInfo.Link, password: string) {
     workerAsync(fsWorker, "requestFile", {
         password,
         location: fullPath,
-        path
+        localLocation: location
     }, (result) => {
-        
-        console.log("fuck")
-        downloadBlobURL(byteArraysToBlobURL([result]), fileName)
+        fileSystemActions.downloadComplete(result)
+        //downloadBlobURL(byteArraysToBlobURL([result]), fileName)
     })
     /*
     let message: WorkerMessage<FileSystemInfo.InitialDownload> = {

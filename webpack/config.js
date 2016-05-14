@@ -9,7 +9,7 @@ let loaders = [
         exclude: /node_modules/
     },
     {
-        test: /\.s(c|a)ss$/,
+        test: /\.s[ca]ss$/,
         loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
     },
     {

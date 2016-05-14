@@ -16,7 +16,8 @@ Todo
 * ~~refresh filesystem~~
 * ~~and refresh on upload~~
 * ~~don't allow downloading a file while the same file is downloading~~
-* ~~download and upload progress, maybe~~ Nope, api doesn't allow this.
+* new upload shit
+* download and upload progress
 * ~~loading animations~~
 * ~~make the task manager actually responsive~~
 * ~~make cameras movable~~
@@ -24,3 +25,4 @@ Todo
 * ~~log out~~
 * ~~fix camera closing~~
 * ~~totals on graphs~~
+* file searching

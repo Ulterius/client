@@ -3,33 +3,49 @@ import {EntryBox, Dropdown, Bar} from "./"
 import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input, ListGroup, ListGroupItem} from "react-bootstrap"
 import {FileSystemState, fileSystemStore, isLoaded} from "../store"
 import {fileSystemActions, messageActions} from "../action"
-import {bytesToSize, lastPathSegment, downloadFile} from "../util"
+import {bytesToSize, lastPathSegment, downloadFile, downloadBlobURL, byteArraysToBlobURL} from "../util"
 import {sendCommandToDefault, sendCommandAsync} from "../socket"
 import {AutoAffix} from "react-overlays"
 //import {api} from "../api"
 import {fsApi} from "../api-layer"
-console.log(fsApi)
+
+interface fsComponentState extends FileSystemState {
+    width?: number
+}
+
 export class FileList extends React.Component<{}, FileSystemState> {
     box: EntryBox
     upload: any
     fileDownloading: string = ""
+    fileList: HTMLDivElement
+    headerBar: HTMLDivElement
     componentDidMount() {
         this.updateState(fileSystemStore.getState())
         fileSystemStore.listen(this.updateState)
+        window.addEventListener("resize", this.onResize)
+        this.onResize()
     }
     componentWillUnmount() {
         fileSystemStore.unlisten(this.updateState)
+        window.removeEventListener("resize", this.onResize)
+    }
+    componentDidUpdate() {
+        //all life is pain, you know
+        if (this.fileList && this.headerBar) {
+            this.headerBar.style.width = this.fileList.getBoundingClientRect().width + "px"
+        }
+    }
+    onResize = () => {
+        this.setState({}) //force a redraw of this component
     }
     updateState = (state: FileSystemState) => {
         this.setState(state)
         if (this.box) {
             this.box.setState({customized: false})
         }
-        _.forOwn(state.downloads, (v: FileSystemInfo.LoadedFile, k) => {
-            if (isLoaded(v)) {
-                v.path = k
-                downloadFile(v)
-            }
+        _.forOwn(state.downloads.complete, (v: FileTransfer.Complete, k) => {
+            downloadBlobURL(byteArraysToBlobURL([v.data]), lastPathSegment(v.path))
+            fsApi.removeFile(lastPathSegment(v.path))
         })
     }
     openFolder = (path: string) => {
@@ -50,10 +66,16 @@ export class FileList extends React.Component<{}, FileSystemState> {
         
         reader.onload = ee => {
             messageActions.message({style: "success", text: "File upload started."})
+            fsApi.uploadFile(
+                this.state.tree.RootFolder.Name + "\\" + readerAny.name,
+                (ee.target as any).result as ArrayBuffer
+            )
+            /*
             sendCommandToDefault("uploadFile", [
                 this.state.tree.RootFolder.Name + "\\" + readerAny.name,
                 [].slice.call(new Int8Array((ee.target as any).result))
             ])
+            */
         }
         reader.onerror = function (e) {
             console.error(e);
@@ -69,16 +91,19 @@ export class FileList extends React.Component<{}, FileSystemState> {
     render() {
         if (!this.state || !this.state.tree) {
             console.log(this.state)
-            return <div>loading files...</div>
+            return <div className="row">
+                <div className="col-xs-12" ref="fileList">
+                    loading files...
+                </div>
+            </div>
         }
             
         let {tree} = this.state
         return <div>
-            {/* this.state.pathStack.map(tree => tree.RootFolder.Name) */}
-            {/* this.state.pathStack.indexOf(this.state.tree) */}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
-                <div className="row" style={{position: "fixed", zIndex: 2}}>
-                    <div className="col-sm-3">
+                <div className="row" ref={ref => this.headerBar = ref} style={{position: "fixed", zIndex: 2}}>
+                    <div className="col-xs-12">
+                    <div style={{width: 200, float: "left"}}>
                         <ButtonToolbar>
                         <ButtonGroup justified>
                             <ButtonGroup>
@@ -104,7 +129,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                         </ButtonGroup>
                         </ButtonToolbar>
                     </div>
-                    <div className="col-sm-9">
+                    <div style={{marginLeft: 220}}>
                         <EntryBox 
                         ref={box => this.box = box}
                         onConfirmation={this.openFolder}
@@ -112,8 +137,9 @@ export class FileList extends React.Component<{}, FileSystemState> {
                         glyph="chevron-right" />
                     </div>
                 </div>
+                </div>
             <div className="row">
-                <div className="col-xs-12">
+                <div className="col-xs-12" style={{marginTop: 50}} ref={ref => this.fileList = ref}>
                     <Table>
                         <thead>
                             <tr>
@@ -145,12 +171,9 @@ export class FileList extends React.Component<{}, FileSystemState> {
                                                 <ListGroupItem onClick={() => this.download(file.Path)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
                                             </ListGroup>
                                         </Dropdown>
-                                        {_.map(this.state.downloads, (v, k) => {
-                                            if (v && k == file.Path && !v.complete) {
-                                                return <Bar value={ Number(((v.downloaded/v.total) * 100).toFixed(0))}/>
-                                            }
-                                            else {
-                                                return null
+                                        {_.map(this.state.downloads.inProgress, (v, k) => {
+                                            if (v && k == file.Path) {
+                                                return <Bar value={Number(((v.downloaded/v.total) * 100).toFixed(0))}/>
                                             }
                                         })}
                                     </td>
