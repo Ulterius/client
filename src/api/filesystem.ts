@@ -24,11 +24,12 @@ export const fsApi = {
     },
     uploadFile(path: string, data: ArrayBuffer) {
         let password = generatePassword()
+        let fileKey = generatePassword()
         sendCommandAsync("approveFile", 
-            [password, path, password], 
+            [fileKey, path, password], 
             (response: FileTransfer.Approved) => {
                 if (response.fileApproved) {
-                    handleUploadFile(path, password, data)
+                    handleUploadFile(path, fileKey,password, data)
                 }
             }
         )
@@ -52,7 +53,7 @@ export const fsApi = {
     }
 }
 
-function handleUploadFile(path: string, password: string, data: ArrayBuffer) {
+function handleUploadFile(path: string, fileKey: string, password: string, data: ArrayBuffer) {
     let {host} = appStore.getState().connection
     let port = settingsStore.getState().settings.WebServerPort
     let destination =  "http://" + 
@@ -62,6 +63,7 @@ function handleUploadFile(path: string, password: string, data: ArrayBuffer) {
     workerAsync(fsWorker, "uploadFile", {
         password,
         path,
+        fileKey,
         destination,
         data
     }, ({sent}) => {

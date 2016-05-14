@@ -29,14 +29,14 @@ handle("requestFile", ({password, location, localLocation}) => {
     return false
 })
 
-handle("uploadFile", ({path, destination, data, password}) => {
+handle("uploadFile", ({path, destination, data, password, fileKey}) => {
     let encryptedData = encryptData(password, arrayBufferToBase64(data))
     let formData = new FormData()
     let fileBlob = new Blob([base64toArray(encryptedData)])
     formData.append("file", fileBlob)
     let req = new XMLHttpRequest()
     req.open("POST", destination, true)
-    req.setRequestHeader("File-Key", password)
+    req.setRequestHeader("File-Key", fileKey)
     req.addEventListener("load", e => {
         console.log(req.responseText)
         pm("uploadFile", {
