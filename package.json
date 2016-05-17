@@ -20,6 +20,7 @@
     "jsencrypt": "^2.1.0",
     "lodash": "^3.10.1",
     "node-sass": "^3.4.2",
+    "novnc-node": "^0.5.3",
     "public-encrypt": "^4.0.0",
     "react": "^0.14.8",
     "react-addons-css-transition-group": "^0.14.7",

@@ -13,7 +13,7 @@ import {
 } 
 from "./action"
 import {appStore} from "./store"
-import {socket, sendCommandToDefault, sendCommandAsync} from "./socket"
+import {sendCommandToDefault, sendCommandAsync} from "./socket"
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
 import config from "./config"

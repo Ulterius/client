@@ -13,6 +13,8 @@ import {
     SettingsPage,
     FilePage,
     PluginPage,
+    VncPage,
+    
     Dialogs,
     dialogEvents,
     LoginScreen,
@@ -22,6 +24,7 @@ import {
     MoveRightTransition,
     LoadingScreen,
     ConnectScreen
+    
 } from "./"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
@@ -40,7 +43,8 @@ export function RootRouter(props: any) {
             <Route path="cameras" component={CameraPage} />
             <Route path="settings" component={SettingsPage} />
             <Route path="filesystem" component={FilePage} />
-            {/*<Route path="plugin" component={PluginPage} />*/}
+            <Route path="vnc" component={VncPage} />
+            {/* <Route path="plugin" component={PluginPage} /> */}
         </Route>
     </Router>
 }
@@ -165,22 +169,22 @@ class Sidebar extends React.Component<{activePath: string}, {
                             this.getActive("/"))  ?  "active": ""} 
                     path="/tasks"
                     glyph="tasks"
-                    label="Task Manager"/>
+                    label="Task Manager" />
                 <NavItem 
                     className={this.getActiveClassName("/info")} 
                     path="/info"
                     glyph="stats"
-                    label="System Info"/>
+                    label="System Info" />
                 <NavItem 
                     className={this.getActiveClassName("/cameras")} 
                     path="/cameras"
                     glyph="facetime-video"
-                    label="Cameras"/>
+                    label="Cameras" />
                 <NavItem 
                     className={this.getActiveClassName("/filesystem")} 
                     path="/filesystem"
                     glyph="hdd"
-                    label="Filesystem"/>
+                    label="Filesystem" />
                 {/*<NavItem 
                     className={this.getActiveClassName("/plugin")} 
                     path="/plugin"
@@ -190,7 +194,12 @@ class Sidebar extends React.Component<{activePath: string}, {
                     className={this.getActiveClassName("/settings")} 
                     path="/settings"
                     glyph="cog"
-                    label="Settings"/>
+                    label="Settings" />
+                <NavItem
+                    className={this.getActiveClassName("/vnc")}
+                    path="/vnc"
+                    glyph="picture"
+                    label="VNC" />
                 <li>
                     <a style={{cursor: "pointer"}} onClick={() => {
                         dialogEvents.dialog({

@@ -1,7 +1,7 @@
 import React = require("react")
 import {taskStore, appStore} from "../store"
 import {createSortOnProperty, bytesToSize} from "../util"
-import {socket, sendCommandToDefault} from "../socket"
+import {sendCommandToDefault} from "../socket"
 import {Stats, LoadingScreen} from "./"
 import {Button, Input, Glyphicon} from "react-bootstrap"
 import setIntervals from "../interval"

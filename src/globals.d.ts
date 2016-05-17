@@ -475,6 +475,13 @@ declare interface HostInfo {
     port: string
 }
 
+declare interface VncInfo {
+    vncStarted: boolean,
+    proxyPort: number,
+    port: number,
+    message: string
+}
+
 declare interface WorkerMessage<T> {
     type: string,
     content: T

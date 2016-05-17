@@ -29,7 +29,7 @@ export const fsApi = {
             [fileKey, path, password], 
             (response: FileTransfer.Approved) => {
                 if (response.fileApproved) {
-                    handleUploadFile(path, fileKey,password, data)
+                    handleUploadFile(path, fileKey, password, data)
                 }
             }
         )

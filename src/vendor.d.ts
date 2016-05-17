@@ -40,6 +40,45 @@ declare module "react-sortable-pane" {
     export const Pane: PaneI
     
 }
+
+declare interface RFB_Instance {
+    connect(host: string, password?: string): void
+    disconnect(): void
+    sendPassword(password: string): void
+    sendCtrlAltDel(): void
+    sendKey(code: string, down?: boolean)
+    clipboardPasteFrom(text: string): void
+    get_display(): any
+    [key: string]: any
+}
+
+declare module "novnc-node" {
+    let Util: any
+    let Keys: any
+    let KbdUtil: any
+    let Input: any
+    let WebSock: any
+    let Base64: any
+    let DES: any
+    let TINF: any
+    let Display: any
+    interface RFB_Class {
+        new(config: any): RFB_Instance
+    }
+    let RFB: RFB_Class
+    export = {
+        Util,
+        Keys,
+        KbdUtil,
+        Input,
+        WebSock,
+        Base64,
+        DES,
+        TINF,
+        Display,
+        RFB
+    }
+}
 /*
 declare namespace ReactBootstrap {
 

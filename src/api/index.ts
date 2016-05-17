@@ -15,3 +15,4 @@ export const api = {
 export * from "./settings"
 export * from "./filesystem"
 export * from "./plugin"
+export * from "./vnc"
