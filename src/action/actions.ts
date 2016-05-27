@@ -237,3 +237,25 @@ class PluginActions extends AbstractActions {
 }
 
 export let pluginActions = alt.createActions<PluginActionFunctions>(PluginActions)
+
+
+interface TerminalActionFunctions {
+    addTerminal(descriptor: TerminalInfo.Terminal): TerminalInfo.Terminal
+    removeTerminal(id: string): string
+    output(content: TerminalInfo.Output): TerminalInfo.Output
+    addLine(line: string): string
+}
+
+class TerminalActions extends AbstractActions {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+        this.generateActions(
+            "addTerminal",
+            "removeTerminal",
+            "output",
+            "addLine"
+        )
+    }
+}
+
+export let terminalActions = alt.createActions<TerminalActionFunctions>(TerminalActions)

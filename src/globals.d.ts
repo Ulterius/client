@@ -486,3 +486,38 @@ declare interface WorkerMessage<T> {
     type: string,
     content: T
 }
+
+declare namespace TerminalInfo {
+    interface Message {
+        correlationId?: number,
+        type: string
+    }
+    interface Terminal {
+        terminalType: string,
+        id: string,
+        currentPath: string
+    }
+    interface SessionState extends Message {
+        userId: string,
+        aesShook?: boolean,
+        publicKey?: string,
+        terminals: Terminal[]
+    }
+    interface Created extends Message {
+        terminalType: string,
+        currentPath: string,
+        terminalId: string
+    }
+    interface Output {
+        output: string,
+        endOfCommand?: boolean,
+        sensitive?: boolean,
+        terminalId: string,
+        type?: string,
+        correlationId?: number
+    }
+    interface Input extends Message {
+        input: string,
+        terminalId: string
+    }
+}

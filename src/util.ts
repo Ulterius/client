@@ -148,6 +148,27 @@ export function workerAsync<T>(worker: Worker, type: string, content: T, callbac
     })
 }
 
+export function workerListen(worker: Worker, callbacks: {[key: string]: Function}) {
+    worker.addEventListener("message", ({data}) => {
+        _.forOwn(callbacks, (callback, name) => {
+            if (data.type == name) {
+                callback(data.content)
+            }
+        })
+    })
+}
+
+export function wrapWorker(worker: Worker) {
+    return {
+        listen(callbacks: { [key: string]: Function }) {
+            workerListen(worker, callbacks)
+        },
+        post(type: string, content: any) {
+            worker.postMessage({type, content})
+        }
+    }
+}
+
 export function wrapPostMessage(postMessage: typeof window.postMessage) {
     const pm = postMessage as (any) => void
     return (type: string, content: any) => {
@@ -338,4 +359,8 @@ export function generatePassword() {
     }
     console.log(password)
     return password
+}
+
+export function elementAfter<T>(arr: T[], element: T) {
+    return arr[arr.indexOf(element) + 1]
 }

@@ -14,6 +14,7 @@ import {
     FilePage,
     PluginPage,
     VncPage,
+    TerminalPage,
     
     Dialogs,
     dialogEvents,
@@ -44,6 +45,7 @@ export function RootRouter(props: any) {
             <Route path="settings" component={SettingsPage} />
             <Route path="filesystem" component={FilePage} />
             <Route path="vnc" component={VncPage} />
+            <Route path="terminal" component={TerminalPage} />
             {/* <Route path="plugin" component={PluginPage} /> */}
         </Route>
     </Router>
@@ -89,7 +91,12 @@ export default class App extends React.Component<{
     onUserChange = (userState: UserState) => {
         this.setState({user: userState.user})
     }
+    fullHeightIf(path: string) {
+        return this.props.location.pathname == path ? {height: "100%"} : {}
+    }
     mainContent() {
+        let {app} = this.state
+        let path = this.props.location.pathname
         if (!this.state.app || !this.state.app.connection.host) {
             return <ConnectScreen />
         }
@@ -107,19 +114,17 @@ export default class App extends React.Component<{
                     appActions.setPassword(pwd)
                 }} />
         }
-        return <div>
+        return <div style={this.fullHeightIf("/terminal")}>
             <Sidebar activePath={this.props.location.pathname} />
-            <div className="page">
-                <FadeTransition>
-                    <div className="page-content container-fluid">
-                        {this.props.children}
-                    </div>
-                </FadeTransition>
+            <div className="page" style={this.fullHeightIf("/terminal")}>
+                <div className="page-content container-fluid" style={this.fullHeightIf("/terminal")}>
+                    {this.props.children}
+                </div>
             </div>
         </div>
     }
     render() {
-        return <div className="main">
+        return <div className="main" style={this.fullHeightIf("/terminal")}>
             <Messages />
             <Dialogs />
             {this.mainContent()}
@@ -200,6 +205,11 @@ class Sidebar extends React.Component<{activePath: string}, {
                     path="/vnc"
                     glyph="picture"
                     label="VNC" />
+                <NavItem
+                    className={this.getActiveClassName("/terminal")}
+                    path="/terminal"
+                    glyph="console"
+                    label="Terminal" />
                 <li>
                     <a style={{cursor: "pointer"}} onClick={() => {
                         dialogEvents.dialog({

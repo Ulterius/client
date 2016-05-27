@@ -13,7 +13,7 @@ import {
 } 
 from "./action"
 import {appStore} from "./store"
-import {sendCommandToDefault, sendCommandAsync} from "./socket"
+import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
 import config from "./config"
@@ -23,6 +23,9 @@ import CryptoJS = require("crypto-js")
 export let intervals: {[key:string]: number} = {}
 
 export * from "./api"
+import * as terminal from "./api/terminal"
+export let terminalApi = terminal.terminalApi
+
 const resLog = true
 export let helpers = {
     requestAuxillarySystemInformation: function() {
@@ -112,6 +115,7 @@ export function authenticate(info: AuthInfo) {
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
+        terminal.initialize()
         helpers.requestAuxillarySystemInformation()
         onAuthenticate()
         appActions.login(true)
@@ -211,6 +215,7 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     messageActions.message({style: "success", text: "Connected."})
     appActions.setKey("", "")
     appActions.setShake(false)
+    mainConnection.unencrypt()
     let encrypt = new JSEncrypt()
     encrypt.setPublicKey(atob(results.publicKey))
     key = generateHexString(16)
@@ -218,6 +223,7 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     let encKey = encrypt.encrypt(key)
     let encIV = encrypt.encrypt(iv)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
+    mainConnection.encrypt(key, iv)
     appActions.setKey(key, iv)
     /*
     setInterval(() => {
