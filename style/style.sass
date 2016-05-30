@@ -1,26 +1,52 @@
-$sidebar-width: 200px
-$sidebar-sm-width: 75px
-$strike-deepseagreen: rgb(38, 116, 126)
-$sidebar-color: rgba(90%, 90%, 90%, 100%)
 
-$screen-sm-min: 768px
-$screen-xs-max: $screen-sm-min - 1px
-$screen-md-min: 992px
-$screen-sm-max: $screen-md-min - 1px
-$screen-lg-min: 1200px
-$screen-md-max: $screen-lg-min - 1px
+
+@import "_vars"
+@import "_mixins"
+
+@import "panel"
+@import "sidebar"
+@import "grid"
+
+@font-face
+    font-family: ProximaNova
+    src: url("/font/proxima_nova.otf")
+
+@font-face
+    font-family: ProximaNovaCondSemi
+    src: url("/font/proxima_nova_condensed_semibold.otf")
+
+@font-face
+    font-family: ProximaNovaIt
+    src: url("/font/proxima_nova_italic.otf")
+
+@font-face
+    font-family: ProximaNovaCond
+    src: url("/font/proxima_nova_condensed.otf")
+
+body
+    font-family: ProximaNova
+    background-color: $bg
+
+.col-collapsed-left
+    padding-left: 0 !important
+
+.col-collapsed-right
+    padding-right: 0 !important
+
+.full-height
+    height: 100%
 
 .ct-series-a .ct-line
-    stroke: $strike-deepseagreen
-    stroke-width: 1px
+    stroke: $orange
+    stroke-width: 2px
 
 .ct-series-a .ct-area
-    fill: $strike-deepseagreen
+    fill: $orange
 a
-    color: $strike-deepseagreen !important
+    color: $orange !important
     
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus
-    color: #555555 !important
+//.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus
+//    color: #555555 !important
 
 
 th
@@ -28,31 +54,13 @@ th
 
 td
     vertical-align: middle !important
-
-.sidebar
-    height: 100%
-    width: $sidebar-width
-    padding: 10px
-    color: white !important
-    background-color: $strike-deepseagreen
-    position: fixed
-    z-index: 1000000
-    .progress
-        margin-bottom: 0 !important
-    ul .active
-        background-color: white !important
-        a
-            background-color: white !important
-            color: $strike-deepseagreen !important
-    a
-        color: white !important
-        &:hover
-            color: $strike-deepseagreen !important
+    border: none !important
 
 .page
-    padding: 10px
+    padding-top: 10px
     box-sizing: border-box
     float: right
+    
 @media (max-width: $screen-xs-max)
     .task-memory, .task-memory-head, .task-id, .task-id-head
         display: none
@@ -60,29 +68,24 @@ td
         width: 100%
     .cam-box
         width: 100% !important
+        
 @media (max-width: $screen-sm-max)
-    .sidebar
-        width: $sidebar-sm-width
-        img
-            width: 32px
-            height: 32px
     .tab-label, .task-id, .task-id-head
         display: none
     li
         text-align: center
+        
 @media (max-width: $screen-sm-max) and (min-width: $screen-sm-min)
     .page
         width: calc(100% - #{$sidebar-sm-width})
         
-    
 @media (min-width: $screen-md-min)
-    .sidebar
-        width: $sidebar-width
     .page
         width: calc(100% - #{$sidebar-width})
+        
 @media (min-width: $screen-lg-min)
     .task-page, .file-page, .settings-page, .plugin-page
-        width: 900px
+        max-width: 1000px
         margin: auto
         //margin-left: calc((0.5 * (100% - #{$sidebar-width})) - 450px + #{$sidebar-width})
         float: none !important
@@ -151,7 +154,7 @@ td
     
 .user-widget
     text-align: center
-    margin-bottom: 20px
+    margin: 35px 0
     
 .btn-primary, .label-primary
     background-color: $strike-deepseagreen

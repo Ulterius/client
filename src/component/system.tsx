@@ -7,7 +7,10 @@ import {helpers} from "../api-layer"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
 import {LoadingScreen} from "./"
+import {panel, FlexRow, FlexCol} from "./ui"
 import * as _ from  "lodash"
+
+const {Panel, Fixed, FixedCenter, Flex, Header, HeaderCenter} = panel
 
 let graphOptions = {
     axisX: {
@@ -22,37 +25,42 @@ let graphOptions = {
     showPoint: false,
     high: 100,
     low: 0,
-    //height: "100px",
+    height: "150px",
     width: "100%",
     chartPadding: {
-        top: 5,
-        bottom: 5,
-        left: -10,
-        right: 5
+        top: 20,
+        bottom: -20,
+        left: 0,
+        right: 20
     }
 }
 
+function StatHeader(props: {
+    headLeft?: React.ReactChild,
+    headRight?: React.ReactChild
+}) {
+    const {headLeft, headRight} = props
+    return <div className="clearfix stat-header">
+        <div className="left" style={{float: "left"}}>{headLeft}</div>
+        <div className="right" style={{float: "right"}}>{headRight}</div>
+    </div>
+}
+
 function StatContainer(props: {
-    headLeft: any,
-    headRight: any,
     children?: any
 }) {
-    let {headLeft, headRight, children} = props
-    return <div style={{marginBottom: 10}}>
-        <div className="clearfix">
-            <div style={{float: "left"}}>{headLeft}</div>
-            <div style={{float: "right"}}>{headRight}</div>
-        </div>
+    const {children} = props
+    return <div className="stat-container">
         {children}
     </div>
 }
 
 function StatItem(props: {head: string, children?: any}) {
-    return <div style={{
+    return <div className="stat-item" style={{
             display: "inline-block",
-            marginRight: 10
+            marginRight: 41
         }}>
-            <span style={{color: "grey"}}>{props.head}</span>
+            <span className="stat-item-head">{props.head}</span>
             <br />
             {props.children}
         </div>
@@ -106,42 +114,89 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
         ramSeries = _(ramSeries).reverse().value()
         let {stats} = this.state
         return <div>
-            <br />
-            <StatContainer headLeft={<h4>CPU</h4>} headRight={<h4>Ayylmao</h4>}>
-                <StatItem head="Usage">
-                    {cpuSeries[cpuSeries.length-1].toFixed(0)}%
-                </StatItem>
-                <StatItem head="Processes">
-                    {this.state.stats.runningProcesses}
-                </StatItem>
-            </StatContainer>
-            <Graph
-                data={{
-                    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                    series: [cpuSeries]
-                }}
-                options={graphOptions}
-                type={"Line"} />
-            <StatContainer headLeft={<h4>RAM</h4>} headRight={<h4>{bytesToSize(this.state.stats.totalMemory)}</h4>}>
-                <StatItem head="Usage">
-                    {ramSeries[ramSeries.length-1].toFixed(0)}%
-                </StatItem>
-                <StatItem head="In Use">
-                    {bytesToSize(stats.usedMemory)}
-                </StatItem>
-                <StatItem head="Free">
-                    {bytesToSize(stats.availableMemory)}
-                </StatItem>
-            </StatContainer>
-            <Graph
-                data={{
-                    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                    series: [ramSeries]
-                }}
-                options={graphOptions}
-                type={"Line"} />
+            <Panel style={{marginBottom: 20}}>
+                <div className="header">
+                    <StatHeader headLeft={"CPU"} />
+                </div>
+                <div className="body">
+                    <StatContainer>
+                        <StatItem head="Usage">
+                            {cpuSeries[cpuSeries.length-1].toFixed(0)}%
+                        </StatItem>
+                        <StatItem head="Processes">
+                            {this.state.stats.runningProcesses}
+                        </StatItem>
+                    </StatContainer>
+                    <Graph
+                        data={{
+                            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                            series: [cpuSeries]
+                        }}
+                        options={graphOptions}
+                        type={"Line"} />
+                </div>
+            </Panel>
+            <Panel>
+                <div className="header">
+                    <StatHeader headLeft="RAM" headRight={bytesToSize(this.state.stats.totalMemory)} />
+                </div>
+                <div className="body">
+                    <StatContainer >
+                        <StatItem head="Usage">
+                            {ramSeries[ramSeries.length-1].toFixed(0)}%
+                        </StatItem>
+                        <StatItem head="In Use">
+                            {bytesToSize(stats.usedMemory)}
+                        </StatItem>
+                        <StatItem head="Free">
+                            {bytesToSize(stats.availableMemory)}
+                        </StatItem>
+                    </StatContainer>
+                    <Graph
+                        data={{
+                            labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                            series: [ramSeries]
+                        }}
+                        options={graphOptions}
+                        type={"Line"} />
+                </div>
+            </Panel>
         </div>
     }
+}
+
+interface SystemPanelProps extends React.HTMLProps<HTMLDivElement> {
+    title: string,
+    image: React.ReactChild,
+    emptyBody?: boolean,
+    flexGrow?: number,
+    flexShrink?: number
+}
+
+function SystemPanel(props: SystemPanelProps) {
+    let {title, image, flexGrow, flexShrink, children, emptyBody} = props
+    if (emptyBody === undefined) {
+        emptyBody = true
+    }
+    const rest = _.omit(props, ["title", "image", "children", "flexGrow", "flexShrink"])
+    return <Panel style={{flexGrow, flexShrink}} className="flex-child" {...rest}>
+        <HeaderCenter>
+            {title} <br /> <br />
+            {image}
+        </HeaderCenter>
+        {emptyBody ? [
+            <Flex />, 
+            <FixedCenter>
+                {children}
+            </FixedCenter>
+        ] : {children}}
+    </Panel>
+}
+
+function Faded(props: {children?: any}) {
+    return <span className="faded">
+        {props.children}
+    </span>
 }
 
 export class SystemPage extends React.Component<{}, {
@@ -184,7 +239,57 @@ export class SystemPage extends React.Component<{}, {
         return (
             <div 
             className="animated fadeInDown" 
-            style={{marginLeft: 30, marginTop: 40, maxWidth: 900}}>
+            style={{marginLeft: 30, marginTop: 40}}>
+                <FlexCol>
+                    <FlexRow>
+                        <FlexCol style={{width: "66%"}}>
+                            <FlexRow>
+                                <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="operating system" image={
+                                    <img src="/img/icon/pc.svg" width="40" height="75" />
+                                }>
+                                    {os.name} {os.architecture} <br />
+                                    <Faded>
+                                        Version {os.version} <br />
+                                        Build {os.build}
+                                    </Faded>
+                                </SystemPanel>
+                                <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="motherboard" image={
+                                    <img src="/img/icon/motherboard.svg" width="60" height="67" />
+                                }>
+                                    {stats.motherBoard} <br />
+                                    <Faded>
+                                        BIOS from {stats.biosInfo.biosManufacturer} <br />
+                                        {stats.biosInfo.biosCaption}
+                                    </Faded>
+                                </SystemPanel>
+                            </FlexRow>
+                            <FlexRow>
+                                <SystemPanel emptyBody  flexGrow={1} title="CPU" image={
+                                    <img src="/img/icon/microchip.svg" width="60" height="75" />
+                                }>
+                                    {cpu.cpuName}
+                                </SystemPanel>
+                            </FlexRow>
+                        </FlexCol>
+                        <SystemPanel emptyBody  flexGrow={1} title="CPU" image={
+                            <img src="/img/icon/microchip.svg" width="60" height="75" />
+                        }>
+                            {cpu.cpuName}
+                        </SystemPanel>
+                    </FlexRow>
+                    <FlexRow>
+                        <SystemPanel emptyBody style={{width: "66%"}} title="video cards" image={
+                            <img src="/img/icon/videocard.svg" width="60" height="55" />
+                        }>
+                            sample text
+                        </SystemPanel>
+                        <SystemPanel emptyBody flexGrow={1} title="drives" image={
+                            <img src="/img/icon/sdd.svg" width="60" height="55" />
+                        }>
+                            sample text
+                        </SystemPanel>
+                    </FlexRow>
+                </FlexCol>
                 <IconMedia src="/img/icon/pc.svg" size={[40, 75]} alt="PC">
                     <h4 className="media-heading">Operating System</h4>
                     {os.name} {os.architecture}, version {os.version}

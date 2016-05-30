@@ -3,6 +3,7 @@ import {taskStore, appStore} from "../store"
 import {createSortOnProperty, bytesToSize} from "../util"
 import {sendCommandToDefault} from "../socket"
 import {Stats, LoadingScreen} from "./"
+import {Panel} from "./ui"
 import {Button, Input, Glyphicon} from "react-bootstrap"
 import setIntervals from "../interval"
 import {intervals} from "../api-layer"
@@ -20,11 +21,11 @@ export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}
         
     }
     render() {
-        const createButton = <Button bsStyle="primary" onClick={this.startProcess}><Glyphicon glyph="plus"/></Button>
+        const createButton = <Button bsStyle="primary" onClick={this.startProcess}>start</Button>
         return <div>
             <Input 
             type="text" 
-            placeholder="Start new process..." 
+            placeholder="Enter new process name..." 
             onChange={e => this.setState({exe: e.target.value, box: e.target})} 
             onKeyDown={(e) => {
                 if (e.keyCode == 13) {
@@ -100,7 +101,7 @@ export class TaskList extends React.Component<
             this.state.tasks.sort(createSortOnProperty<TaskInfo>(this.state.sortProperty, this.state.sortType))
         }
         return (
-            <table className="table">
+            <table className="table table-striped">
                 <thead>
                     <tr>
                         <th>Icon</th>
@@ -177,20 +178,29 @@ export class Task extends React.Component<
 }
 
 export function TaskPage(props: any) {
-    return <div className="task-page">
+    return <div className="task-page" style={{height: "100%"}}>
         <div className="row">
             
         </div>
-        <div className="row">
-            <div className="col-md-8" style={{minHeight: "600px"}}>
-                <ProcessCreator />
-                <TaskList />
+        <div className="row" style={{height: "100%"}}>
+            <div className="col-md-7" style={{minHeight: "600px", height: "100%"}}>
+                <Panel className="full-height">
+                    <div className="header">
+                        processes
+                    </div>
+                    <div className="fixed dashed-bottom" style={{height: 43}}>
+                            <ProcessCreator />
+                        </div>
+                    <div className="body" style={{overflow: "auto"}}>
+                        <TaskList />
+                    </div>
+                </Panel>
             </div>
             
-            <div className="col-md-4">
+            <div className="col-md-5 col-collapsed-left">
                 {/*<AutoAffix viewportOffsetTop={15} container={this}>*/}
-                    <div style={{position: "fixed", width: "25%"}}>
-                    <Stats />
+                    <div>
+                        <Stats />
                     </div>
                 {/*</AutoAffix>*/}
             </div>

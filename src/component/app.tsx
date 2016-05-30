@@ -61,6 +61,9 @@ function NavItem(props: {className: string, path: string, label: string, glyph: 
     </li>
 }
 
+const fullHeight: React.CSSProperties = {
+    height: "100%"
+}
 
 export default class App extends React.Component<{
     children?: any, 
@@ -114,17 +117,17 @@ export default class App extends React.Component<{
                     appActions.setPassword(pwd)
                 }} />
         }
-        return <div style={this.fullHeightIf("/terminal")}>
+        return <div style={fullHeight}>
             <Sidebar activePath={this.props.location.pathname} />
-            <div className="page" style={this.fullHeightIf("/terminal")}>
-                <div className="page-content container-fluid" style={this.fullHeightIf("/terminal")}>
+            <div className="page" style={fullHeight}>
+                <div className="page-content container-fluid" style={fullHeight}>
                     {this.props.children}
                 </div>
             </div>
         </div>
     }
     render() {
-        return <div className="main" style={this.fullHeightIf("/terminal")}>
+        return <div className="main" style={fullHeight}>
             <Messages />
             <Dialogs />
             {this.mainContent()}
@@ -165,7 +168,9 @@ class Sidebar extends React.Component<{activePath: string}, {
     }
     sidebarContent() {
         return <div className="sidebar col-md-4" data-spy="affix">
-            <h1 className="text-center">Ulterius</h1>
+            <div className="header">
+                <img src="img/logo.png" height="20" /> &nbsp; ULTERIUS
+            </div>
             <UserWidget />
             <ul className="nav nav-pills nav-stacked">
                 <NavItem 
@@ -179,7 +184,7 @@ class Sidebar extends React.Component<{activePath: string}, {
                     className={this.getActiveClassName("/info")} 
                     path="/info"
                     glyph="stats"
-                    label="System Info" />
+                    label="System Information" />
                 <NavItem 
                     className={this.getActiveClassName("/cameras")} 
                     path="/cameras"

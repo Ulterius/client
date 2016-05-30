@@ -1,0 +1,24 @@
+
+=reset-bs
+    border: none !important
+    background: none !important
+    box-shadow: none !important
+    -webkit-box-shadow: none !important
+    
+=h-margin-collapse($size)
+    margin:
+        left: $size
+        right: $size
+    &:first-child
+        margin-left: 0 !important
+    &:last-child
+        margin-right: 0 !important
+
+=v-margin-collapse($size)
+    margin:
+        top: $size
+        bottom: $size
+    &:first-child
+        margin-top: 0 !important
+    &:last-child
+        margin-bottom: 0 !important

@@ -122,7 +122,7 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
         let {avatar, username} = this.state.user
         return <div className="user-widget">
             <Base64Img src={"data:image/png;base64," + avatar} className="img-circle" width="64" height="64" alt="avatar" />
-            <div style={{marginTop: 5}}>{username}</div>
+            <div style={{marginTop: 5}}>Hi, {username}!</div>
         </div>
 
     }
@@ -204,7 +204,8 @@ import {Input, Button, Glyphicon} from "react-bootstrap"
 export class EntryBox extends React.Component<
     {
         onConfirmation: (text: string) => any, 
-        glyph: string, 
+        glyph?: string, 
+        buttonText?: string,
         buttonStyle?: string,
         placeholder?: string,
         type?: string,
@@ -220,7 +221,8 @@ export class EntryBox extends React.Component<
             <Button
             bsStyle={this.props.buttonStyle || "primary"}
             onClick={() => {this.props.onConfirmation(this.state.text)}}>
-                <Glyphicon glyph={this.props.glyph} />
+                {this.props.glyph ? <Glyphicon glyph={this.props.glyph} /> : false}
+                {this.props.buttonText ? this.props.buttonText : false}
             </Button>
         return <Input
             type={this.props.type || "text"}

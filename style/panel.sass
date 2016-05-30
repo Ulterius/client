@@ -1,0 +1,78 @@
+
+
+@font-face
+    font-family: ProximaNovaSemi
+    src: url("/font/proxima_nova_semibold.otf")
+@font-face
+    font-family: ProximaNovaBold
+    src: url("/font/proxima_nova_bold.otf")
+
+.dashed-bottom
+    border-bottom: $dashed-line
+
+
+
+.ulterius-panel
+    color: $text-color
+    display: flex
+    flex-direction: column
+    background-color: #ffffff;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.05)
+    justify-content: space-between
+    .fixed
+        input
+            +reset-bs
+            font-family: ProximaNovaIt
+
+        button
+            +reset-bs
+            color: $highlight
+            text-transform: uppercase
+            font:
+                family: ProximaNovaBold
+                size: 12px
+    .header
+        height: 50px
+        font-family: ProximaNovaSemi
+        font-size: 12px
+        text-transform: uppercase
+        padding: 19px 20px 17px 20px
+        border-bottom: $solid-line
+    
+    .header-center
+        @extend .header
+        height: auto
+        text-align: center
+        border-bottom: none
+    
+    .faded
+        opacity: 0.5
+        
+    .fixed-center
+        text-align: center
+        flex: none
+        
+    .header, .fixed, .header-center
+        flex: none
+    .body, .flexible
+        flex-grow: 1
+    .stat-header
+        .right
+            margin-top: -5px
+            color: $highlight
+            font:
+                family: ProximaNovaCond
+                size: 18px
+    .stat-item:last-child
+        margin-right: 0 !important
+    .stat-container 
+        .stat-item-head
+            opacity: 0.3
+            text-transform: uppercase
+            font:
+                family: ProximaNova
+                size: 12px
+        background-color: $stat-bg
+        border-bottom: $solid-line
+        padding: 8px 20px 7px 20px
+        margin-bottom: 10px

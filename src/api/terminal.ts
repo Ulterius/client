@@ -42,18 +42,18 @@ export function initialize() {
 tC.fallbackListen(console.log.bind(console))
 
 tC.listenAll(
-    [msg => !!msg.publicKey && !msg.aesShook && !terminalConnection.encrypted, msg => {
+    [msg => !!msg.publicKey && !msg.aesShook && !tC.encrypted, msg => {
         let encrypt = new JSEncrypt()
         encrypt.setPublicKey(atob(msg.publicKey))
         let key = generateHexString(16)
         let iv = generateHexString(16)
         let encKey = encrypt.encrypt(key)
         let encIV = encrypt.encrypt(iv)
-        terminalConnection.send("AesHandShakeRequest", {
+        tC.send("AesHandShakeRequest", {
             encryptedKey: encKey,
             encryptedIv: encIV
         })
-        terminalConnection.encrypt(key, iv)
+        tC.encrypt(key, iv)
     }],
     [msg => isSessionStateEvent(msg) && msg.aesShook, msg => {
         console.log(msg)

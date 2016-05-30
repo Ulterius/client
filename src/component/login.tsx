@@ -46,6 +46,7 @@ export class ConnectScreen extends React.Component<{}, {
 }> {
     componentDidMount() {
         this.setState({host: "localhost", port: "22007"})
+        connect("localhost", "22007")
     }
     inner() {
         return <div>
