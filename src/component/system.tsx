@@ -7,10 +7,12 @@ import {helpers} from "../api-layer"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
 import {LoadingScreen} from "./"
-import {panel, FlexRow, FlexCol} from "./ui"
+import {panel, FlexRow, FlexCol, Meter, createDivComponent} from "./ui"
 import * as _ from  "lodash"
 
-const {Panel, Fixed, FixedCenter, Flex, Header, HeaderCenter} = panel
+const {Panel, Fixed, FixedCenter, Flex, FlexFixed, Header, HeaderCenter} = panel
+
+const SystemFooter = createDivComponent("system-footer")
 
 let graphOptions = {
     axisX: {
@@ -55,15 +57,13 @@ function StatContainer(props: {
     </div>
 }
 
-function StatItem(props: {head: string, children?: any}) {
-    return <div className="stat-item" style={{
-            display: "inline-block",
-            marginRight: 41
-        }}>
-            <span className="stat-item-head">{props.head}</span>
-            <br />
-            {props.children}
-        </div>
+function StatItem(props: {head: string, isFooter?: boolean, children?: any}) {
+    const {head, isFooter, children} = props
+    return <div className={isFooter ? "foot-stat-item" : "stat-item"}>
+        <span className="stat-item-head-text">{head}</span>
+        <br />
+        {children}
+    </div>
 }
 
 export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: SystemInfo[] }> {
@@ -175,9 +175,6 @@ interface SystemPanelProps extends React.HTMLProps<HTMLDivElement> {
 
 function SystemPanel(props: SystemPanelProps) {
     let {title, image, flexGrow, flexShrink, children, emptyBody} = props
-    if (emptyBody === undefined) {
-        emptyBody = true
-    }
     const rest = _.omit(props, ["title", "image", "children", "flexGrow", "flexShrink"])
     return <Panel style={{flexGrow, flexShrink}} className="flex-child" {...rest}>
         <HeaderCenter>
@@ -189,7 +186,7 @@ function SystemPanel(props: SystemPanelProps) {
             <FixedCenter>
                 {children}
             </FixedCenter>
-        ] : {children}}
+        ] : children}
     </Panel>
 }
 
@@ -264,29 +261,92 @@ export class SystemPage extends React.Component<{}, {
                                 </SystemPanel>
                             </FlexRow>
                             <FlexRow>
-                                <SystemPanel emptyBody  flexGrow={1} title="CPU" image={
-                                    <img src="/img/icon/microchip.svg" width="60" height="75" />
+                                <SystemPanel flexGrow={1} title="network" image={
+                                    <img src="/img/icon/routers.svg" width="60" height="58" />
                                 }>
-                                    {cpu.cpuName}
+                                    <Flex />
+                                    <SystemFooter>
+                                        <StatItem isFooter head="public ip">
+                                            {network.publicIp}
+                                        </StatItem>
+                                        <StatItem isFooter head="internal ip">
+                                            {network.internalIp}
+                                        </StatItem>
+                                        <StatItem isFooter head="mac address">
+                                            {network.macAddress}
+                                        </StatItem>
+                                    </SystemFooter>
                                 </SystemPanel>
                             </FlexRow>
                         </FlexCol>
-                        <SystemPanel emptyBody  flexGrow={1} title="CPU" image={
+                        <SystemPanel flexGrow={1} title="CPU" image={
                             <img src="/img/icon/microchip.svg" width="60" height="75" />
                         }>
-                            {cpu.cpuName}
+                            <FixedCenter>
+                                {cpu.cpuName}
+                            </FixedCenter>
+                            <Flex>
+                                <div className="meter-box">
+                                    <Meter />
+                                </div>
+                            </Flex>
+                            <SystemFooter>
+                                <StatItem isFooter head="cores">
+                                    {cpu.cores}
+                                </StatItem>
+                                <StatItem isFooter head="threads">
+                                    {cpu.threads}
+                                </StatItem>
+                                <StatItem isFooter head="clock speed">
+                                    {(cpu.speedMhz/1000).toFixed(1)} GHz
+                                </StatItem>
+                            </SystemFooter>
                         </SystemPanel>
                     </FlexRow>
                     <FlexRow>
-                        <SystemPanel emptyBody style={{width: "66%"}} title="video cards" image={
+                        <SystemPanel style={{width: "66%"}} title="video cards" image={
                             <img src="/img/icon/videocard.svg" width="60" height="55" />
                         }>
-                            sample text
+                            <FlexFixed>
+                                {gpu.gpus.map(info => {
+                                    return <FixedCenter style={{flexGrow: 1, flexBasis: 0}} key={info.Name}>
+                                        {info.Name} <br />
+                                        <Faded>Driver Version: {info.DriverVersion}</Faded> <br />
+                                        <span
+                                        className={"label label-" + (info.Status == "OK" ? "success" : "danger")}>
+                                            {info.Status}
+                                        </span>
+                                        &nbsp;
+                                        <span className="label label-default">
+                                            {GpuAvailability[info.Availability]}
+                                        </span>
+                                    </FixedCenter>
+                                })}
+                            </FlexFixed>
+                            <Flex />
                         </SystemPanel>
                         <SystemPanel emptyBody flexGrow={1} title="drives" image={
                             <img src="/img/icon/sdd.svg" width="60" height="55" />
                         }>
-                            sample text
+                            <Fixed>
+                                {stats.drives.map(drive => {
+                                    return <div key={drive.RootDirectory} className="graph-item">
+                                        <div className="graph-label">
+                                            {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
+                                            {drive.RootDirectory} <br /> 
+                                            <Faded>{bytesToSize(drive.TotalSize)}</Faded>
+                                        </div>
+                                        <div className="graph-bar">
+                                            <Bar
+                                                value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
+                                                style={{width: "100%"}} 
+                                                color={true}
+                                            />
+                                            <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
+                                        </div>
+                                    </div>
+                                })}
+                            </Fixed>
                         </SystemPanel>
                     </FlexRow>
                 </FlexCol>

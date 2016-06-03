@@ -35,18 +35,16 @@ export const panel = {
     HeaderCenter: createDivComponent("header-center"),
     Fixed: createDivComponent("fixed"),
     FixedCenter: createDivComponent("fixed-center"),
-    Flex: createDivComponent("flexible")
+    Flex: createDivComponent("flexible"),
+    FlexFixed: createDivComponent("flex-fixed")
 }
 
 export const Panel = createDivComponent("ulterius-panel")
 export const FlexRow = createDivComponent("flex-row")
 export const FlexCol = createDivComponent("flex-col")
 
-/*
-export function Panel(props: React.HTMLProps<HTMLDivElement>) {
-    return <div {...props} className={"ulterius-panel " + stringIf(!!props.className, props.className)} >
-        {props.children}
-    </div>
+export function Meter() {
+    return <svg viewBox="0 0 100 75">
+        <path d="M25 40 C 35 20 65 20 75 40" style={{strokeWidth: 20}} stroke="black" fill="transparent"/>
+    </svg>
 }
-*/
-

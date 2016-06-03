@@ -50,6 +50,7 @@
         
     .fixed-center
         text-align: center
+        padding-bottom: 20px
         flex: none
         
     .header, .fixed, .header-center
@@ -64,7 +65,7 @@
                 family: ProximaNovaCond
                 size: 18px
     .stat-item:last-child
-        margin-right: 0 !important
+        margin-right: 0
     .stat-container 
         .stat-item-head
             opacity: 0.3
@@ -76,3 +77,70 @@
         border-bottom: $solid-line
         padding: 8px 20px 7px 20px
         margin-bottom: 10px
+        
+    .flex-fixed
+        @extend .fixed
+        display: flex
+        justify-content: space-around
+        align-items: center
+        
+    .system-footer
+        @extend .flex-fixed
+        background-color: $stat-bg
+    
+    .graph-item
+        display: flex
+        justify-content: space-between
+        border-bottom: $dashed-line
+        padding: 20px
+        &:last-child
+            border-bottom: none
+        .graph-label
+            text-align: left
+        .graph-bar
+            .progress
+                margin-bottom: 7px
+            margin:
+                top: 6px
+            width: 50%
+            text-align: right
+
+.meter-box
+    flex: none
+    margin: auto
+    width: 100px
+    height: 75px
+
+.stat-item
+    display: inline-block
+    margin-right: 41px
+    line-height: 18px
+    font:
+        family: ProximaNovaCond
+        size: 18px
+        
+.foot-stat-item
+    @extend .stat-item
+    &:last-child
+        margin-right: 20px !important
+    &:first-child
+        margin-left: 20px !important
+    line-height: 20px
+    .stat-item-head-text
+        letter-spacing: 1px
+    flex-grow: 1
+    flex-basis: 0
+    
+    margin:
+        top: 15px
+        right: 0
+        bottom: 20px 
+    
+    text-align: center
+
+.stat-item-head-text
+    opacity: 0.3
+    text-transform: uppercase
+    font:
+        family: ProximaNova
+        size: 12px

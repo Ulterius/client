@@ -119,6 +119,9 @@ export function authenticate(info: AuthInfo) {
         helpers.requestAuxillarySystemInformation()
         onAuthenticate()
         appActions.login(true)
+        if (config.cachePassword && !window.localStorage.getItem("password")) {
+            window.localStorage.setItem("password", appStore.getState().auth.password)
+        }
     }
     else {
         appActions.login(false)
@@ -201,6 +204,10 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
         */
+        if (config.cachePassword && window.localStorage.getItem("password")) {
+            sendCommandToDefault("authenticate", window.localStorage.getItem("password"))
+        }
+        
         let password
         if (password = appStore.getState().auth.password) {
             sendCommandToDefault("authenticate", password)

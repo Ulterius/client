@@ -7,7 +7,8 @@ new WebpackDevServer(webpack(config), {
     watch: true,
     contentBase: "public",
     progress: true,
-    colors: true
+    colors: true,
+    hot: true
 }).listen(8080, "localhost", function(err, result) {
     if (err) {
         console.log(err)

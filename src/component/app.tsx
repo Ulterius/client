@@ -35,21 +35,7 @@ import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
 import MediaQuery = require("react-responsive")
 
-export function RootRouter(props: any) {
-    return <Router>
-        <Route path="/" component={App}>
-            <IndexRoute component={TaskPage} />
-            <Route path="tasks" component={TaskPage} />
-            <Route path="info" component={SystemPage} />
-            <Route path="cameras" component={CameraPage} />
-            <Route path="settings" component={SettingsPage} />
-            <Route path="filesystem" component={FilePage} />
-            <Route path="vnc" component={VncPage} />
-            <Route path="terminal" component={TerminalPage} />
-            {/* <Route path="plugin" component={PluginPage} /> */}
-        </Route>
-    </Router>
-}
+
 
 function NavItem(props: {className: string, path: string, label: string, glyph: string}) {
     let {className, path, label, glyph} = props
@@ -272,5 +258,25 @@ class Sidebar extends React.Component<{activePath: string}, {
                 {this.modalSidebar()}
             </MediaQuery>
         </div>
+    }
+}
+
+const routes = <Route path="/" component={App}>
+            <IndexRoute component={TaskPage} />
+            <Route path="tasks" component={TaskPage} />
+            <Route path="info" component={SystemPage} />
+            <Route path="cameras" component={CameraPage} />
+            <Route path="settings" component={SettingsPage} />
+            <Route path="filesystem" component={FilePage} />
+            <Route path="vnc" component={VncPage} />
+            <Route path="terminal" component={TerminalPage} />
+            {/* <Route path="plugin" component={PluginPage} /> */}
+        </Route>
+
+export class RootRouter extends React.Component<{}, {}> {
+    render() {
+        return <Router>
+            {routes}
+        </Router>
     }
 }
