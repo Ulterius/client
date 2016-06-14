@@ -1,5 +1,6 @@
 import {terminalConnection} from "../socket"
 import {generateHexString} from "../util"
+import {generateKey} from "../util/crypto"
 import {terminalActions} from "../action"
 import Ti = TerminalInfo
 const tC = terminalConnection
@@ -41,26 +42,29 @@ export function initialize() {
 
 tC.fallbackListen(console.log.bind(console))
 
-tC.listenAll(
-    [msg => !!msg.publicKey && !msg.aesShook && !tC.encrypted, msg => {
+tC.listenAll<typeof tC>(
+    [(msg, t) => !!msg.publicKey && !msg.aesShook && !t.encrypted, (msg, t) => {
+        let {key, iv, encKey, encIV} = generateKey(msg.publicKey)
+        /*
         let encrypt = new JSEncrypt()
         encrypt.setPublicKey(atob(msg.publicKey))
         let key = generateHexString(16)
         let iv = generateHexString(16)
         let encKey = encrypt.encrypt(key)
         let encIV = encrypt.encrypt(iv)
-        tC.send("AesHandShakeRequest", {
+        */
+        t.send("AesHandShakeRequest", {
             encryptedKey: encKey,
             encryptedIv: encIV
         })
-        tC.encrypt(key, iv)
+        t.encrypt(key, iv)
     }],
-    [msg => isSessionStateEvent(msg) && msg.aesShook, msg => {
+    [msg => isSessionStateEvent(msg) && msg.aesShook, (msg, tc) => {
         console.log(msg)
         console.log("Shake got, sending create terminal shit")
-        tC.send("CreateTerminalRequest", {
+        tc.send("CreateTerminalRequest", {
             terminalType: "cmd.exe", 
-            correlationId: tC.nextCorrelationId()
+            correlationId: tc.nextCorrelationId()
         })
     }],
     [isCreatedEvent, (msg: Ti.Created) => {

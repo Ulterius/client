@@ -1,0 +1,23 @@
+{
+  "name": "ulterius-client",
+  "dependencies": {},
+  "globalDependencies": {
+    "alt": "registry:dt/alt#0.16.10+20160317120654",
+    "classnames": "registry:dt/classnames#0.0.0+20160316155526",
+    "crypto-js": "registry:dt/crypto-js#3.1.4+20160505170201",
+    "es6-promise": "registry:dt/es6-promise#0.0.0+20160423074304",
+    "history": "registry:dt/history#1.8.0+20160316155526",
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+    "jquery": "registry:dt/jquery#1.10.0+20160417213236",
+    "lodash": "registry:dt/lodash#3.10.0+20160330154726",
+    "node": "registry:dt/node#6.0.0+20160602155235",
+    "pako": "registry:dt/pako#0.0.0+20160317120654",
+    "react": "registry:dt/react#0.14.0+20160602151522",
+    "react-addons-css-transition-group": "registry:dt/react-addons-css-transition-group#0.14.0+20160316155526",
+    "react-addons-transition-group": "registry:dt/react-addons-transition-group#0.14.0+20160417134118",
+    "react-bootstrap": "registry:dt/react-bootstrap#0.0.0+20160526141239",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
+    "react-router": "registry:dt/react-router#2.0.0+20160501155536",
+    "react-router/history": "registry:dt/react-router/history#2.0.0+20160602154905"
+  }
+}

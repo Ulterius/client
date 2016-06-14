@@ -28,7 +28,7 @@ export class LoginScreen extends React.Component<{
                 type="password" 
                 placeholder="Password" 
                 buttonAfter={loginButton} 
-                onChange={(e) => this.setState({password: e.target.value})}
+                onChange={(e) => this.setState({password: (e.target as HTMLInputElement).value})}
                 onKeyDown={(e) => {
                     if (e.keyCode == 13) {
                         this.props.onLogin(this.state.password)
@@ -54,10 +54,14 @@ export class ConnectScreen extends React.Component<{}, {
             <br />
             <div className="row">
                 <div className="col-sm-8">
-                    <Input type="text" defaultValue="localhost" placeholder="host" onChange={e => this.setState({host: e.target.value})} />
+                    <Input type="text" defaultValue="localhost" placeholder="host" onChange={e => 
+                        this.setState({host: (e.target as HTMLInputElement).value})
+                    } />
                 </div>
                 <div className="col-sm-4">
-                    <Input type="text" defaultValue="22007" placeholder="port" onChange={e => this.setState({port: e.target.value})} />
+                    <Input type="text" defaultValue="22007" placeholder="port" onChange={e => 
+                        this.setState({port: (e.target as HTMLInputElement).value})
+                    } />
                 </div>
             </div>
             <Button bsStyle="primary" onClick={() => connect(this.state.host, this.state.port)}><Glyphicon glyph="arrow-right" /></Button>

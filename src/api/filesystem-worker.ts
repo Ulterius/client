@@ -58,7 +58,7 @@ function encryptData(key: string, data: string): string {
             iv: pass
         }
     )
-    return encrypted.ciphertext.toString(CryptoJS.enc.Base64)
+    return (encrypted.ciphertext as any).toString(CryptoJS.enc.Base64)
 }
 
 function decryptData(key: string, data: string) {

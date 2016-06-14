@@ -4,10 +4,27 @@ import * as _ from "lodash"
 import * as apiLayer from "./api-layer"
 import {appStore} from "./store"
 import CryptoJS = require("crypto-js")
-import {toHex, workerAsync, workerListen, byteArraysToBlobURL, downloadBlobURL, elementAfter, wrapWorker as ww} from "./util"
+import {toHex, workerAsync, arrayBufferToBase64, workerListen, byteArraysToBlobURL, downloadBlobURL, elementAfter, wrapWorker as ww} from "./util"
+import {WorkerPool} from "./util/worker"
 import {appActions, messageActions} from "./action"
 
+
+
 let SocketWorker = require("worker?name=socket.worker.js!./socket-worker")
+
+/*
+let pool = new WorkerPool(SocketWorker, 3)
+pool.listen({
+    test(message) {
+        console.log(message)
+    }
+})
+pool.post("test")
+pool.post("test")
+pool.post("test")
+pool.post("test")
+pool.post("test")
+*/
 
 //let connectInterval = undefined
 
@@ -31,25 +48,41 @@ function getSyncKey(prepend: string) {
 
 //let timeoutInterval;
 
+
+
+interface Callback {
+    (message: any, connection: Connection): any
+}
+
+interface Predicate {
+    (message: any, connection: Connection): boolean
+}
+
+interface KeyPredicate {
+    (key: string, message: any, connection: Connection): boolean
+}
+
 abstract class Connection {
     keyCounter = 0
+    useQueue: boolean = true
     requestQueue = []
     socket: WebSocket
-    socketWorker: Worker
+    socketPool: WorkerPool
     reconnectInterval = undefined
     callbacks: {[key: string]: Function} = {}
     listeners: {
-        predicate: (message: any) => boolean,
-        callback: (message: any) => any,
+        predicate: Predicate,
+        callback: Callback,
         once?: boolean
     }[] = []
+    bufferListeners: Callback[] = []
     keyedListeners: {
-        predicate: (key: string, message: any) => boolean,
+        predicate: KeyPredicate,
         callbacks: {
-            [key: string]: Function
+            [key: string]: Callback
         }
     }[] = []
-    fallbackListeners: Function[] = []
+    fallbackListeners: Callback[] = []
     logPackets: boolean = false
     host: string
     port: string
@@ -57,7 +90,7 @@ abstract class Connection {
     key: string = undefined
     iv: string = undefined
     
-    constructor(public isDefault: boolean = false) {}
+    constructor(public poolSize = 3, public isDefault: boolean = false) {}
     
     abstract onMessage(message?: any)
     
@@ -70,9 +103,10 @@ abstract class Connection {
         this.socket = undefined
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
+            this.socket.binaryType = "arraybuffer"
             console.log(this.socket)
             if (this.socket) {
-                this.socketWorker = new SocketWorker
+                this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
                 this.setSocketEvents()
                 this.setWorkerEvents()
             }
@@ -90,17 +124,24 @@ abstract class Connection {
     }
     
     promiseToSendPacket(packet, packetName: string = "unnamed") {
-        let {logPackets, requestQueue} = this
+        let {logPackets, useQueue, requestQueue} = this
         if (logPackets) {
             console.groupCollapsed("Queueing packet: " + packetName)
             console.log(packet)
         }
-        requestQueue.push(packet)
-        if (requestQueue.length == 1) {
-            if (logPackets) {
-                console.log("Queue empty, sending packet now")
-                console.groupEnd()
+        if (useQueue) {
+            requestQueue.push(packet)
+            if (requestQueue.length == 1) {
+                if (logPackets) {
+                    console.log("Queue empty, sending packet now")
+                    console.groupEnd()
+                }
+                this.sendPacket(packet, packetName)
             }
+        }
+        else {
+            if (logPackets)
+                console.log("Queue disabled, Sending Packet: " + packetName)
             this.sendPacket(packet, packetName)
         }
         if (logPackets)
@@ -108,7 +149,7 @@ abstract class Connection {
     }
     
     sendPacket(packet, packetName: string = "unnamed") {
-        let {logPackets, requestQueue, socketWorker} = this
+        let {logPackets, requestQueue, socketPool} = this
         if (logPackets) {
             console.groupEnd()
             console.groupCollapsed("Sending packet: " + packetName)
@@ -116,14 +157,14 @@ abstract class Connection {
             console.log("Waiting messages: " + requestQueue.length)
             console.groupEnd()
         }
-        ww(socketWorker).post("serialize", {
+        socketPool.post("serialize", {
             encrypted: this.encrypted,
             key: this.key,
             iv: this.iv,
             data: packet
         })
         /*
-        socketWorker.postMessage({
+        socketPool.postMessage({
             type: "serialize",
             content: {
                 encrypted: this.encrypted,
@@ -163,9 +204,14 @@ abstract class Connection {
     }
     
     setWorkerEvents() {
-        ww(this.socketWorker).listen({
+        this.socketPool.listen({
             deserialize: (message) => {
-                this.onDeserialize(message)
+                if (typeof message === "string") {
+                    this.onArrayBuffer(message)
+                }
+                else {
+                    this.onDeserialize(message)
+                }
             },
             serialize: (message) => {
                 try {
@@ -174,20 +220,28 @@ abstract class Connection {
                 catch (e) {
                     console.log(e)
                 }
+            },
+            decryptBuffer: (message) => {
+                this.onArrayBuffer(message)
             }
         })
     }
     
-    onString() {
-        
+    onString() {}
+    //base64 string, by the way
+    onArrayBuffer(data: string) {
+        this.requestQueue = []
+        this.bufferListeners.forEach(listener => {
+            listener(data, this)
+        })
     }
     
     private onDeserialize(message: any) {
         this.onMessage(message)
         let caught = false
         for (let listener of this.listeners) {
-            if (listener.predicate(message)) {
-                listener.callback(message)
+            if (listener.predicate(message, this)) {
+                listener.callback(message, this)
                 caught = true
                 if (listener.once) {
                     _.pull(this.listeners, listener)
@@ -196,15 +250,15 @@ abstract class Connection {
         }
         for (let listener of this.keyedListeners) {
             _.forOwn(listener.callbacks, (callback, k) => {
-                if (listener.predicate(k, message)) {
+                if (listener.predicate(k, message, this)) {
                     caught = true
-                    callback(message)
+                    callback(message, this)
                 }
             })
         }
         if (!caught) {
             for (let listener of this.fallbackListeners) {
-                listener(message)
+                listener(message, this)
             }
         }
     }
@@ -212,7 +266,7 @@ abstract class Connection {
     setSocketEvents() {
         let {
             socket, 
-            socketWorker, 
+            socketPool, 
             host, 
             port, 
             isDefault, 
@@ -223,7 +277,7 @@ abstract class Connection {
             if (this.reconnectInterval === undefined) {
                 socket.onerror = (e) => {
                     this.socket.close(1000)
-                    this.socketWorker.terminate()
+                    this.socketPool.terminate()
                     if (this.isDefault && appStore.getState().connection.host) {
                         this.reconnectInterval = setInterval(() => {
                             console.log("Not connected... trying to reconnect.")
@@ -249,14 +303,24 @@ abstract class Connection {
             socket.onmessage = (e) => {
                 if (typeof e.data === "string") {
                     this.onString()
-                    ww(this.socketWorker).post("deserialize", {
+                    this.socketPool.post("deserialize", {
                         key: this.key,
                         iv: this.iv,
                         data: e.data
                     })
                 }
                 else if (e.data instanceof ArrayBuffer) {
-                    console.log("ArrayBuffer get (for some reason): " + e.data)
+                    if (this.logPackets)
+                        console.log("got buffer")
+                    //this.onArrayBuffer(arrayBufferToBase64(e.data))
+                    
+                    this.socketPool.post("decryptBuffer", {
+                        key: this.key,
+                        iv: this.iv,
+                        data: e.data
+                    })
+                    
+                    
                 }
                 else if (e.data instanceof Blob) {
                     console.log("Blob get " + e.data)
@@ -273,7 +337,7 @@ abstract class Connection {
                         this.connect(this.host, this.port)
                     }, 4000)
                 }
-                this.socketWorker.terminate()
+                this.socketPool.terminate()
             }
         }
         catch (e) {
@@ -281,7 +345,7 @@ abstract class Connection {
         }
     }
     
-    listen(predicate: (message: any) => boolean, callback: (message: any) => any) {
+    listen(predicate: Predicate, callback: Callback) {
         this.listeners.push({
             predicate,
             callback,
@@ -289,7 +353,10 @@ abstract class Connection {
         })
     }
     
-    listenAll(...listeners: [(message: any) => boolean, (message: any) => any][]) {
+    listenAll<T extends Connection>(...listeners: [
+        (message: any, connection: T) => boolean, 
+        (message: any, connection: T) => any
+    ][]) {
         for (let listener of listeners) {
             this.listeners.push({
                 predicate: listener[0],
@@ -298,23 +365,26 @@ abstract class Connection {
             })
         }
     }
-    
-    listenKeys(predicate: (key: string, message: any) => boolean, callbacks: {[key: string]: Function}) {
+    listenKeys<T extends Connection>(
+        predicate: (key: string, message: any, connection: T) => boolean, 
+        callbacks: {[key: string]: (message: any, connection: T) => any}
+    ) {
         this.keyedListeners.push({
             predicate,
             callbacks
         })
     }
-    
-    listenOnce(predicate: (any) => boolean, callback: (message: any) => any) {
+    listenBuffer(callback: Callback) {
+        this.bufferListeners.push(callback)
+    }
+    listenOnce(predicate: Predicate, callback: Callback) {
         this.listeners.push({
             predicate,
             callback,
             once: true
         })
     }
-    
-    fallbackListen(callback: Function) {
+    fallbackListen(callback: Callback) {
         this.fallbackListeners.push(callback)
     }
 }
@@ -390,7 +460,7 @@ class UlteriusConnection extends Connection {
     onMessage(message: ApiMessage) {
         let {
             socket, 
-            socketWorker, 
+            socketPool, 
             host, 
             port, 
             isDefault, 
@@ -468,10 +538,23 @@ class TerminalConnection extends Connection {
     }
 }
 
-export let terminalConnection = new TerminalConnection(false)
+class ScreenShareConnection extends Connection {
+    send(packet: any) {
+        this.promiseToSendPacket(packet, "ScreenShare")
+    }
+    onMessage(message: any) {
+        this.requestQueue = []
+    }
+}
+
+export let terminalConnection = new TerminalConnection(1, false)
 terminalConnection.logPackets = true
 
-export let mainConnection = new UlteriusConnection(true)
+export let screenConnection = new ScreenShareConnection(5, false)
+screenConnection.logPackets = false
+screenConnection.useQueue = false
+
+export let mainConnection = new UlteriusConnection(2, true)
 mainConnection.logPackets = false
 
 //let terminalConnection = new Connection()

@@ -26,7 +26,7 @@ export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}
             <Input 
             type="text" 
             placeholder="Enter new process name..." 
-            onChange={e => this.setState({exe: e.target.value, box: e.target})} 
+            onChange={e => this.setState({exe: (e.target as HTMLInputElement).value, box: e.target})} 
             onKeyDown={(e) => {
                 if (e.keyCode == 13) {
                     this.startProcess()

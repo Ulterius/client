@@ -10,8 +10,9 @@ let loaders = [
         exclude: /node_modules/
     },
     {
-        test: /\.s[ca]ss$/,
-        loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
+        test: /\.scss$/,
+        loaders: ["style", "css", "resolve-url", "sass?sourceMap"]
+        //loaders: ["style", "css", "resolve-url", "sass?sourceMap&indentedSyntax"]
     },
     {
         test: /\.json$/,

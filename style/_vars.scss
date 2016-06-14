@@ -1,0 +1,20 @@
+$strike-deepseagreen: rgb(38, 116, 126);
+
+$screen-sm-min: 768px;
+$screen-xs-max: $screen-sm-min - 1px;
+$screen-md-min: 992px;
+$screen-sm-max: $screen-md-min - 1px;
+$screen-lg-min: 1200px;
+$screen-md-max: $screen-lg-min - 1px;
+
+$bg: #eff3f6;
+$highlight: #03aadb;
+$orange: #fcab52;
+$line-color: #ecedf2;
+$stat-bg: #fafbfd;
+$text-color: #33394d;
+
+$solid-line: solid 1px $line-color;
+$dashed-line: dashed 2px $line-color;
+
+$panel-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.05);

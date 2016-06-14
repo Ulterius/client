@@ -13,11 +13,14 @@
     "exclude": [
         "node_modules",
         "nontypings",
+        "oldtypings",
         ".vscode",
         "img",
         "style",
         "public",
         "Gruntfile.js",
-        "typings/jasmine"
+        "typings/jasmine",
+        "typings/index.d.ts",
+        "typings/globals/index.d.ts"
     ]
 }

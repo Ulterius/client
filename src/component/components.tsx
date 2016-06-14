@@ -128,7 +128,12 @@ export class UserWidget extends React.Component<{}, {user: UserInfo}> {
     }
 }
 
-export function Base64Img(props: {type?: string, data?: string, [key:string]: any}) {
+interface Base64ImgProps extends React.HTMLAttributes, React.ClassAttributes<HTMLImageElement> {
+    type?: string,
+    data?: string
+}
+
+export function Base64Img(props: Base64ImgProps) {
     const {type, data} = props
     const other = _.omit(props, ["type", "data"])
     return <img src={`data:${type};base64,${data}`} {...other} />
@@ -228,7 +233,7 @@ export class EntryBox extends React.Component<
             type={this.props.type || "text"}
             placeholder={this.props.placeholder || ""}
             buttonAfter={confirmButton}
-            onChange={e => this.setState({text: e.target.value, customized: true})}
+            onChange={e => this.setState({text: (e.target as any).value, customized: true})}
             value={this.state.customized ? this.state.text : this.props.defaultValue}
             onKeyDown={e => {
                 if (e.keyCode == 13) {
@@ -325,7 +330,7 @@ export class DragGroup extends React.Component<{children?: React.ReactElement<an
             return React.cloneElement(ch, {
                 style: _.assign({}, ch.props.style, {display: "inline-block"}),
                 draggable: true, 
-                onDragStart: e => {
+                onDragStart: (e: any) => {
                     this.handleDragStart(child, i, e)
                 },
                 onDrop: e => {
@@ -493,6 +498,16 @@ export function MoveRightTransition(props: {show: boolean, children?: React.Reac
         show={props.show}
         here={"translateX(0px)"}
         gone={"translateX(-200px)"}
+    >
+        {props.children}
+    </TransformTransition>
+}
+
+export function MoveLeftTransition(props: {show: boolean, children?: React.ReactNode}) {
+    return <TransformTransition
+        show={props.show}
+        here={"translateX(0px)"}
+        gone={"translateX(200px)"}
     >
         {props.children}
     </TransformTransition>

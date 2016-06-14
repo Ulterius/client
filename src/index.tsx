@@ -1,6 +1,10 @@
 
+window["debug"] = {}
+
 declare let require: (string) => any
-require("../style/style.sass")
+require("../style/style.scss")
+let scrypt = require("simplecrypto")
+console.log(scrypt)
 
 import React = require("react")
 import ReactDOM = require("react-dom")

@@ -1,0 +1,31 @@
+.flex-row {
+	display: flex;
+
+	@include h-margin-collapse(10px);
+}
+
+.flex-child {
+	@include h-margin-collapse(10px);
+}
+
+.flex-col {
+	.flex-row {
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+
+		@include v-margin-collapse(10px);
+	}
+
+	display: flex;
+	flex-direction: column;
+
+	@include h-margin-collapse(10px);
+}
+
+.flex-1 {
+	flex-grow: 1;
+}
+
+.flex-fixed {
+	flex: none;
+}

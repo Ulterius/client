@@ -148,3 +148,18 @@ declare module "react-grid-layout" {
     export const Responsive: ResponsiveReactGridLayoutI
     export const WidthProvider: (ResponsiveReactGridLayoutI) => ResponsiveReactGridLayoutI
 }
+
+declare module "simplecrypto" {
+    interface Sym {
+        decrypt: (keys: {aeskeyObj: any, iv?: any}) => any
+    }
+    let sym: Sym
+    export = {
+        sym
+    }
+}
+
+declare module "asmcrypto.js" {
+    let ex: any
+    export = ex
+}

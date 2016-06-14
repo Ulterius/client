@@ -25,8 +25,8 @@ import {
     MoveRightTransition,
     LoadingScreen,
     ConnectScreen
-    
 } from "./"
+import {ScreenPage} from "./screen"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link} from 'react-router'
@@ -34,7 +34,6 @@ import {Glyphicon, Button} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
 import MediaQuery = require("react-responsive")
-
 
 
 function NavItem(props: {className: string, path: string, label: string, glyph: string}) {
@@ -51,6 +50,18 @@ const fullHeight: React.CSSProperties = {
     height: "100%"
 }
 
+function TopBar({currentPage, children}: {currentPage: string, children?: React.ReactElement<any> | React.ReactElement<any>[]}) {
+    let items = React.Children.map(children, (child: React.ReactElement<any>) => {
+        return React.cloneElement(child, {className: "bar-item"})
+    })
+    return <div className="top-bar">
+        <div className="page-title">{currentPage}</div>
+        <div className="item-area">
+            {items}
+        </div>
+    </div>
+}
+
 export default class App extends React.Component<{
     children?: any, 
     location?: any,
@@ -60,6 +71,16 @@ export default class App extends React.Component<{
     app?: AppState,
     user?: UserInfo
 }> {
+    pathMap = {
+        "/tasks": "Task Manager",
+        "/info": "System Information",
+        "/cameras": "Cameras",
+        "/filesystem": "Filesystem",
+        "/settings": "Settings",
+        "/vnc": "VNC",
+        "/screen": "Screen Share",
+        "/terminal": "Terminal"
+    }
     constructor(props) {
         super(props)
         this.state = {}
@@ -105,6 +126,10 @@ export default class App extends React.Component<{
         }
         return <div style={fullHeight}>
             <Sidebar activePath={this.props.location.pathname} />
+            <TopBar currentPage={this.pathMap[this.props.location.pathname]}>
+                <div><Glyphicon glyph="cog" /> &nbsp; Settings</div>
+                <div><Glyphicon glyph="log-out" /> &nbsp; Disconnect</div>
+            </TopBar>
             <div className="page" style={fullHeight}>
                 <div className="page-content container-fluid" style={fullHeight}>
                     {this.props.children}
@@ -122,6 +147,7 @@ export default class App extends React.Component<{
 }
 
 function Overlay(props: any) {
+    
     const style = _.assign({}, props.style, {
         zIndex: 10,
         position: "fixed",
@@ -192,10 +218,10 @@ class Sidebar extends React.Component<{activePath: string}, {
                     glyph="cog"
                     label="Settings" />
                 <NavItem
-                    className={this.getActiveClassName("/vnc")}
-                    path="/vnc"
+                    className={this.getActiveClassName("/screen")}
+                    path="/screen"
                     glyph="picture"
-                    label="VNC" />
+                    label="Screen Share" />
                 <NavItem
                     className={this.getActiveClassName("/terminal")}
                     path="/terminal"
@@ -268,7 +294,7 @@ const routes = <Route path="/" component={App}>
             <Route path="cameras" component={CameraPage} />
             <Route path="settings" component={SettingsPage} />
             <Route path="filesystem" component={FilePage} />
-            <Route path="vnc" component={VncPage} />
+            <Route path="screen" component={ScreenPage} />
             <Route path="terminal" component={TerminalPage} />
             {/* <Route path="plugin" component={PluginPage} /> */}
         </Route>

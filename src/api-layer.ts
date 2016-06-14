@@ -16,6 +16,7 @@ import {appStore} from "./store"
 import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
+import {generateKey} from "./util/crypto"
 import config from "./config"
 import * as _ from "lodash"
 declare let JSEncrypt: any
@@ -24,9 +25,10 @@ export let intervals: {[key:string]: number} = {}
 
 export * from "./api"
 import * as terminal from "./api/terminal"
+import * as screen from "./api/screen"
 export let terminalApi = terminal.terminalApi
 
-const resLog = true
+const resLog = false
 export let helpers = {
     requestAuxillarySystemInformation: function() {
         sendCommandToDefault("requestCpuInformation")
@@ -115,7 +117,27 @@ export function authenticate(info: AuthInfo) {
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
+        mainConnection.sendAsync("startScreenShare", msgg => {
+            console.log(msgg)
+            screen.initialize()
+            screen.register()
+        })
+        /*
+        mainConnection.sendAsync("stopScreenShare", msg => {
+            console.log(msg)
+
+            mainConnection.sendAsync("startScreenShare", msgg => {
+                console.log(msgg)
+                setTimeout(() => {
+                    screen.initialize()
+                    screen.register()
+                }, 1000)
+                
+            })
+        })
+        */
         terminal.initialize()
+        //screen.initialize()
         helpers.requestAuxillarySystemInformation()
         onAuthenticate()
         appActions.login(true)
@@ -220,15 +242,19 @@ let iv = ""
 
 export function connectedToUlterius(results: {message: string, publicKey: string}) {
     messageActions.message({style: "success", text: "Connected."})
+    
     appActions.setKey("", "")
     appActions.setShake(false)
     mainConnection.unencrypt()
+    /*
     let encrypt = new JSEncrypt()
     encrypt.setPublicKey(atob(results.publicKey))
     key = generateHexString(16)
     iv = generateHexString(16)
     let encKey = encrypt.encrypt(key)
     let encIV = encrypt.encrypt(iv)
+    */
+    let {key, iv, encKey, encIV} = generateKey(results.publicKey)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
     mainConnection.encrypt(key, iv)
     appActions.setKey(key, iv)

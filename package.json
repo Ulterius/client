@@ -11,8 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "alt": "^0.18.1",
+    "asmcrypto.js": "0.0.11",
     "bluebird": "^3.3.5",
     "chartist": "^0.9.5",
+    "classnames": "^2.2.5",
     "crypto-js": "^3.1.6",
     "css-loader": "^0.23.1",
     "flux": "^2.1.1",
@@ -21,6 +23,7 @@
     "lodash": "^3.10.1",
     "node-sass": "^3.4.2",
     "novnc-node": "^0.5.3",
+    "pako": "^1.0.1",
     "public-encrypt": "^4.0.0",
     "react": "^0.14.8",
     "react-addons-css-transition-group": "^0.14.7",
@@ -36,7 +39,7 @@
     "resolve-url-loader": "^1.4.3",
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
-    "typescript": "^1.9.0-dev.20160501"
+    "typescript": "^1.9.0-dev.20160603-1.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.17.0",

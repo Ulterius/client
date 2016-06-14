@@ -334,7 +334,7 @@ export function arrayBufferToBase64(arrayBuffer) {
   return base64
 }
 
-export function arrayToBase64(bytes: number[]) {
+export function arrayToBase64(bytes: number[] | Uint8Array) {
     let uintBytes = new Uint8Array(bytes)
     let len = uintBytes.byteLength
     let binary = ""

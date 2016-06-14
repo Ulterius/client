@@ -116,8 +116,8 @@ export class SettingsPage extends React.Component<{}, {
                         type="text" 
                         label={this.settingNames[k]} 
                         defaultValue={String(v)}
-                        onChange={e => {
-                            this.setState({newSettings: _.assign(this.state.newSettings, {[k]: e.target.value})})
+                        onChange={(e) => {
+                            this.setState({newSettings: _.assign(this.state.newSettings, {[k]: (e.target as HTMLInputElement).value})})
                         }}/>
                 )
             }
