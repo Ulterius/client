@@ -1,12 +1,23 @@
 import asmCrypto = require("asmcrypto.js")
-import CryptoJS = require("crypto-js")
 import pako = require("pako")
 
 import {toHex, getHandler, base64toArray, arrayBufferToBase64} from "./util"
+import {hexStringtoArray, Base64Binary, ab2str} from "./util/crypto"
+
+declare let require: (string) => any
+
+if (!TextEncoder) {
+    let encoding = require("text-encoding")
+    TextEncoder = encoding.TextEncoder as typeof TextEncoder
+    TextDecoder = encoding.TextDecoder as typeof TextDecoder
+}
+
+let encoder = new TextEncoder("utf-8")
+let decoder = new TextDecoder("utf-8")
 
 let pm = postMessage as (any) => void
 
-let handle = getHandler(postMessage, addEventListener).bind(this)
+let handle = getHandler(postMessage, addEventListener)
 
 handle("test", () => {
     console.log("Started...")
@@ -21,6 +32,7 @@ handle("deserialize", ({key, iv, data}) => {
     if (!(key && iv)) {
         return JSON.parse(data)
     }
+
     let ret
     try {
         ret = JSON.parse(data)
@@ -42,16 +54,18 @@ handle("serialize", ({encrypted, key, iv, data}) => {
 
 handle("decryptBuffer", ({key, iv, data}: {key: string, iv: string, data: ArrayBuffer}) => {
     if (!(key && iv)) {
-        return decompressData(arrayBufferToBase64(data))
+        return decompressData(new Uint8Array(data))
     }
     else {
         return decompressData(
-            decryptData(key, iv, arrayBufferToBase64(data))
+            decryptData(key, iv, data)
         )
     }
 })
 
 function encrypt(key, iv, packet) {
+
+    /*
     let packetString = ""
     let utf8Key = CryptoJS.enc.Utf8.parse(key)
     let utf8Iv = CryptoJS.enc.Utf8.parse(iv)
@@ -66,36 +80,41 @@ function encrypt(key, iv, packet) {
         }
     ).toString()
     return packetString
+    */
+    //asmCrypto.AES_CBC.BLOCK_SIZE = 128
+    let encodedPacket = encoder.encode(JSON.stringify(packet))
+    let encryptedPacket = asmCrypto.AES_CBC.encrypt(
+        encodedPacket,
+        encoder.encode(key), 
+        true,
+        encoder.encode(iv)
+    )
+    return encryptedPacket
 }
 
-function decrypt(key, iv, data: string) {
-    let ret
-    let decrypted = CryptoJS.AES.decrypt(
+function decrypt(key, iv, data) {
+    //asmCrypto.AES_CBC.BLOCK_SIZE = 128
+    console.log(key)
+    const decrypted = asmCrypto.AES_CBC.decrypt(
         data,
-        CryptoJS.enc.Base64.parse(btoa(key)),
-        {
-            iv: CryptoJS.enc.Hex.parse(toHex(iv))
-        }
+        encoder.encode(key), 
+        true, 
+        encoder.encode(iv)
     )
+
+    const decoded = decoder.decode(decrypted)
+    let ret
     try {
-        ret = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8))
+        ret = JSON.parse(decoded)
     }
     catch (errr) {
-        ret = decrypted.toString(CryptoJS.enc.Base64)
-        /*
-        ret = {
-            endpoint: "error",
-            results: {
-                message: "Failed to parse a message!",
-                exception: errr
-            }
-        }
-        */
+        ret = decoded
     }
     return ret
 }
 
-function decryptData(key: string, iv: string, data: string) {
+function decryptData(key: string, iv: string, data: ArrayBuffer) {
+    /*
     let pass = CryptoJS.enc.Utf8.parse(key)
     let criv = CryptoJS.enc.Utf8.parse(iv)
     
@@ -108,12 +127,19 @@ function decryptData(key: string, iv: string, data: string) {
         padding: CryptoJS.pad.Pkcs7,
         iv: criv
     })
-    
-    return decrypted.toString(CryptoJS.enc.Base64)
+    */
+    let decrypted = asmCrypto.AES_CBC.decrypt(
+        data,
+        encoder.encode(key),
+        true,
+        encoder.encode(iv)
+    )
+
+    return decrypted
 }
 
-function decompressData(data: string) {
-    let compressedBuffer = base64toArray(data)
-    let buffer = pako.inflate(compressedBuffer)
+function decompressData(data: Uint8Array) {
+    //let compressedBuffer = base64toArray(data)
+    let buffer = pako.inflate(data)
     return arrayBufferToBase64(buffer)
 }

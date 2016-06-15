@@ -310,17 +310,11 @@ abstract class Connection {
                     })
                 }
                 else if (e.data instanceof ArrayBuffer) {
-                    if (this.logPackets)
-                        console.log("got buffer")
-                    //this.onArrayBuffer(arrayBufferToBase64(e.data))
-                    
-                    this.socketPool.post("decryptBuffer", {
+                    this.socketPool.post("deserialize", {
                         key: this.key,
                         iv: this.iv,
                         data: e.data
                     })
-                    
-                    
                 }
                 else if (e.data instanceof Blob) {
                     console.log("Blob get " + e.data)
@@ -551,11 +545,11 @@ export let terminalConnection = new TerminalConnection(1, false)
 terminalConnection.logPackets = true
 
 export let screenConnection = new ScreenShareConnection(5, false)
-screenConnection.logPackets = false
+screenConnection.logPackets = true
 screenConnection.useQueue = false
 
 export let mainConnection = new UlteriusConnection(2, true)
-mainConnection.logPackets = false
+mainConnection.logPackets = true
 
 //let terminalConnection = new Connection()
 

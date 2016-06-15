@@ -136,7 +136,7 @@ export function authenticate(info: AuthInfo) {
             })
         })
         */
-        terminal.initialize()
+        //terminal.initialize()
         //screen.initialize()
         helpers.requestAuxillarySystemInformation()
         onAuthenticate()
