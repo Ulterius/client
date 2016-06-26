@@ -11,7 +11,8 @@ interface WrappedWorker {
 
 interface WorkerTask {
     type: string,
-    content: any
+    content: any,
+    transferList?: any[]
 }
 
 export class WorkerPool {
@@ -35,8 +36,8 @@ export class WorkerPool {
     onWorkerMessage = (worker: WrappedWorker) => {
         worker.busy = false
         if (this.taskQueue.length > 0) {
-            let {type, content} = this.taskQueue.shift()
-            this.post(type, content)
+            let {type, content, transferList} = this.taskQueue.shift()
+            this.post(type, content, transferList)
         }
     }
     poolSize() {
@@ -45,18 +46,18 @@ export class WorkerPool {
     oneWorker() {
         return this.poolSize() == 1
     }
-    post(type: string, content?: any) {
+    post(type: string, content?: any, transferList?: any[]) {
         if (this.oneWorker()) {
-            this.workers[0].worker.postMessage({type, content})
+            this.workers[0].worker.postMessage({type, content}, transferList)
             return;
         }
         let freeWorker = _.find(this.workers, w => !w.busy)
         if (freeWorker) {
-            freeWorker.worker.postMessage({ type, content })
+            freeWorker.worker.postMessage({ type, content }, transferList)
             freeWorker.busy = true
         }
         else {
-            this.taskQueue.push({ type, content })
+            this.taskQueue.push({ type, content, transferList })
         }
     }
     listen(callbacks: {[key: string]: Function}) {

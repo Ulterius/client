@@ -4,6 +4,7 @@ import {Glyphicon, Button, Input} from "react-bootstrap"
 import {connect, disconnect} from "../socket"
 import {appActions} from "../action"
 import {verticalCenter, media} from "../util"
+import config from "../config"
 import MediaQuery = require("react-responsive")
 
 export class LoginScreen extends React.Component<{
@@ -45,8 +46,12 @@ export class ConnectScreen extends React.Component<{}, {
     port?: string
 }> {
     componentDidMount() {
-        this.setState({host: "localhost", port: "22007"})
-        connect("localhost", "22007")
+        if (config.autoConnect) {
+            let {host, port} = config.autoConnect
+            this.setState({host, port})
+            connect(host, port)
+        }
+        
     }
     inner() {
         return <div>

@@ -8,6 +8,7 @@
     "es6-promise": "registry:dt/es6-promise#0.0.0+20160423074304",
     "history": "registry:dt/history#1.8.0+20160316155526",
     "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+    "jdataview": "registry:dt/jdataview#0.0.0+20160317120654",
     "jquery": "registry:dt/jquery#1.10.0+20160417213236",
     "lodash": "registry:dt/lodash#3.10.0+20160330154726",
     "node": "registry:dt/node#6.0.0+20160602155235",

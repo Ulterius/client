@@ -19,9 +19,10 @@
     "css-loader": "^0.23.1",
     "flux": "^2.1.1",
     "history": "^1.17.0",
+    "jdataview": "^2.5.0",
     "jsencrypt": "^2.1.0",
     "lodash": "^3.10.1",
-    "node-sass": "^3.4.2",
+    "node-sass": "^3.8.0",
     "novnc-node": "^0.5.3",
     "pako": "^1.0.1",
     "public-encrypt": "^4.0.0",
@@ -40,7 +41,7 @@
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "text-encoding": "^0.6.0",
-    "typescript": "^1.9.0-dev.20160603-1.0"
+    "typescript": "^1.9.0-dev.20160619-1.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^0.17.0",

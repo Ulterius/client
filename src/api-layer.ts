@@ -117,11 +117,14 @@ export function authenticate(info: AuthInfo) {
         sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
+        
         mainConnection.sendAsync("startScreenShare", msgg => {
             console.log(msgg)
-            screen.initialize()
+            let {host, port} = appStore.getState().connection
+            screen.initialize(host, "22009")
             screen.register()
         })
+        
         /*
         mainConnection.sendAsync("stopScreenShare", msg => {
             console.log(msg)
@@ -141,8 +144,8 @@ export function authenticate(info: AuthInfo) {
         helpers.requestAuxillarySystemInformation()
         onAuthenticate()
         appActions.login(true)
-        if (config.cachePassword && !window.localStorage.getItem("password")) {
-            window.localStorage.setItem("password", appStore.getState().auth.password)
+        if (config.cachePassword && !window.localStorage.getItem(`${appStore.getState().connection.host}:password`)) {
+            window.localStorage.setItem(`${appStore.getState().connection.host}:password`, appStore.getState().auth.password)
         }
     }
     else {
@@ -226,8 +229,8 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
         */
-        if (config.cachePassword && window.localStorage.getItem("password")) {
-            sendCommandToDefault("authenticate", window.localStorage.getItem("password"))
+        if (config.cachePassword && window.localStorage.getItem(`${appStore.getState().connection.host}:password`)) {
+            sendCommandToDefault("authenticate", window.localStorage.getItem(`${appStore.getState().connection.host}:password`))
         }
         
         let password

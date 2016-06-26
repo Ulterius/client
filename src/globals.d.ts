@@ -521,3 +521,26 @@ declare namespace TerminalInfo {
         terminalId: string
     }
 }
+
+declare interface ScreenTile {
+    x: number,
+    y: number,
+    top: number,
+    bottom: number,
+    left: number,
+    right: number,
+    image: string
+}
+
+declare interface FrameData {
+    Bounds: {
+        Top: number,
+        Bottom: number,
+        Left: number,
+        Right: number,
+        X: number,
+        Y: number,
+        Height: number,
+        IsEmpty: boolean,
+    }
+}

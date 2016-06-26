@@ -9,7 +9,6 @@ import {WorkerPool} from "./util/worker"
 import {appActions, messageActions} from "./action"
 
 
-
 let SocketWorker = require("worker?name=socket.worker.js!./socket-worker")
 
 /*
@@ -86,29 +85,38 @@ abstract class Connection {
     logPackets: boolean = false
     host: string
     port: string
+    connected: boolean
     encrypted: boolean
+    ofb: boolean = false
     key: string = undefined
     iv: string = undefined
     
-    constructor(public poolSize = 3, public isDefault: boolean = false) {}
+    constructor(public poolSize = 3, public isDefault: boolean = false) {
+
+    }
     
     abstract onMessage(message?: any)
     
     connect(host: string, port: string) {
         this.host = host
         this.port = port
+        this.ofb = false
+        this.unencrypt()
         if (this.socket) {
             this.socket.close()
         }
+
+        this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
+        this.setWorkerEvents()
+ 
         this.socket = undefined
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
             this.socket.binaryType = "arraybuffer"
             console.log(this.socket)
             if (this.socket) {
-                this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
                 this.setSocketEvents()
-                this.setWorkerEvents()
+                this.connected = true
             }
         }
         catch (e) {
@@ -121,6 +129,7 @@ abstract class Connection {
         this.socket.close()
         if (this.isDefault)
             appActions.setHost({ host: "", port: "" })
+        
     }
     
     promiseToSendPacket(packet, packetName: string = "unnamed") {
@@ -149,6 +158,9 @@ abstract class Connection {
     }
     
     sendPacket(packet, packetName: string = "unnamed") {
+        if (!this.connected) {
+            return;
+        }
         let {logPackets, requestQueue, socketPool} = this
         if (logPackets) {
             console.groupEnd()
@@ -299,8 +311,8 @@ abstract class Connection {
                     appActions.setHost({host, port})
                 }
             }
-            
             socket.onmessage = (e) => {
+                const {key, iv, ofb} = this
                 if (typeof e.data === "string") {
                     this.onString()
                     this.socketPool.post("deserialize", {
@@ -311,10 +323,11 @@ abstract class Connection {
                 }
                 else if (e.data instanceof ArrayBuffer) {
                     this.socketPool.post("deserialize", {
-                        key: this.key,
-                        iv: this.iv,
+                        key,
+                        iv,
+                        ofb,
                         data: e.data
-                    })
+                    }, [e.data])
                 }
                 else if (e.data instanceof Blob) {
                     console.log("Blob get " + e.data)
@@ -331,6 +344,7 @@ abstract class Connection {
                         this.connect(this.host, this.port)
                     }, 4000)
                 }
+                this.connected = false
                 this.socketPool.terminate()
             }
         }
@@ -380,6 +394,11 @@ abstract class Connection {
     }
     fallbackListen(callback: Callback) {
         this.fallbackListeners.push(callback)
+    }
+
+    //override this for queue usage
+    doesMessageMatch(message, queueMessage) {
+        return true
     }
 }
 
@@ -449,6 +468,10 @@ class UlteriusConnection extends Connection {
             callbacks[key] = console.log.bind(console)
         }
         return this.promiseToSendPacket(packet, packet.endpoint)
+    }
+
+    doesMessageMatch(message, queueMessage) {
+        return (message.synckey == queueMessage.synckey)
     }
     
     onMessage(message: ApiMessage) {
@@ -533,19 +556,50 @@ class TerminalConnection extends Connection {
 }
 
 class ScreenShareConnection extends Connection {
+    loggedIn: boolean = false
     send(packet: any) {
         this.promiseToSendPacket(packet, "ScreenShare")
     }
+    sendMessage(action: string, args?) {
+        var packet: any = {
+            endpoint: action.toLowerCase(),
+        }
+        if (typeof args !== "undefined") {
+            if (args instanceof Array) {
+                packet.args = args
+            }
+            else {
+                packet.args = [args]
+            }
+        }
+        this.promiseToSendPacket(packet, packet.endpoint)
+    }
+    sendEvent(EventType: string, Action: string, additional: any = {}) {
+        if (!this.loggedIn)
+            return;
+
+        let packet = {
+            EventType,
+            Action
+        }
+        _.assign(packet, additional)
+        this.promiseToSendPacket(packet, packet.Action)
+    }
     onMessage(message: any) {
         this.requestQueue = []
+        if (message.endpoint == "login")
+            console.log(message)
+        if (message.endpoint == "login" && message.results.loggedIn) {
+            this.loggedIn = true
+        }
     }
 }
 
 export let terminalConnection = new TerminalConnection(1, false)
 terminalConnection.logPackets = true
 
-export let screenConnection = new ScreenShareConnection(5, false)
-screenConnection.logPackets = true
+export let screenConnection = new ScreenShareConnection(3, false)
+screenConnection.logPackets = false
 screenConnection.useQueue = false
 
 export let mainConnection = new UlteriusConnection(2, true)

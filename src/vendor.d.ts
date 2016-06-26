@@ -160,16 +160,31 @@ declare module "simplecrypto" {
 }
 
 declare module "asmcrypto.js" {
-    interface CBCCryptFn {(
-        data: Uint8Array | ArrayBuffer,
-        key: Uint8Array | ArrayBuffer,
-        padding?: boolean,
-        iv?: Uint8Array | ArrayBuffer): Uint8Array
+    type CryptoArrayLike = Uint8Array | ArrayBuffer
+    interface CBCCryptFn {
+        (
+            data: CryptoArrayLike,
+            key: CryptoArrayLike,
+            padding?: boolean,
+            iv?: CryptoArrayLike
+        ): Uint8Array
+    }
+    interface OFBCryptFn {
+        (
+            data: CryptoArrayLike,
+            key: CryptoArrayLike,
+            iv?: CryptoArrayLike
+        ): Uint8Array
     }
     let ex: {
         AES_CBC: {
             encrypt: CBCCryptFn,
             decrypt: CBCCryptFn,
+            [key: string]: any
+        },
+        AES_OFB: {
+            encrypt: OFBCryptFn,
+            decrypt: OFBCryptFn,
             [key: string]: any
         }
     }

@@ -281,6 +281,11 @@ export function base64toArray(b64string: string) {
     return new Uint8Array(numbers)
 }
 
+export function toInt32(startIndex: number, bytes: ArrayLike<number>) {
+    let i = startIndex
+    return (bytes[i] << 24) | (bytes[i+1] << 16) | (bytes[i+2] << 8) | bytes[i+3] 
+}
+
 //credit to jonleighton
 export function arrayBufferToBase64(arrayBuffer) {
   var base64    = ''
@@ -363,4 +368,28 @@ export function generatePassword() {
 
 export function elementAfter<T>(arr: T[], element: T) {
     return arr[arr.indexOf(element) + 1]
+}
+
+export function tryUntil(
+    predicate: () => boolean, 
+    action: () => any, 
+    delay: number = 1000
+) {
+    action()
+    if (!predicate) {
+        let interval = setInterval(() => {
+            if (!predicate) {
+                action()
+            }
+            if (predicate) {
+                clearInterval(interval)
+            }
+        }, delay)
+    }
+}
+
+export function clearFunctions(functionBag: {[key: string]: Function}) {
+    _.forOwn(functionBag, (fn, name) => {
+        functionBag[name] = () => {}
+    })
 }
