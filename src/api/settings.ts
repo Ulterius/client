@@ -6,7 +6,6 @@ import {sendCommandToDefault} from "../socket"
 export function getCurrentSettings(settings: SettingsInfo.Settings) {
     console.log(settings)
     settingsActions.getAllSettings(settings)
-    sendCommandToDefault("changeVncPort", 6690)
 }
 
 export let changeVncPort = settingsActions.updateVncPort

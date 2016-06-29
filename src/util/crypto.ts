@@ -1,5 +1,6 @@
 declare let JSEncrypt: any
-import {generateHexString} from "./"
+import {generateHexString, arrayBufferToBase64} from "./"
+import pako = require("pako")
 
 export function generateKey(base64Key: string) {
     let encrypt = new JSEncrypt()
@@ -80,4 +81,11 @@ export let Base64Binary = {
 
 export function ab2str(buf) {
   return String.fromCharCode.apply(null, buf);
+}
+
+export function decompressData(data: Uint8Array) {
+	let inflated = pako.inflate(data)
+	let blob = new Blob([inflated], {type: "image/jpeg"})
+	return URL.createObjectURL(blob)
+    //return arrayBufferToBase64(pako.inflate(data))
 }

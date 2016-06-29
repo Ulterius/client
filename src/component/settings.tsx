@@ -1,6 +1,8 @@
 import React = require("react")
+import Component = React.Component
 import {settingsStore, SettingsState} from "../store"
 import {Input, Button, ButtonGroup, ButtonToolbar} from "react-bootstrap"
+import {MoveLeftTransition} from "./components"
 //import {api} from "../api"
 import {settingsApi} from "../api-layer"
 import * as _ from "lodash"
@@ -131,5 +133,23 @@ export class SettingsPage extends React.Component<{}, {
             </ButtonToolbar>
         </div>
         
+    }
+}
+
+interface ModalSettingsProps {
+    show: boolean
+}
+
+export class ModalSettings extends Component<ModalSettingsProps, {}> {
+    render() {
+        return <MoveLeftTransition show={this.props.show} distance={500}>
+            <div className="settings-panel">
+                <div className="header">settings</div>
+                <div className="panel-button-bar">
+                    <div className="panel-button">apply changes</div>
+                    <div className="green-panel-button">restart server</div>
+                </div>
+            </div>
+        </MoveLeftTransition>
     }
 }

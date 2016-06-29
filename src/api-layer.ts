@@ -125,6 +125,7 @@ export function authenticate(info: AuthInfo) {
             screen.register()
         })
         
+        
         /*
         mainConnection.sendAsync("stopScreenShare", msg => {
             console.log(msg)

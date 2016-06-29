@@ -503,11 +503,16 @@ export function MoveRightTransition(props: {show: boolean, children?: React.Reac
     </TransformTransition>
 }
 
-export function MoveLeftTransition(props: {show: boolean, children?: React.ReactNode}) {
+export function MoveLeftTransition(props: {
+    show: boolean, 
+    distance?: number,
+    children?: React.ReactNode}
+) {
+    let distance = props.distance || 200
     return <TransformTransition
         show={props.show}
         here={"translateX(0px)"}
-        gone={"translateX(200px)"}
+        gone={`translateX(${distance}px)`}
     >
         {props.children}
     </TransformTransition>

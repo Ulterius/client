@@ -47,8 +47,14 @@ class ScreenShare extends Component<{}, {
 
                 const img = new Image(width, height)
                 
-                img.src = `data:image/jpg;base64,${image}`
-                this.canvasCtx.drawImage(img, x, y, width, height)
+                //img.src = `data:image/jpg;base64,${image}`
+                img.src = image
+                img.onload = () => {
+                    this.canvasCtx.drawImage(img, x, y, width, height)
+                    setTimeout(() => {
+                        URL.revokeObjectURL(img.src)
+                    }, 200)
+                }
             }
         }
         screenEvents.frameData = (data: FrameData) => {
@@ -59,6 +65,7 @@ class ScreenShare extends Component<{}, {
         }
         screenEvents.login = () => {
             tryUntil(() => !!this.state.screenWidth, () => {
+                console.log("Trying...")
                 screenShareApi.requestFrame()
             })
         }

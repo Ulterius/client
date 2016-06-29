@@ -9,6 +9,7 @@ $screen-md-max: $screen-lg-min - 1px;
 
 $bg: #eff3f6;
 $highlight: #03aadb;
+$green: #01c58f;
 $orange: #fcab52;
 $line-color: #ecedf2;
 $stat-bg: #fafbfd;
@@ -18,3 +19,4 @@ $solid-line: solid 1px $line-color;
 $dashed-line: dashed 2px $line-color;
 
 $panel-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.05);
+$hole-shadow: inset 0 1px 5px 0 rgba(80, 65, 65, 0.1);

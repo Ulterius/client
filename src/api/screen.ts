@@ -1,6 +1,6 @@
 import {screenConnection as sC} from "../socket"
-import {generateKey} from "../util/crypto"
-import {base64toArray, arrayToBase64} from "../util"
+import {generateKey, decompressData} from "../util/crypto"
+import {base64toArray, arrayToBase64, addImageHeader} from "../util"
 import {screenEvents} from "../component/screen"
 import pako = require("pako")
 
@@ -109,7 +109,17 @@ export function register() {
         },
         frameData(msg, sc) {
             let result: FrameData = msg.results
+            let includedFrame = decompressData(new Uint8Array(msg.results.frameData)) 
             screenEvents.frameData(result)
+            screenEvents.frame({
+                x: 0,
+                y: 0,
+                top: 0,
+                left: 0,
+                bottom: result.Bounds.Bottom,
+                right: result.Bounds.Right,
+                image: includedFrame
+            })
         }
     })
     sC.listen(isTile, (msg: ScreenTile, sc) => {

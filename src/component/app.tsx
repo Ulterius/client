@@ -11,6 +11,7 @@ import {
     TaskPage,
     SystemPage,
     SettingsPage,
+    ModalSettings,
     FilePage,
     PluginPage,
     VncPage,
@@ -65,11 +66,12 @@ function TopBar({currentPage, children}: {currentPage: string, children?: React.
 export default class App extends React.Component<{
     children?: any, 
     location?: any,
-    appState?: AppState
+    appState?: AppState,
 }, 
 {
     app?: AppState,
-    user?: UserInfo
+    user?: UserInfo,
+    showSettings?: boolean
 }> {
     pathMap = {
         "/tasks": "Task Manager",
@@ -83,7 +85,7 @@ export default class App extends React.Component<{
     }
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {showSettings: false}
     }
     componentDidMount() {
         this.onAppChange(appStore.getState())
@@ -105,7 +107,7 @@ export default class App extends React.Component<{
         return this.props.location.pathname == path ? {height: "100%"} : {}
     }
     mainContent() {
-        let {app} = this.state
+        let {app, showSettings} = this.state
         let path = this.props.location.pathname
         if (!this.state.app || !this.state.app.connection.host) {
             return <ConnectScreen />
@@ -126,8 +128,11 @@ export default class App extends React.Component<{
         }
         return <div style={fullHeight}>
             <Sidebar activePath={this.props.location.pathname} />
+            <ModalSettings show={showSettings} />
             <TopBar currentPage={this.pathMap[this.props.location.pathname]}>
-                <div><Glyphicon glyph="cog" /> &nbsp; Settings</div>
+                <div onClick={() => this.setState({showSettings: !showSettings})}>
+                    <Glyphicon glyph="cog" /> &nbsp; Settings
+                </div>
                 <div><Glyphicon glyph="log-out" /> &nbsp; Disconnect</div>
             </TopBar>
             <div className="page" style={fullHeight}>

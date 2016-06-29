@@ -12,6 +12,21 @@
 	border-bottom: $dashed-line;
 }
 
+.label-text {
+	color: $highlight;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font: {
+		family: ProximaNovaBold;
+		size: 12px;
+	}
+}
+
+.green-label-text {
+	@extend .label-text;
+	color: $green;
+}
+
 .ulterius-panel {
 	color: $text-color;
 	display: flex;
@@ -197,4 +212,36 @@
 		family: ProximaNova;
 		size: 12px;
 	};
+}
+
+.settings-panel {
+	@extend .ulterius-panel;
+	justify-content: flex-start;
+	z-index: 10;
+	position: fixed;
+	right: 0px;
+	left: calc(100% - 500px);
+	height: 100%;
+	bottom: 0px;
+	top: 0px;
+}
+
+.panel-button-bar {
+	background-color: $stat-bg;
+	height: 40px;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	.panel-button {
+		@extend .label-text;
+		cursor: pointer;
+		padding: {
+			left: 30px;
+			right: 30px;
+		}
+	}
+	.green-panel-button {
+		@extend .green-label-text;
+		@extend .panel-button;
+	}
 }

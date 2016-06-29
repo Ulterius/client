@@ -393,3 +393,7 @@ export function clearFunctions(functionBag: {[key: string]: Function}) {
         functionBag[name] = () => {}
     })
 }
+
+export function addImageHeader(data: string) {
+    return `data:image/jpg;base64,${data}`
+}

@@ -4,7 +4,7 @@ import pako = require("pako")
 import jDataView = require("jdataview")
 
 import {toHex, getHandler, base64toArray, arrayBufferToBase64} from "./util"
-import {hexStringtoArray, Base64Binary, ab2str} from "./util/crypto"
+import {hexStringtoArray, Base64Binary, ab2str, decompressData} from "./util/crypto"
 
 declare let require: (string) => any
 
@@ -119,6 +119,7 @@ function decrypt(key, iv, data, ofb?) {
             ret = unpackFrameData(decrypted)
         }
         catch (e) {
+            console.log(e)
             //means it's actually not ofb
             decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
             decoded = decoder.decode(decrypted)
@@ -137,15 +138,8 @@ function unpackFrameData(data: Uint8Array) {
     let bottom = fv.getInt32()
     let left = fv.getInt32()
     let right = fv.getInt32()
-    let image = arrayBufferToBase64(pako.inflate(data.subarray(16 + (4*6))))
+    let image = decompressData(data.subarray(16 + (4*6)))
     return {
         x, y, top, bottom, left, right, image
     }
-}
-
-function decompressData(data: Uint8Array) {
-    //let compressedBuffer = base64toArray(data)
-    //let buffer = pako.inflate(data)
-    //return URL.createObjectURL(new Blob([data], {"type": "image/jpeg"}))
-    return arrayBufferToBase64(data)
 }

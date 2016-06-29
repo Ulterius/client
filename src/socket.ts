@@ -108,7 +108,6 @@ abstract class Connection {
 
         this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
         this.setWorkerEvents()
- 
         this.socket = undefined
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
@@ -117,6 +116,7 @@ abstract class Connection {
             if (this.socket) {
                 this.setSocketEvents()
                 this.connected = true
+                this.onConnect()
             }
         }
         catch (e) {
@@ -125,11 +125,16 @@ abstract class Connection {
         
     }
 
+    onConnect() {}
+
     disconnect() {
-        this.socket.close()
+        if (this.socket) {
+            this.socket.close(1000)
+        }
+        this.socketPool.terminate()
+        this.connected = false
         if (this.isDefault)
             appActions.setHost({ host: "", port: "" })
-        
     }
     
     promiseToSendPacket(packet, packetName: string = "unnamed") {
@@ -585,6 +590,9 @@ class ScreenShareConnection extends Connection {
         _.assign(packet, additional)
         this.promiseToSendPacket(packet, packet.Action)
     }
+    onConnect() {
+        this.loggedIn = false
+    }
     onMessage(message: any) {
         this.requestQueue = []
         if (message.endpoint == "login")
@@ -596,14 +604,20 @@ class ScreenShareConnection extends Connection {
 }
 
 export let terminalConnection = new TerminalConnection(1, false)
-terminalConnection.logPackets = true
+terminalConnection.logPackets = false
 
 export let screenConnection = new ScreenShareConnection(3, false)
 screenConnection.logPackets = false
 screenConnection.useQueue = false
 
 export let mainConnection = new UlteriusConnection(2, true)
-mainConnection.logPackets = true
+mainConnection.logPackets = false
+
+window.onbeforeunload = () => {
+    terminalConnection.disconnect()
+    screenConnection.disconnect()
+    mainConnection.disconnect()
+}
 
 //let terminalConnection = new Connection()
 
