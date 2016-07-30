@@ -109,22 +109,18 @@ import {frameBufferToImageURL} from "../util"
 
 interface CameraActionFunctions {
     updateCameras(cams: CameraInfos): CameraInfo[]
-    updateFrame(frame: CameraFrame): CameraImage,
+    updateFrame(frame: CameraImage): CameraImage,
     startCameraStream(Id: string): string
     stopCameraStream(Id: string): string
 }
 
-class CameraActions extends AbstractActions implements CameraActionFunctions {
+class CameraActions extends AbstractActions {
     
     updateCameras(cams: CameraInfos) {
         return cams.cameraInfo
     }
-    
-    updateFrame(frame: CameraFrame) {
-        return {
-            cameraId: frame.cameraId,
-            URL: frameBufferToImageURL(frame.cameraFrame)
-        }
+    updateFrame(frame: CameraImage) {
+        return frame
     }
     startCameraStream(Id: string) {
         return Id
@@ -139,6 +135,7 @@ export let cameraActions = alt.createActions<CameraActionFunctions>(CameraAction
 interface SettingsActionFunctions {
     //sometimes great type safety requires great sacrifice
     //such as all ten (10) of your fingers
+    /*
     updateWebServer(info: SettingsInfo.WebServer): SettingsInfo.WebServer
     updateWebServerPort(info: SettingsInfo.WebServerPort): SettingsInfo.WebServerPort
     updateWebFilePath(info: SettingsInfo.WebFilePath): SettingsInfo.WebFilePath
@@ -148,21 +145,17 @@ interface SettingsActionFunctions {
     updateTaskServerPort(info: SettingsInfo.TaskServerPort): SettingsInfo.TaskServerPort
     updateNetworkResolve(info: SettingsInfo.NetworkResolve): SettingsInfo.NetworkResolve
     getAllSettings(info: SettingsInfo.Settings): SettingsInfo.Settings
+    */
+    updateSetting(setting: any): any
+    updateAllSettings(allSettings: SettingsInfo.All): SettingsInfo.All
 }
 
 class SettingsActions extends AbstractActions  {
     constructor(alt: AltJS.Alt) {
         super(alt)
         this.generateActions(
-            "updateWebServer",
-            "updateWebServerPort",
-            "updateWebFilePath",
-            "updateVncPass",
-            "updateVncPort",
-            "updateVncProxyPort",
-            "updateTaskServerPort",
-            "updateNetworkResolve",
-            "getAllSettings"
+            "updateSetting",
+            "updateAllSettings"
         )
     }
 }
@@ -172,13 +165,17 @@ export let settingsActions = alt.createActions<SettingsActionFunctions>(Settings
 
 interface FileSystemActionFunctions {
     updateFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
+    createRoot(drives: DriveInfo[]): DriveInfo[]
     goBack(): boolean
     goForward(): boolean
     reloadFileTree(tree: FileSystemInfo.FileTree): FileSystemInfo.FileTree
     addDownload(file: FileTransfer.Initial): FileTransfer.Initial
     downloadProgress(data: FileTransfer.Progress): FileTransfer.Progress
+    uploadProgress(file: FileTransfer.UploadProgress): FileTransfer.UploadProgress
     downloadComplete(data: FileTransfer.Complete): FileTransfer.Complete
     removeDownload(path: string): string
+    search(result: SearchResult): SearchResult
+    clearSearch(): void
 }
 
 class FileSystemActions extends AbstractActions {
@@ -190,26 +187,13 @@ class FileSystemActions extends AbstractActions {
             "addDownload",
             "downloadProgress",
             "downloadComplete",
-            "reloadFileTree"
+            "reloadFileTree",
+            "uploadProgress",
+            "search",
+            "clearSearch",
+            "createRoot"
         )
     }
-    /*
-    removeDownload(path: string) {
-        return path
-    }
-    updateFileTree(tree: FileSystemInfo.FileTree) {
-        return tree
-    }
-    addDownload(file: FileSystemInfo.InitialDownload) {
-        return file
-    }
-    downloadData(data: FileSystemInfo.Data) {
-        return data
-    }
-    reloadFileTree(tree: FileSystemInfo.FileTree) {
-        return tree
-    }
-    */
     goBack() {
         return true
     }
@@ -219,7 +203,6 @@ class FileSystemActions extends AbstractActions {
 }
 
 export let fileSystemActions = alt.createActions<FileSystemActionFunctions>(FileSystemActions)
-
 
 interface PluginActionFunctions {
     updatePlugins(plugins: PluginInfo.Plugins): PluginInfo.Plugins

@@ -13,6 +13,7 @@ import {
 } 
 from "./action"
 import {appStore} from "./store"
+import {loginEvents} from "./component"
 import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
@@ -26,7 +27,11 @@ export let intervals: {[key:string]: number} = {}
 export * from "./api"
 import * as terminal from "./api/terminal"
 import * as screen from "./api/screen"
+import * as settings from "./api/settings"
+import * as camera from "./api/camera"
 export let terminalApi = terminal.terminalApi
+
+const mC = mainConnection
 
 const resLog = false
 export let helpers = {
@@ -37,12 +42,18 @@ export let helpers = {
         return sendCommandToDefault("requestgpuinformation")
     },
     startCamera: function(id: string) {
+        //sendCommandAsync("startCamera", id, () => {
+            //sendCommandToDefault("startCameraStream", id)
+        //})
         sendCommandToDefault("startCamera", id)
     },
     stopCamera: function(id: string) {
         sendCommandToDefault("stopCameraStream", id)
     }
 }
+
+export let settingsApi = settings.register(mC)
+export let cameraApi = camera.register(mC)
 
 export let listeners: {[key: string]: Function[]} = {}
 
@@ -114,7 +125,7 @@ export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
         sendCommandToDefault("requestsysteminformation")
         sendCommandToDefault("getCameras")
-        sendCommandToDefault("createFileTree", "C:\\")
+        //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
         
@@ -124,6 +135,7 @@ export function authenticate(info: AuthInfo) {
             screen.initialize(host, "22009")
             screen.register()
         })
+        
         
         
         /*
@@ -152,7 +164,10 @@ export function authenticate(info: AuthInfo) {
     else {
         appActions.login(false)
         appActions.setPassword("") //because it's obviously invalid
-        messageActions.message({style: "danger", text: "Invalid password."})
+        console.log("Failed to login.")
+        loginEvents.fail("Invalid password.")
+        console.log(loginEvents.fail)
+        //messageActions.message({style: "danger", text: "Invalid password."})
     }
 }
 
@@ -195,9 +210,11 @@ export function stopCamera(status: CameraStatus.Stopped) {
     }
 }
 
+/*
 export function getCameraFrame(frame: CameraFrame) {
     cameraActions.updateFrame(frame)
 }
+*/
 
 export function refreshCameras(status: CamerasRefreshed) {
     if (status.cameraFresh) {
@@ -278,14 +295,12 @@ export function checkForUpdate({update, message}: UpdateInfo) {
 }
 
 export function disconnectedFromUlterius() {
-    messageActions.message({style: "danger", text: "Disconnected. Reconnecting in a second..."})
+    ///messageActions.message({style: "danger", text: "Disconnected. Reconnecting in a second..."})
     _.forEach(intervals, (v: number, k) => {
         clearInterval(v)
     })
 }
 
 function onAuthenticate() {
-    //just a spot to put my calls that I don't do anything with.
-    //dialogActions.showDialog({title: "Hi!", body: "How are you doing today?"})
-    //sendCommandToDefault("getBadPlugins")
+    sendCommandAsync("searchFiles", "*.gif", console.log.bind(console))
 }

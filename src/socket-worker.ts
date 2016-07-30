@@ -3,7 +3,7 @@ import pako = require("pako")
 
 import jDataView = require("jdataview")
 
-import {toHex, getHandler, base64toArray, arrayBufferToBase64} from "./util"
+import {toHex, getHandler, base64toArray, arrayBufferToBase64, SocketType, bytesToGuid} from "./util"
 import {hexStringtoArray, Base64Binary, ab2str, decompressData} from "./util/crypto"
 
 declare let require: (string) => any
@@ -31,7 +31,15 @@ handle("test", () => {
     return "successful! " + counter
 })
 
-handle("deserialize", ({key, iv, ofb, data}) => {
+interface DeserializeArgs {
+    key: string,
+    iv: string, 
+    ofb: boolean,
+    type: SocketType,
+    data: any
+}
+
+handle("deserialize", ({key, iv, ofb, data, type}: DeserializeArgs) => {
     if (!(key && iv)) {
         return JSON.parse(data)
     }
@@ -41,7 +49,7 @@ handle("deserialize", ({key, iv, ofb, data}) => {
         ret = JSON.parse(data)
     }
     catch (err) {
-        ret = decrypt(key, iv, data, ofb)
+        ret = decrypt(key, iv, data, type, ofb)
     }
     return ret
 })
@@ -97,7 +105,7 @@ function encrypt(key, iv, packet) {
     return encryptedPacket
 }
 
-function decrypt(key, iv, data, ofb?) {
+function decrypt(key, iv, data, type, ofb?) {
     //asmCrypto.AES_CBC.BLOCK_SIZE = 128
     let decrypted
     let [encKey, encIv] = [encoder.encode(key), encoder.encode(iv)]
@@ -116,7 +124,13 @@ function decrypt(key, iv, data, ofb?) {
     }
     catch (errr) {
         try {
-            ret = unpackFrameData(decrypted)
+            if (type === SocketType.ScreenShare) {
+                ret = unpackFrameData(decrypted)
+            }
+            else {
+                ret = unpackCameraFrameData(decrypted)
+            }
+            
         }
         catch (e) {
             console.log(e)
@@ -143,3 +157,15 @@ function unpackFrameData(data: Uint8Array) {
         x, y, top, bottom, left, right, image
     }
 }
+
+function unpackCameraFrameData(data: Uint8Array) {
+    let fv = new jDataView(data, 0, data.length, true)
+    let guid = fv.getString(32)
+    let cameraImage = decompressData(data.subarray(32))
+    return {
+        results: {
+            guid, cameraImage
+        }
+    }
+}
+

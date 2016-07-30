@@ -6,19 +6,18 @@ import {
     UserWidget,
     TaskList,
     Stats,
+    Overlay,
     
     CameraPage,
     TaskPage,
     SystemPage,
-    SettingsPage,
     ModalSettings,
     FilePage,
     PluginPage,
-    VncPage,
-    TerminalPage,
     
     Dialogs,
     dialogEvents,
+    DisconnectOverlay,
     LoginScreen,
     Messages,
     FadeTransition,
@@ -27,6 +26,7 @@ import {
     LoadingScreen,
     ConnectScreen
 } from "./"
+import {TerminalPage} from "./terminal"
 import {ScreenPage} from "./screen"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
@@ -37,12 +37,12 @@ import {appActions} from "../action"
 import MediaQuery = require("react-responsive")
 
 
-function NavItem(props: {className: string, path: string, label: string, glyph: string}) {
-    let {className, path, label, glyph} = props
+function NavItem(props: {className: string, path: string, label: string, icon: string}) {
+    let {className, path, label, icon} = props
     return <li className={className}>
         <Link to={path}>
-            <Glyphicon glyph={glyph} />
-            <span className="tab-label">&nbsp; {label}</span>
+            <img src={"img/newicon/"+icon+".svg"} />
+            <span className="tab-label">&nbsp; &nbsp; {label}</span>
         </Link>
     </li>
 }
@@ -106,6 +106,16 @@ export default class App extends React.Component<{
     fullHeightIf(path: string) {
         return this.props.location.pathname == path ? {height: "100%"} : {}
     }
+    logOut = () => {
+        dialogEvents.dialog({
+            title: "Disconnect?",
+            body: <p>Are you sure you want to disconnect?</p>,
+            buttons: [
+                { bsStyle: "primary", children: "Yes", onClick: socket.disconnect },
+                { bsStyle: "default", children: "No" }
+            ]
+        })
+    }
     mainContent() {
         let {app, showSettings} = this.state
         let path = this.props.location.pathname
@@ -130,10 +140,12 @@ export default class App extends React.Component<{
             <Sidebar activePath={this.props.location.pathname} />
             <ModalSettings show={showSettings} />
             <TopBar currentPage={this.pathMap[this.props.location.pathname]}>
-                <div onClick={() => this.setState({showSettings: !showSettings})}>
+                <div onClick={() => {
+                    this.setState({showSettings: true})
+                }}>
                     <Glyphicon glyph="cog" /> &nbsp; Settings
                 </div>
-                <div><Glyphicon glyph="log-out" /> &nbsp; Disconnect</div>
+                <div onClick={this.logOut}><Glyphicon glyph="log-out" /> &nbsp; Disconnect</div>
             </TopBar>
             <div className="page" style={fullHeight}>
                 <div className="page-content container-fluid" style={fullHeight}>
@@ -145,27 +157,17 @@ export default class App extends React.Component<{
     render() {
         return <div className="main" style={fullHeight}>
             <Messages />
+            <DisconnectOverlay />
+            {this.state.showSettings ? <Overlay onClick={() => {
+                this.setState({showSettings: false})
+                console.log("clicc")
+            }} /> : null}
             <Dialogs />
             {this.mainContent()}
         </div>
     }
 }
 
-function Overlay(props: any) {
-    
-    const style = _.assign({}, props.style, {
-        zIndex: 10,
-        position: "fixed",
-        width: "100%",
-        height: "100%",
-        opacity: 0.5,
-        backgroundColor: "black"
-    })
-    
-    return <div {...props} style={style}>
-    </div>
-    
-}
 
 class Sidebar extends React.Component<{activePath: string}, {
     open: boolean
@@ -195,58 +197,43 @@ class Sidebar extends React.Component<{activePath: string}, {
                         (this.getActive("/tasks") ||
                             this.getActive("/"))  ?  "active": ""} 
                     path="/tasks"
-                    glyph="tasks"
+                    icon="task"
                     label="Task Manager" />
                 <NavItem 
                     className={this.getActiveClassName("/info")} 
                     path="/info"
-                    glyph="stats"
+                    icon="stats"
                     label="System Information" />
                 <NavItem 
                     className={this.getActiveClassName("/cameras")} 
                     path="/cameras"
-                    glyph="facetime-video"
+                    icon="camera"
                     label="Cameras" />
                 <NavItem 
                     className={this.getActiveClassName("/filesystem")} 
                     path="/filesystem"
-                    glyph="hdd"
+                    icon="filesystem"
                     label="Filesystem" />
                 {/*<NavItem 
                     className={this.getActiveClassName("/plugin")} 
                     path="/plugin"
-                    glyph="plus-sign"
-                    label="Plugins"/>*/}
+                    icon="plus-sign"
+                    label="Plugins"/>
                 <NavItem 
                     className={this.getActiveClassName("/settings")} 
                     path="/settings"
-                    glyph="cog"
-                    label="Settings" />
+                    icon="cog"
+                    label="Settings" />*/}
                 <NavItem
                     className={this.getActiveClassName("/screen")}
                     path="/screen"
-                    glyph="picture"
+                    icon="screenshare"
                     label="Screen Share" />
                 <NavItem
                     className={this.getActiveClassName("/terminal")}
                     path="/terminal"
-                    glyph="console"
+                    icon="terminal"
                     label="Terminal" />
-                <li>
-                    <a style={{cursor: "pointer"}} onClick={() => {
-                        dialogEvents.dialog({
-                            title: "Disconnect?",
-                            body: <p>Are you sure you want to disconnect?</p>,
-                            buttons: [
-                                {bsStyle: "primary", children: "Yes", onClick: socket.disconnect},
-                                {bsStyle: "default", children: "No"}
-                            ]
-                        })
-                    }}>
-                        <Glyphicon glyph="log-out" />
-                        <span className="tab-label">&nbsp; Disconnect</span>
-                    </a>
-                </li>
             </ul>
         </div>
     }
@@ -297,11 +284,12 @@ const routes = <Route path="/" component={App}>
             <Route path="tasks" component={TaskPage} />
             <Route path="info" component={SystemPage} />
             <Route path="cameras" component={CameraPage} />
-            <Route path="settings" component={SettingsPage} />
+            
             <Route path="filesystem" component={FilePage} />
             <Route path="screen" component={ScreenPage} />
             <Route path="terminal" component={TerminalPage} />
-            {/* <Route path="plugin" component={PluginPage} /> */}
+            {/* <Route path="plugin" component={PluginPage} /> 
+            <Route path="settings" component={SettingsPage} />*/}
         </Route>
 
 export class RootRouter extends React.Component<{}, {}> {

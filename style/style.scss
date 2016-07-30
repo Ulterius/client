@@ -1,9 +1,11 @@
 @import "_vars";
 @import "_mixins";
+@import "spinkit";
 
 @import "panel";
 @import "sidebar";
 @import "grid";
+@import "ui";
 
 @font-face {
 	font-family: ProximaNova;
@@ -26,6 +28,7 @@
 }
 
 .top-bar {
+	z-index: 2;
 	position: fixed;
 	left: $sidebar-width;
 	background-color: white;
@@ -239,23 +242,27 @@ td {
 }
 
 .btn-primary, .label-primary {
-	background-color: $strike-deepseagreen;
-	border-color: darken($strike-deepseagreen, 3%);
+	background-color: $highlight;
+	border-color: darken($highlight, 3%);
 
 	&:hover {
-		background-color: darken($strike-deepseagreen, 5%);
-		border-color: darken($strike-deepseagreen, 3%);
+		background-color: darken($highlight, 5%);
+		border-color: darken($highlight, 3%);
 	}
 
-	&.active {
-		background-color: darken($strike-deepseagreen, 10%);
-		border-color: darken($strike-deepseagreen, 3%);
+	&:active {
+		background-color: darken($highlight, 10%);
+		border-color: darken($highlight, 3%);
 	}
 }
 
-.btn-primary.active:hover {
-	background-color: darken($strike-deepseagreen, 10%);
-	border-color: darken($strike-deepseagreen, 3%);
+.btn-primary:active:hover {
+	background-color: darken($highlight, 10%);
+	border-color: darken($highlight, 3%);
+}
+
+.btn-link {
+	color: $highlight;
 }
 
 .fade-enter {

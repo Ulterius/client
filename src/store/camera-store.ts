@@ -56,9 +56,9 @@ class CameraStore extends AbstractStoreModel<CameraState> {
         }
     }
     
-    handleCameraImage(image: CameraImage) {
-        if (this.cameraIsActive(image.cameraId)) {
-            _.find(this.activeCameras, cam => cam.cameraId == image.cameraId).URL = image.URL
+    handleCameraImage(frame: CameraImage) {
+        if (this.cameraIsActive(frame.cameraId)) {
+            _.find(this.activeCameras, cam => cam.cameraId == frame.cameraId).URL = frame.URL
         }
     }
 }

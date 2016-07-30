@@ -4,28 +4,30 @@ import {settingsActions, messageActions} from "../action"
 import * as _ from "lodash"
 
 export interface SettingsState {
-    settings: SettingsInfo.Settings
+    settings: SettingsInfo.All
 }
 
 class SettingsStore extends AbstractStoreModel<SettingsState> {
-    settings: SettingsInfo.Settings
+    settings: SettingsInfo.All
     constructor() {
         super()
+        this.settings = {} as any
         this.bindListeners({
-            updateSettings: [
-                settingsActions.updateWebServer,
-                settingsActions.updateWebServerPort,
-                settingsActions.updateWebFilePath,
-                settingsActions.updateVncPass,
-                settingsActions.updateVncPort,
-                settingsActions.updateVncProxyPort,
-                settingsActions.updateTaskServerPort,
-                settingsActions.updateNetworkResolve,
-                settingsActions.getAllSettings
-            ]
+            updateSetting: settingsActions.updateSetting,
+            updateAllSettings: settingsActions.updateAllSettings
         })
     }
-    updateSettings(whichever: any) {
+    updateAllSettings(allSettings: SettingsInfo.All) {
+        this.settings = allSettings
+    }
+    updateSetting(setting: any) {
+        const newSettingKey = Object.keys(setting)[0]
+        _.forOwn(this.settings, (subsettings, category) => {
+            if (_.has(subsettings, newSettingKey)) {
+                _.assign(subsettings, setting)
+            }
+        })
+        /*
         if (!this.settings) {
             this.settings = {} as any
         }
@@ -40,6 +42,7 @@ class SettingsStore extends AbstractStoreModel<SettingsState> {
             console.log(this.settings)
         }
         console.log("Setting updated: "+JSON.stringify(whichever))
+        */
     }
 }
 

@@ -98,6 +98,9 @@ export function bootstrapSizeMatches(size: string) {
 }
 
 export function lastPathSegment(path: string) {
+    if (path.lastIndexOf("://") == path.length-4) {
+        return path
+    }
     return path.substr(path.lastIndexOf("\\")+1)
 }
 
@@ -170,8 +173,8 @@ export function wrapWorker(worker: Worker) {
 }
 
 export function wrapPostMessage(postMessage: typeof window.postMessage) {
-    const pm = postMessage as (any) => void
-    return (type: string, content: any) => {
+    const pm = postMessage as any as (content: any, transferList?: any[]) => void
+    return (type: string, content: any, transferList?: any[]) => {
         pm({
             type,
             content
@@ -232,13 +235,13 @@ export function numberToPercent(num: number) {
 export function verticalCenter(width: number|string, height: number|string) {
     let negativeWidthOverTwo
     let negativeHeightOverTwo
-    if (typeof width == "string") {
+    if (typeof width === "string") {
         negativeWidthOverTwo = numberToPercent(-percentToNumber(width)/2)
     }
     else {
         negativeWidthOverTwo = -width/2
     }
-    if (typeof height == "string") {
+    if (typeof height === "string") {
         negativeHeightOverTwo = numberToPercent(-percentToNumber(height)/2)
     }
     else {
@@ -396,4 +399,31 @@ export function clearFunctions(functionBag: {[key: string]: Function}) {
 
 export function addImageHeader(data: string) {
     return `data:image/jpg;base64,${data}`
+}
+
+export function caseInsensitiveMatch(s1: string, s2: string) {
+    return s1.toLowerCase() == s2.toLowerCase()
+}
+
+export function endpointMatch(key: string, msg: any) {
+    return ( msg.endpoint && caseInsensitiveMatch(msg.endpoint, key) )
+}
+
+export enum SocketType {
+    Main = 0,
+    ScreenShare,
+    Terminal
+}
+
+export function isCameraFrame(data): data is CameraFrame {
+    return typeof data.guid === "string" && typeof data.cameraImage === "string"
+}
+
+export function bytesToGuid(x) {
+    var bytes = x
+    .slice(0, 4)
+    .reverse()
+    .concat(x.slice(4,6).reverse()).concat(x.slice(6,8).reverse()).concat(x.slice(8))
+    var y = bytes.map(function(item) {return ('00'+item.toString(16).toUpperCase()).substr(-2,2)})
+    return y
 }

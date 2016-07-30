@@ -1,8 +1,5 @@
 $sidebar-width: 200px;
 $sidebar-sm-width: 75px;
-$sidebar-bg: #33394d;
-$sidebar-header-bg: #485069;
-$sidebar-highlight: #03aadb;
 $sidebar-color: rgba(90%, 90%, 90%, 100%);
 
 .sidebar {
@@ -49,12 +46,15 @@ $sidebar-color: rgba(90%, 90%, 90%, 100%);
 	color: white !important;
 	background-color: $sidebar-bg;
 	position: fixed;
-	z-index: 1000000;
+	z-index: 11;
 
 	.progress {
 		margin-bottom: 0 !important;
 	}
-
+	li {
+		font-family: ProximaNova;
+		font-size: 14px;
+	}
 	ul .active {
 		background-color: $sidebar-highlight !important;
 

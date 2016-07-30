@@ -6,6 +6,7 @@ import React = require("react")
 import * as _ from "lodash"
 import {SortablePane, Pane} from "react-sortable-pane"
 import {DragGroup, DragElement} from "./"
+import classNames = require("classnames")
 
 const style = {
     fontSize: "40px",
@@ -72,7 +73,7 @@ export class CameraPage extends React.Component<{}, CameraState> {
         }
         else {
             let cam = _.find(this.state.cameras, cam => cam.Id == id)
-            return <div style={{margin: 0, padding: 0, width: "100%", height: "100%", verticalAlign: "top"}}><Glyphicon glyph="play" /> &nbsp; {cam.Name}</div>
+            return <div style={{margin: 0, padding: 0, width: "100%", height: "100%", verticalAlign: "top"}}></div>
             /*
             return <Button 
                     key={cam.Id}
@@ -95,41 +96,26 @@ export class CameraPage extends React.Component<{}, CameraState> {
         let {cameras, activeCameras} = this.state
         
         return <div className="camera-page">
-            {/*<ButtonToolbar>
-                {cameras.map(cam => {
-                    return <Button 
-                            key={cam.Id}
-                            onClick={() => this.toggleCamera(cam.Id)} 
-                            bsStyle={this.getButtonStyle(cam.Id)}>
-                        {this.getIcon(cam.Id)} {cam.Name}
-                    </Button>
-                })}
-                
-                
-                <Button bsStyle="primary" disabled={this.state.activeCameras.length > 0} onClick={this.refresh}><Glyphicon glyph="refresh" /></Button>
-            </ButtonToolbar>*/}
-            {/*
-            <SortablePane direction="horizontal" margin={10} onResize={(id, dir, size, rect) => null} onOrderChange={(panes) => null}>
-                <Pane width={200} height={300} style={style}>
-                    hi faggot
-                </Pane>
-                <Pane width={200} height={300} style={style}>
-                    hi faggot
-                </Pane>
-            </SortablePane>
-            {activeCameras.map(cam => {
-                 return <img key={cam.cameraId} src={cam.URL} width="640" height="480" />
-            })} */}
-            
+            {cameras.length == 0 ? "No cameras found." : null}
             <DragGroup>
                 {cameras.map(cam => {
-                    return <div className="well well-sm cam-box" onClick={() => this.toggleCamera(cam.Id)} style={{width: 400, height: "300px", margin: 10}}>
+                    let active = cu(this.state).cameraIsActive(cam.Id)
+                    let icon = <span className={classNames(
+                        "glyphicon", 
+                        {
+                            "glyphicon-stop": active,
+                            "glyphicon-play": !active
+                        }
+                    )} />
+                    return <div className="ulterius-panel" style={{width: 400, height: "300px", margin: 10}}>
+                        <div className="camera-header" onClick={() => this.toggleCamera(cam.Id)}>
+                            <div>{cam.Name}</div>
+                            <div>{icon}</div>
+                        </div>
                         {this.getCam(cam.Id)}
                     </div>
                 })}
-                
             </DragGroup>
-            
         </div>
     }
 }

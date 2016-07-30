@@ -65,15 +65,16 @@ class ScreenShare extends Component<{}, {
         }
         screenEvents.login = () => {
             tryUntil(() => !!this.state.screenWidth, () => {
-                console.log("Trying...")
                 screenShareApi.requestFrame()
             })
         }
         document.addEventListener("keydown", this.onKeyDown)
+        document.addEventListener("keyup", this.onKeyUp)
     }
     componentWillUnmount() {
         clearFunctions(screenEvents)
         document.removeEventListener("keydown", this.onKeyDown)
+        document.removeEventListener("keyup", this.onKeyUp)
     }
     cancelEvents(e: React.SyntheticEvent | Event) {
         e.preventDefault()
@@ -93,6 +94,10 @@ class ScreenShare extends Component<{}, {
         this.cancelEvents(e)
         screenShareApi.keyDown(e.keyCode)
     }
+    onKeyUp = (e: KeyboardEvent) => {
+        this.cancelEvents(e)
+        screenShareApi.keyUp(e.keyCode)
+    }
     processMouse(e: React.MouseEvent) {
         this.cancelEvents(e)
         return this.offsetMouse(e)
@@ -100,8 +105,8 @@ class ScreenShare extends Component<{}, {
     frameImg() {
         let {screenWidth, screenHeight} = this.state
         return <canvas 
-            width={screenWidth || "1920"}
-            height={screenHeight || "1080"}
+            width={screenWidth || "500"}
+            height={screenHeight || "500"}
             tabIndex="1"
             ref={(ref) => {
                 this.canvas = ref
@@ -137,8 +142,24 @@ class ScreenShare extends Component<{}, {
             }}
         />
     }
+    connected() {
+        if (this.state.screenWidth) {
+            return <div className="proxima-nova-14">Connected &nbsp; <span style={{color: "green"}} className="glyphicon glyphicon-record"/></div>
+        }
+         return <div className="proxima-nova-14">Not Connected &nbsp; <span style={{color: "red"}} className="glyphicon glyphicon-record"/></div>
+    }
     render() {
-        return <div>
+        return <div className="ulterius-panel">
+            <div className="double-header" onClick={() => {
+                screenShareApi.login()
+            }}>
+                <div>screen share</div>
+                {this.connected()}
+            </div>
+            <div className="fixed">
+                {this.frameImg()}
+            </div>
+            {/* 
             <Button onClick={() => {
                 screenShareApi.login()
             }}>Connect</Button>
@@ -146,7 +167,7 @@ class ScreenShare extends Component<{}, {
             <Button onClick={() => {
                 screenShareApi.requestFrame()
             }}/>
-            {this.frameImg()}
+            */}
         </div>
     }
 }

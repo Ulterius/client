@@ -9,11 +9,13 @@ import {
     lastPathSegment,
     untilLastPathSegment
 } from "../util"
+import {WorkerPool} from "../util/worker"
 import {sendCommandAsync, sendCommandToDefault} from "../socket"
 import * as _ from "lodash"
 import FS = FileSystemInfo
 let FsWorker = require("worker?name=filesystem.worker.js!./filesystem-worker")
-let fsWorker: Worker = new FsWorker
+//let fsWorker: Worker = new FsWorker
+let fsWorkerPool = new WorkerPool(FsWorker, 1)
 
 export const fsApi = {
     requestFile(location: string) {
@@ -21,7 +23,7 @@ export const fsApi = {
         sendCommandAsync("requestFile", [location, password], (file) => {
             handleRequestFile(file, password, location)
         })
-    },
+    },        
     uploadFile(path: string, data: ArrayBuffer) {
         let password = generatePassword()
         let fileKey = generatePassword()
@@ -34,13 +36,18 @@ export const fsApi = {
             }
         )
     },
+    search(query: string) {
+        sendCommandAsync("searchFiles", query, (result: SearchResult) => {
+            fileSystemActions.search(result)
+        })
+    },
     reloadFileTree(path: string) {
         sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
     },
     removeFile(path: string) {
         const name = lastPathSegment(path)
         sendCommandAsync("removeFile", 
-            settingsStore.getState().settings.WebFilePath + "temp/" + name, 
+            settingsStore.getState().settings.WebServer.WebFilePath + "temp/" + name, 
             (response) => {
                 if (response.deleted) {
                     fileSystemActions.removeDownload(path)
@@ -48,38 +55,55 @@ export const fsApi = {
             }
         )
     },
-    createFileTree(path: string) {
-        sendCommandToDefault("createFileTree", path)
+    createFileTree(path: string = "") {
+        if (path == "") {
+            sendCommandAsync("requestSystemInformation", (info: SystemInfo) => {
+                fileSystemActions.createRoot(info.drives)
+            })
+        }
+        else {
+            sendCommandToDefault("createFileTree", path)
+        }
     }
 }
 
+fsWorkerPool.listen({
+    uploadProgress(progress) {
+        console.log(progress)
+        fileSystemActions.uploadProgress(progress)
+    },
+    uploadFile({sent, path}) {
+        messageActions.message({style: "success", text: "File uploaded."})
+        fsApi.reloadFileTree(untilLastPathSegment(path))
+    },
+    requestFile(result) {
+        console.log("Download compree.")
+        sendCommandAsync("removeFile", [lastPathSegment(result.path)])
+        fileSystemActions.downloadComplete(result)
+    },
+    progress(content) {
+        //console.log(content)
+        console.log("We get progress.")
+        fileSystemActions.downloadProgress(content)
+    }
+})
+
 function handleUploadFile(path: string, fileKey: string, password: string, data: ArrayBuffer) {
     let {host} = appStore.getState().connection
-    let port = settingsStore.getState().settings.WebServerPort
+    let port = settingsStore.getState().settings.WebServer.WebServerPort
+    console.log(settingsStore.getState())
     let destination =  "http://" + 
         appStore.getState().connection.host + ":" +
         port +
         "/upload/"
-    workerAsync(fsWorker, "uploadFile", {
+    fsWorkerPool.post("uploadFile", {
         password,
         path,
         fileKey,
         destination,
         data
-    }, ({sent}) => {
-        messageActions.message({style: "success", text: "File uploaded."})
-        fsApi.reloadFileTree(untilLastPathSegment(path))
     })
 }
-
-fsWorker.addEventListener("message", ({data}) => {
-    console.log(data)
-    let message = data as WorkerMessage<any>
-    if (message.type == "progress") {
-        console.log("We get progres")
-        fileSystemActions.downloadProgress(message.content)
-    }
-})
 
 export function createFileTree(tree: FileSystemInfo.FileTree) {
     console.log(tree)
@@ -97,13 +121,10 @@ export function handleRequestFile(file: FileSystemInfo.Link, password: string, l
         port +
         "/" + path
     console.log(fullPath)
-    workerAsync(fsWorker, "requestFile", {
+    fsWorkerPool.post("requestFile", {
         password,
         location: fullPath,
         localLocation: location
-    }, (result) => {
-        fileSystemActions.downloadComplete(result)
-        //downloadBlobURL(byteArraysToBlobURL([result]), fileName)
     })
     /*
     let message: WorkerMessage<FileSystemInfo.InitialDownload> = {
@@ -115,12 +136,9 @@ export function handleRequestFile(file: FileSystemInfo.Link, password: string, l
     */
 }
 
+
 export function downloadData(data: FileSystemInfo.Data) {
-    let message: WorkerMessage<FileSystemInfo.Data> = {
-        type: "downloadData",
-        content: data
-    }
-    fsWorker.postMessage(message)
+    fsWorkerPool.post("downloadData", data)
     //fileSystemActions.downloadData(data)
 }
 

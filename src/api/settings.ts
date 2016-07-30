@@ -1,11 +1,45 @@
 import {settingsActions, messageActions} from "../action"
-import {sendCommandToDefault} from "../socket"
+import {sendCommandToDefault, mainConnection as _mainConnection} from "../socket"
+import {endpointMatch} from "../util"
+
+function getEndpoint(property: string) {
+    if (property == "UseWebServer") return "changeWebServerUse"
+    if (property == "SkipHostNameResolve") return "changeNetworkResolve"
+    return "change" + property
+}
 
 
+export function register(mC: typeof _mainConnection) {
+    mC.listenKeys(endpointMatch, {
+        getCurrentSettings(settings: SettingsInfo.All) {
+            console.log(settings)
+            settingsActions.updateAllSettings(settings)
+        }
+    })
+    mC.listen(msg => msg.endpoint && msg.endpoint.indexOf("change") === 0, (msg: SettingsInfo.Updated) => {
+        if (msg.changedStatus) {
 
+        }
+    })
+    return {
+        getCurrentSettings() {
+            mC.send("getCurrentSettings")
+        },
+        changeSetting(newSettings) {
+            _.forOwn(newSettings, (v, k) => {
+                mC.send(getEndpoint(k), v)
+            })
+        },
+        restartServer() {
+            mC.send("restartServer")
+        }
+    }
+}
+
+/*
 export function getCurrentSettings(settings: SettingsInfo.Settings) {
     console.log(settings)
-    settingsActions.getAllSettings(settings)
+    settingsActions.updateAllSettings(settings)
 }
 
 export let changeVncPort = settingsActions.updateVncPort
@@ -35,3 +69,4 @@ export let settingsApi = {
         sendCommandToDefault("restartServer")
     }
 }
+*/

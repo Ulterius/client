@@ -1,7 +1,8 @@
 
 import React = require("react")
+import Component = React.Component
 import ReactDOM = require("react-dom")
-import {GpuAvailability, bytesToSize} from "../util"
+import {GpuAvailability, bytesToSize, clearFunctions} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
 import {listen} from "../api-layer"
 import * as _ from "lodash"
@@ -209,6 +210,7 @@ import {Input, Button, Glyphicon} from "react-bootstrap"
 export class EntryBox extends React.Component<
     {
         onConfirmation: (text: string) => any, 
+        onEscape?: () => any,
         glyph?: string, 
         buttonText?: string,
         buttonStyle?: string,
@@ -238,6 +240,10 @@ export class EntryBox extends React.Component<
             onKeyDown={e => {
                 if (e.keyCode == 13) {
                     this.props.onConfirmation(this.state.text)
+                }
+                if (e.keyCode == 27) {
+                    if (this.props.onEscape)
+                        this.props.onEscape()
                 }
             }} 
         />
@@ -516,4 +522,77 @@ export function MoveLeftTransition(props: {
     >
         {props.children}
     </TransformTransition>
+}
+
+export function Overlay(props: any) {
+    /*
+    if (!props) {
+        props = {}
+    }
+    if (!props.style) {
+        props.style = {}
+    }
+    */
+    const style = _.assign({}, props.style, {
+        zIndex: (props.style && props.style.zIndex ? props.style.zIndex : 10),
+        position: "fixed",
+        width: "100%",
+        height: "100%",
+        //opacity: 0.5,
+        backgroundColor: "rgba(0, 0, 0, 0.5)"
+    })
+    
+    return <div {...props} style={style}>
+        {props.children}
+    </div>
+    
+}
+
+export let disconnectEvents = {
+    disconnect() {},
+    reconnect() {}
+}
+
+export class DisconnectOverlay extends Component<{}, {
+    visible?: boolean
+}> {
+    constructor(props, context) {
+        super(props, context)
+        this.state = {visible: false}
+    }
+    componentDidMount() {
+        disconnectEvents.disconnect = () => {
+            this.setState({visible: true})
+        }
+        disconnectEvents.reconnect = () => {
+            this.setState({visible: false})
+        }
+    }
+    componentWillUnmount() {
+        clearFunctions(disconnectEvents)
+    }
+    render() {
+        if (this.state.visible) {
+            return <div>
+                <Overlay style={{zIndex: 55, color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+                    <div className="sk-circle">
+                        <div className="sk-circle1 sk-child"></div>
+                        <div className="sk-circle2 sk-child"></div>
+                        <div className="sk-circle3 sk-child"></div>
+                        <div className="sk-circle4 sk-child"></div>
+                        <div className="sk-circle5 sk-child"></div>
+                        <div className="sk-circle6 sk-child"></div>
+                        <div className="sk-circle7 sk-child"></div>
+                        <div className="sk-circle8 sk-child"></div>
+                        <div className="sk-circle9 sk-child"></div>
+                        <div className="sk-circle10 sk-child"></div>
+                        <div className="sk-circle11 sk-child"></div>
+                        <div className="sk-circle12 sk-child"></div>
+                    </div>
+                    <div>Disconnected. Attempting to reconnect...</div>
+                </Overlay>
+            </div>
+        }
+        return null;
+    }
 }

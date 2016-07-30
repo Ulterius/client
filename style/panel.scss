@@ -27,6 +27,42 @@
 	color: $green;
 }
 
+.reset-bs {
+	border: none !important;
+	background: none !important;
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+}
+
+.text-button {
+	@extend .reset-bs;
+	color: $highlight;
+	text-transform: uppercase;
+	font: {
+		family: ProximaNovaBold;
+		size: 12px;
+	};
+}
+
+.bare-input {
+	@extend .reset-bs;
+	font-family: ProximaNovaIt;
+}
+
+.bare-input-button {
+	button, button:hover {
+		@extend .text-button;
+	}
+
+	.form-group {
+		margin-bottom: 0 !important;
+	}
+
+	input[type="text"], input[type="password"] {
+		@extend .bare-input;
+	}
+}
+
 .ulterius-panel {
 	color: $text-color;
 	display: flex;
@@ -34,7 +70,7 @@
 	background-color: #ffffff;
 	box-shadow: $panel-shadow;
 	justify-content: space-between;
-
+	/*
 	.fixed {
 		input {
 			@include reset-bs;
@@ -52,6 +88,7 @@
 			};
 		}
 	}
+	*/
 
 	.header {
 		height: 50px;
@@ -161,21 +198,28 @@
 	}
 }
 
-.meter-box {
-	flex: none;
-	margin: auto;
-	width: 100px;
-	height: 75px;
+.uploads {
+	@extend .ulterius-panel;
+	width: 50%;
+	float: right;
+}
+
+.bar-container {
+	padding: 10px;
+}
+
+.stat-item-body-text {
+	font: {
+		family: ProximaNovaCond;
+		size: 18px;
+	};
 }
 
 .stat-item {
 	display: inline-block;
 	margin-right: 41px;
 	line-height: 18px;
-	font: {
-		family: ProximaNovaCond;
-		size: 18px;
-	};
+	@extend .stat-item-body-text;
 }
 
 .foot-stat-item {
@@ -244,4 +288,81 @@
 		@extend .green-label-text;
 		@extend .panel-button;
 	}
+}
+
+.fs-panel {
+	@extend .ulterius-panel;
+	.fs-controls {
+		padding: 10px;
+		margin-top: -20px;
+		border-bottom: $solid-line;
+		background-color: white;
+		display: flex;
+		position: fixed;
+		z-index: 3;
+		.control-button {
+			padding: 10px 15px 6px 15px;
+			margin: 0 10px 0 0;
+			background-color: $bg;
+			cursor: pointer;
+			&:hover {
+				background-color: darken($bg, 10%)
+			}
+		}
+		.file-bar {
+			@extend .bare-input-button;
+			width: 50%;
+			flex: none;
+			input[type="text"] {
+				font-family: ProximaNova;
+			}
+		}
+		.search-bar {
+			@extend .bare-input-button;
+			.input-group {
+				border: $solid-line !important;
+				box-shadow: $hole-shadow !important;
+			}
+			input[type="text"] {
+				font-family: ProximaNova;
+			}
+		}
+	}
+}
+
+.gauge-box {
+	flex: none;
+	margin: auto;
+	width: 100px;
+}
+
+.gauge-outer {
+	text-align: center;
+	.stat-item-head-text {
+		letter-spacing: 1px;
+	}
+}
+
+.gauge {
+	width: 100px;
+	height: 75px;
+	text {
+		display: none;
+	}
+}
+
+.double-header {
+	height: 50px;
+	font-family: ProximaNovaSemi;
+	font-size: 12px;
+	text-transform: uppercase;
+	padding: 19px 20px 17px 20px;
+	border-bottom: $solid-line;
+	display: flex;
+	justify-content: space-between;
+}
+
+.camera-header {
+	@extend .double-header;
+	cursor: pointer;
 }

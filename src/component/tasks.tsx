@@ -22,7 +22,7 @@ export class ProcessCreator extends React.Component<{}, {exe: string, box?: any}
     }
     render() {
         const createButton = <Button bsStyle="primary" onClick={this.startProcess}>start</Button>
-        return <div>
+        return <div className="bare-input-button">
             <Input 
             type="text" 
             placeholder="Enter new process name..." 
@@ -189,8 +189,8 @@ export function TaskPage(props: any) {
                         processes
                     </div>
                     <div className="fixed dashed-bottom" style={{height: 43}}>
-                            <ProcessCreator />
-                        </div>
+                        <ProcessCreator />
+                    </div>
                     <div className="body" style={{overflow: "auto"}}>
                         <TaskList />
                     </div>

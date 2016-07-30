@@ -4,9 +4,21 @@ import * as _ from "lodash"
 import * as apiLayer from "./api-layer"
 import {appStore} from "./store"
 import CryptoJS = require("crypto-js")
-import {toHex, workerAsync, arrayBufferToBase64, workerListen, byteArraysToBlobURL, downloadBlobURL, elementAfter, wrapWorker as ww} from "./util"
+import {
+    toHex, 
+    workerAsync, 
+    arrayBufferToBase64, 
+    workerListen, 
+    byteArraysToBlobURL, 
+    downloadBlobURL, 
+    elementAfter, 
+    wrapWorker as ww, 
+    SocketType,
+    isCameraFrame
+} from "./util"
 import {WorkerPool} from "./util/worker"
 import {appActions, messageActions} from "./action"
+import {loginEvents, disconnectEvents} from "./component"
 
 
 let SocketWorker = require("worker?name=socket.worker.js!./socket-worker")
@@ -90,6 +102,8 @@ abstract class Connection {
     ofb: boolean = false
     key: string = undefined
     iv: string = undefined
+    socketType: SocketType
+    disconnecting: boolean = false
     
     constructor(public poolSize = 3, public isDefault: boolean = false) {
 
@@ -127,9 +141,12 @@ abstract class Connection {
 
     onConnect() {}
 
-    disconnect() {
+    disconnect = () => {
+        this.disconnecting = true
         if (this.socket) {
+            this.socket.onclose = () => {}
             this.socket.close(1000)
+            this.socket = undefined
         }
         this.socketPool.terminate()
         this.connected = false
@@ -258,7 +275,7 @@ abstract class Connection {
         let caught = false
         for (let listener of this.listeners) {
             if (listener.predicate(message, this)) {
-                listener.callback(message, this)
+                listener.callback(this.messageFilter(message), this)
                 caught = true
                 if (listener.once) {
                     _.pull(this.listeners, listener)
@@ -269,13 +286,13 @@ abstract class Connection {
             _.forOwn(listener.callbacks, (callback, k) => {
                 if (listener.predicate(k, message, this)) {
                     caught = true
-                    callback(message, this)
+                    callback(this.messageFilter(message), this)
                 }
             })
         }
         if (!caught) {
             for (let listener of this.fallbackListeners) {
-                listener(message, this)
+                listener(this.messageFilter(message), this)
             }
         }
     }
@@ -302,6 +319,7 @@ abstract class Connection {
                         }, 4000)
                     }
                     else {
+                        loginEvents.fail("Failed to connect, host invalid.")
                         messageActions.message({ style: "danger", text: "Failed to connect. Host invalid." })
                     }
                 }
@@ -310,6 +328,7 @@ abstract class Connection {
                 console.log(`Socket (${host}:${port}${isDefault ? ", Default" : ""}) Status: ${socket.readyState} (open)`)
                 if (this.reconnectInterval !== undefined && socket.readyState === 1) {
                     clearInterval(this.reconnectInterval)
+                    disconnectEvents.reconnect()
                     this.reconnectInterval = undefined
                 }
                 if (socket.readyState === 1 && isDefault) {
@@ -323,7 +342,8 @@ abstract class Connection {
                     this.socketPool.post("deserialize", {
                         key: this.key,
                         iv: this.iv,
-                        data: e.data
+                        data: e.data,
+                        type: this.socketType
                     })
                 }
                 else if (e.data instanceof ArrayBuffer) {
@@ -331,7 +351,8 @@ abstract class Connection {
                         key,
                         iv,
                         ofb,
-                        data: e.data
+                        data: e.data,
+                        type: this.socketType
                     }, [e.data])
                 }
                 else if (e.data instanceof Blob) {
@@ -341,9 +362,12 @@ abstract class Connection {
             
             socket.onclose = (e) => {
                 console.log(e.code)
-                if (e.code !== 1000 && this.reconnectInterval === undefined) {
+                if (!this.disconnecting && e.code !== 1000 && this.reconnectInterval === undefined && appStore.getState().connection.host) {
                     console.log("Socket... died? Trying to reconnect in a sec...")
-                    if (isDefault) apiLayer.disconnectedFromUlterius()
+                    if (isDefault) { 
+                        apiLayer.disconnectedFromUlterius()
+                        disconnectEvents.disconnect() 
+                    }
                     this.reconnectInterval = setInterval(() => {
                         console.log("Disconnected. Trying to reconnect now...")
                         this.connect(this.host, this.port)
@@ -357,7 +381,9 @@ abstract class Connection {
             console.log(e)
         }
     }
-    
+    messageFilter(message) {
+        return message
+    }
     listen(predicate: Predicate, callback: Callback) {
         this.listeners.push({
             predicate,
@@ -424,14 +450,17 @@ function defaultHandleMessage(message: ApiMessage) {
             fn(message.results)
         }
     }
+    /*
     if (!caught) {
         console.log("Uncaught message: " + message.endpoint)
         console.log(message)
     }
+    */
 }
 
 
 class UlteriusConnection extends Connection {
+    socketType = SocketType.Main
     send(action, args?) {
         var packet: any = {
             endpoint: action.toLowerCase(),
@@ -491,7 +520,7 @@ class UlteriusConnection extends Connection {
         } = this
 
         let {synckey, results, endpoint} = message
-        if (endpoint.toLowerCase() == "connectedtoulterius") {
+        if (endpoint && endpoint.toLowerCase() == "connectedtoulterius") {
             this.requestQueue = []
             //flush it all
         }
@@ -499,7 +528,7 @@ class UlteriusConnection extends Connection {
             (endpoint && endpoint.toLowerCase() == "aeshandshake" &&
                 m.endpoint.toLowerCase() == "aeshandshake"))
 
-        if (endpoint != "getcameraframe") {
+        if (endpoint && endpoint != "getcameraframe" && !isCameraFrame(message)) {
             if (logPackets) {
                 console.groupCollapsed("Got packet: " + endpoint)
                 console.log(message)
@@ -519,7 +548,7 @@ class UlteriusConnection extends Connection {
             _.pull(this.requestQueue, packet)
         }
 
-        if (!synckey || (synckey as string).indexOf("override") == -1) {
+        if (endpoint && (!synckey || (synckey as string).indexOf("override") == -1)) {
             defaultHandleMessage(message)
         }
         else {
@@ -530,14 +559,20 @@ class UlteriusConnection extends Connection {
             }
         }
     }
+
     getSyncKey(prepend: string) {
         this.keyCounter++
         return prepend + String(this.keyCounter)
+    }
+
+    messageFilter(message) {
+        return message.results
     }
 }
 
 class TerminalConnection extends Connection {
     correlationId: number = 1
+    socketType = SocketType.Terminal
     send(type: string, restOfPacket: any) {
         //this.socket.send(JSON.stringify(packet))
         let packet = _.assign({}, {type}, restOfPacket)
@@ -562,6 +597,7 @@ class TerminalConnection extends Connection {
 
 class ScreenShareConnection extends Connection {
     loggedIn: boolean = false
+    socketType = SocketType.ScreenShare
     send(packet: any) {
         this.promiseToSendPacket(packet, "ScreenShare")
     }
@@ -612,6 +648,7 @@ screenConnection.useQueue = false
 
 export let mainConnection = new UlteriusConnection(2, true)
 mainConnection.logPackets = false
+mainConnection.useQueue = false
 
 window.onbeforeunload = () => {
     terminalConnection.disconnect()

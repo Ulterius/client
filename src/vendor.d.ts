@@ -190,3 +190,21 @@ declare module "asmcrypto.js" {
     }
     export = ex
 }
+
+declare module "react-svg-gauge" {
+    interface GaugeI extends __React.ComponentClass<{
+        value: number, 
+        label?: string,
+        min?: number,
+        max?: number,
+        width?: number,
+        height?: number,
+        color?: string,
+        backgroundColor?: string,
+        topLabelStyle?: __React.CSSProperties,
+        valueLabelStyle?: __React.CSSProperties,
+        minMaxLabelStyle?: __React.CSSProperties
+    }> {}
+    let Gauge: GaugeI
+    export default Gauge
+}

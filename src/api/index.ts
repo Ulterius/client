@@ -12,7 +12,7 @@ export const api = {
     settings
 }
 */
-export * from "./settings"
+//export * from "./settings"
 export * from "./filesystem"
 export * from "./plugin"
 export * from "./vnc"

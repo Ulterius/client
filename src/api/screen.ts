@@ -24,7 +24,7 @@ export let screenShareApi = {
     login() {
         sC.send({
             endpoint: "login",
-            args: ["ayy"]
+            args: ["password"]
         })
     },
     mouse: {
@@ -55,6 +55,11 @@ export let screenShareApi = {
     },
     keyDown(code: number) {
         sC.sendEvent("Keyboard", "KeyDown", {
+            KeyCodes: [code]
+        })
+    },
+    keyUp(code: number) {
+        sC.sendEvent("Keyboard", "KeyUp", {
             KeyCodes: [code]
         })
     }

@@ -259,12 +259,19 @@ declare interface CameraInfos {
     cameraInfo: CameraInfo[]
 }
 
+
+/*
 declare interface CameraFrame {
     cameraFrameFailed?: boolean,
     message?: string,
     exceptionMessage?: string,
     cameraId: string,
     cameraFrame: number[]
+}
+*/
+declare interface CameraFrame {
+    cameraId: string,
+    cameraData: number[]
 }
 
 declare interface CameraImage {
@@ -301,9 +308,7 @@ declare interface CamerasRefreshed {
 declare namespace SettingsInfo {
     interface Updated {
         changedStatus: boolean
-    }
-    interface WebServer extends Updated {
-        UseWebServer: boolean
+        [key: string]: any
     }
     interface WebServerPort extends Updated {
         WebServerPort: number
@@ -337,6 +342,118 @@ declare namespace SettingsInfo {
         VncPass: string,
         AllowTerminal: boolean
     }
+
+    /*
+    { "Debug" : { "TraceDebug" : true },
+  "General" : { "ClientIssues" : "https://github.com/Ulterius/client/issues",
+      "Github" : "https://github.com/Ulterius",
+      "Maintainers" : [ { "Github" : "https://github.com/codeusa",
+            "Name" : "Andrew Sampson",
+            "Twitter" : "https://twitter.com/Andrewmd5",
+            "Website" : "https://andrew.im/"
+          },
+          { "Github" : "https://github.com/FrobtheBuilder",
+            "Name" : "Evan Banyash",
+            "Twitter" : "https://twitter.com/frobthebuilder",
+            "Website" : "http://banyash.com/"
+          }
+        ],
+      "ServerIssues" : "https://github.com/Ulterius/server/issues",
+      "UploadLogs" : false,
+      "Version" : { "Build" : 0,
+          "Major" : 1,
+          "MajorRevision" : 0,
+          "Minor" : 0,
+          "MinorRevision" : 0,
+          "Revision" : 0
+        }
+    },
+  "Network" : { "BindLocal" : false,
+      "SkipHostNameResolve" : false
+    },
+  "Plugins" : { "LoadPlugins" : true },
+  "ScreenShare" : { "ScreenSharePass" : "ayy",
+      "ScreenSharePort" : 22009
+    },
+  "TaskServer" : { "Encryption" : true,
+      "TaskServerPort" : 22007
+    },
+  "Terminal" : { "AllowTerminal" : true },
+  "WebServer" : { "UseWebServer" : true,
+      "WebFilePath" : "C:\\Users\\Frob2\\AppData\\Roaming\\Ulterius\\Ulterius Server\\client\\",
+      "WebServerPort" : 22006
+    }
+}
+*/
+
+    interface Maintainer {
+        Github: string,
+        Name: string,
+        Twitter: string,
+        Website: string
+    }
+
+    interface Version {
+        Major: number, 
+        Minor: number,
+        Build: number,
+        Revision: number,
+        MajorRevision: number,
+        MinorRevision: number
+    }
+
+    interface Debug {
+        TraceDebug: boolean
+    }
+
+    interface General {
+        ClientIssues: string,
+        Github: string,
+        Maintainers: Maintainer[],
+        ServerIssues: string,
+        UploadLogs: boolean,
+        Version: Version
+    }
+
+    interface Network {
+        BindLocal: boolean,
+        SkipHostNameResolve: boolean
+    }
+
+    interface Plugins {
+        LoadPlugins: boolean
+    }
+
+    interface ScreenShare {
+        ScreenSharePass: string,
+        ScreenSharePort: number
+    }
+
+    interface TaskServer {
+        Encryption: boolean,
+        TaskServerPort: number
+    }
+
+    interface Terminal {
+        AllowTerminal: boolean
+    }
+
+    interface WebServer {
+        ToggleWebServer: boolean,
+        WebFilePath: string,
+        WebServerPort: number
+    }
+
+    interface All {
+        Debug: Debug,
+        General: General,
+        Network: Network,
+        Plugins: Plugins,
+        ScreenShare: ScreenShare,
+        TaskServer: TaskServer,
+        Terminal: Terminal,
+        WebServer: WebServer
+    }
 }
 
 declare namespace FileTransfer {
@@ -349,6 +466,11 @@ declare namespace FileTransfer {
     interface Progress {
         path: string,
         downloaded: number,
+        total: number
+    }
+    interface UploadProgress {
+        path: string,
+        uploaded: number,
         total: number
     }
     interface Complete {
@@ -544,4 +666,11 @@ declare interface FrameData {
         IsEmpty: boolean,
     },
     frameData: number[]
+}
+
+declare interface SearchResult {
+    searchGenerationTime: number,
+    searchResults: string[],
+    success: boolean,
+    totalResults: number
 }

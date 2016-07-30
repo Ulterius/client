@@ -13,13 +13,35 @@ interface fsComponentState extends FileSystemState {
     width?: number
 }
 
-export class FileList extends React.Component<{}, FileSystemState> {
+function UploadList({uploads}: {uploads: {[key: string]: FileTransfer.UploadProgress}}) {
+    if (!uploads || _.size(uploads) === 0) {
+        return <div />
+    }
+    return <div className="uploads">
+        <div className="header">uploads</div>
+        {_.map(uploads, (upload, path) => {
+            let {uploaded, total} = upload
+            return <div className="bar-container">
+                {lastPathSegment(path)}{uploaded >= total ? ": Complete!" : ""}<br />
+                <Bar value={Number(((uploaded/total)*100).toFixed(0))}/>
+            </div>
+        })}
+    </div>
+}
+
+export class FileList extends React.Component<{}, FileSystemState & {searchQuery?: string}> {
     box: EntryBox
     upload: any
     fileDownloading: string = ""
     fileList: HTMLDivElement
     headerBar: HTMLDivElement
+    lastComplete: string = ""
+    constructor(props, context) {
+        super(props, context)
+        this.state = {searchQuery: ""}
+    }
     componentDidMount() {
+        fsApi.createFileTree("")
         this.updateState(fileSystemStore.getState())
         fileSystemStore.listen(this.updateState)
         window.addEventListener("resize", this.onResize)
@@ -32,7 +54,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
     componentDidUpdate() {
         //all life is pain, you know
         if (this.fileList && this.headerBar) {
-            this.headerBar.style.width = this.fileList.getBoundingClientRect().width + "px"
+            this.headerBar.style.width = this.fileList.getBoundingClientRect().width-30 + "px"
         }
     }
     onResize = () => {
@@ -43,10 +65,19 @@ export class FileList extends React.Component<{}, FileSystemState> {
         if (this.box) {
             this.box.setState({customized: false})
         }
-        _.forOwn(state.downloads.complete, (v: FileTransfer.Complete, k) => {
-            downloadBlobURL(byteArraysToBlobURL([v.data]), lastPathSegment(v.path))
-            fsApi.removeFile(lastPathSegment(v.path))
-        })
+        
+        let v = state.downloads.complete
+        if (v) {
+            if (this.lastComplete != v.path) {
+                downloadBlobURL(byteArraysToBlobURL([v.data]), lastPathSegment(v.path))
+                fsApi.removeFile(lastPathSegment(v.path))
+                setTimeout(() => fileSystemActions.removeDownload(v.path), 0)
+                this.lastComplete = v.path
+            }
+        }
+        else {
+            this.lastComplete = ""
+        }
     }
     openFolder = (path: string) => {
         fsApi.createFileTree(path)
@@ -88,6 +119,61 @@ export class FileList extends React.Component<{}, FileSystemState> {
     download = (path: string) => {
         fsApi.requestFile(path)
     }
+    getFileList() {
+        let {tree} = this.state
+        return [
+            tree.RootFolder.ChildFolders.map(folder => {
+                return <tr key={folder.Name}>
+                    <td width="16"><Glyphicon glyph="folder-close"/></td>
+                    <td>
+                        <span
+                        style={{cursor: "pointer"}}
+                        onClick={() => this.openFolder(folder.Name)}>
+                            {lastPathSegment(folder.Name)}
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            }),
+            tree.RootFolder.Files.map(file => {
+                return <tr key={file.Path}>
+                    <td width="16"><Glyphicon glyph="file"/></td>
+                    <td>
+                        <Dropdown text={lastPathSegment(file.Path)} dropStyle={{width: 150}}>
+                            <ListGroup>
+                                <ListGroupItem onClick={() => this.download(file.Path)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
+                            </ListGroup>
+                        </Dropdown>
+                        {_.map(this.state.downloads.inProgress, (v, k) => {
+                            if (v && k == file.Path) {
+                                return <Bar value={
+                                    Number(((v.downloaded/v.total) * 100)
+                                    .toFixed(0))
+                                }/>
+                            }
+                        })}
+                    </td>
+                    <td>{bytesToSize(file.FileSize)}</td>
+                </tr>
+            })
+        ]
+    }
+    getSearchList() {
+        let {searchResult} = this.state
+        return searchResult.searchResults.map(result => {
+            return <tr key={result}>
+                <td width="16"><Glyphicon glyph="file"/></td>
+                <td>
+                    <Dropdown text={lastPathSegment(result)} dropStyle={{width: 150}}>
+                        <ListGroup>
+                            <ListGroupItem onClick={() => this.download(result)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
+                        </ListGroup>
+                    </Dropdown>
+                    <span className="small-grey-text">{result}</span>
+                </td>
+            </tr>
+        })
+    }
     render() {
         if (!this.state || !this.state.tree) {
             console.log(this.state)
@@ -97,47 +183,46 @@ export class FileList extends React.Component<{}, FileSystemState> {
                 </div>
             </div>
         }
-            
-        let {tree} = this.state
-        return <div>
+        let {tree, uploads} = this.state
+        return <div className="fs-panel">
+            {JSON.stringify(this.state.downloads.inProgress)}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
-                <div className="row" ref={ref => this.headerBar = ref} style={{position: "fixed", zIndex: 2}}>
-                    <div className="col-xs-12">
-                    <div style={{width: 200, float: "left"}}>
-                        <ButtonToolbar>
-                        <ButtonGroup justified>
-                            <ButtonGroup>
-                                <Button onClick={fileSystemActions.goBack}>
-                                    <Glyphicon glyph="arrow-left" />
-                                </Button>
-                            </ButtonGroup>
-                            <ButtonGroup>
-                                <Button onClick={fileSystemActions.goForward}>
-                                    <Glyphicon glyph="arrow-right" />
-                                </Button>
-                            </ButtonGroup>
-                            <ButtonGroup>
-                                <Button bsStyle="primary" onClick={() => this.upload.click()}>
-                                    <Glyphicon glyph="export" />
-                                </Button>
-                            </ButtonGroup>
-                            <ButtonGroup>
-                                <Button bsStyle="primary" onClick={() => this.refresh(this.state.tree.RootFolder.Name)}>
-                                    <Glyphicon glyph="refresh" />
-                                </Button>
-                            </ButtonGroup>
-                        </ButtonGroup>
-                        </ButtonToolbar>
-                    </div>
-                    <div style={{marginLeft: 220}}>
-                        <EntryBox 
+            <div className="fs-controls" ref={ref => this.headerBar = ref}>
+                <div className="control-button" onClick={fileSystemActions.goBack}>
+                    <Glyphicon glyph="arrow-left" />
+                </div>
+                <div className="control-button" onClick={fileSystemActions.goForward}>
+                    <Glyphicon glyph="arrow-right" />
+                </div>
+                <div className="control-button" onClick={() => this.upload.click()}>
+                    <Glyphicon glyph="export" />
+                </div>
+                <div className="control-button" onClick={() => 
+                    this.refresh(this.state.tree.RootFolder.Name)
+                }>
+                    <Glyphicon glyph="refresh" />
+                </div>
+                <div className="file-bar">
+                    <EntryBox 
                         ref={box => this.box = box}
                         onConfirmation={this.openFolder}
                         defaultValue={tree.RootFolder.Name}
-                        glyph="chevron-right" />
-                    </div>
+                        buttonText="go" />
                 </div>
+                <div className="search-bar">
+                    <EntryBox onConfirmation={(text) => {
+                        if (text == "") {
+                            fileSystemActions.clearSearch()
+                        }
+                        else {
+                            fsApi.search(text)
+                        }
+                    }}
+                    onEscape={() => 
+                        fileSystemActions.clearSearch()
+                    } placeholder="Search..." glyph="search" />
                 </div>
+            </div>
             <div className="row">
                 <div className="col-xs-12" style={{marginTop: 50}} ref={ref => this.fileList = ref}>
                     <Table>
@@ -149,37 +234,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
                             </tr>
                         </thead>
                         <tbody>
-                            {tree.RootFolder.ChildFolders.map(folder => {
-                                return <tr key={folder.Name}>
-                                    <td width="16"><Glyphicon glyph="folder-close"/></td>
-                                    <td>
-                                        <span
-                                        style={{cursor: "pointer"}}
-                                        onClick={() => this.openFolder(folder.Name)}>
-                                            {lastPathSegment(folder.Name)}
-                                        </span>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            })}
-                            {tree.RootFolder.Files.map(file => {
-                                return <tr key={file.Path}>
-                                    <td><Glyphicon glyph="file" /></td>
-                                    <td>
-                                        <Dropdown text={lastPathSegment(file.Path)} dropStyle={{width: 150}}>
-                                            <ListGroup>
-                                                <ListGroupItem onClick={() => this.download(file.Path)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
-                                            </ListGroup>
-                                        </Dropdown>
-                                        {_.map(this.state.downloads.inProgress, (v, k) => {
-                                            if (v && k == file.Path) {
-                                                return <Bar value={Number(((v.downloaded/v.total) * 100).toFixed(0))}/>
-                                            }
-                                        })}
-                                    </td>
-                                    <td>{bytesToSize(file.FileSize)}</td>
-                                </tr>
-                            })}
+                            {this.state.searchResult ? this.getSearchList() : this.getFileList()}
                         </tbody>
                     </Table>
                 </div>
@@ -187,6 +242,7 @@ export class FileList extends React.Component<{}, FileSystemState> {
         </div>
     }
 }
+
 
 export function FilePage(props: any) {
     return <div className="file-page">

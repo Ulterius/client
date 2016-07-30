@@ -1,0 +1,113 @@
+.settings-body {
+    padding: 20px;
+    overflow: auto;
+    label, .toggle-label {
+        font-size: 14px;
+        margin-bottom: 10px;
+        font-weight: normal !important;
+    }
+    .form-group {
+        margin-bottom: 30px;
+    }
+    input[type="text"], input[type="password"] {
+        border: $solid-line;
+    }
+}
+
+.error-message {
+    background-color: $failure-color;
+    color: lighten($failure-color, 40%)
+}
+
+.small-grey-text {
+    font-size: 10px;
+    color: darken($line-color, 40%)
+}
+
+.proxima-nova-14 {
+    text-transform: none;
+    font-family: ProximaNova;
+    font-size: 14px;
+}
+
+.login-panel {
+    @extend .ulterius-panel;
+    flex-wrap: wrap;
+    .ulterius-banner {
+        background-color: $sidebar-header-bg;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-family: ProximaNovaCondSemi;
+        font-size: 17px;
+        text-transform: uppercase;
+        img {
+            width: 40px;
+            height: 45px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    }
+    .login-message {
+        padding: 10px 20px;
+    }
+    .login-portrait {
+        text-align: center;
+        line-height: 30px;
+        padding: {
+            top: 20px;
+        }
+    }
+    .login-body {
+        @extend .settings-body;
+        .form-group {
+            margin-bottom: 0;
+        }
+        display: flex;
+        .hostname {
+            flex: 3;
+            margin-right: 10px;
+        }
+        .port {
+            flex: 1;
+        }
+    }
+    .login-foot {
+        padding: 0 20px 20px 20px;
+    }
+}
+
+.toggle-switch {
+    cursor: pointer;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    width: 90px;
+    height: 40px;
+    box-shadow: $hole-shadow;
+    background-color: $bg;
+    border: $solid-line;
+    .inner {
+        div {
+            line-height: 0;
+        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        margin: {
+            right: 5px;
+            left: 5px;
+        }
+        background-color: white;
+        color: $text-color;
+    }
+    &.on {
+        justify-content: flex-end;
+        .inner {
+            color: $highlight;
+        }
+    }
+}

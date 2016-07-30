@@ -5,6 +5,7 @@ import {Input, Button, ButtonGroup, ButtonToolbar} from "react-bootstrap"
 import {MoveLeftTransition} from "./components"
 //import {api} from "../api"
 import {settingsApi} from "../api-layer"
+import {ToggleSwitch} from "./ui"
 import * as _ from "lodash"
 
 class RadioGroup extends React.Component<{
@@ -86,7 +87,7 @@ export class SettingsPage extends React.Component<{}, {
     }
     finalizeSettings = () => {
         _.forIn(this.state.newSettings, (v, k) => {
-            settingsApi.changeSetting(k, v)
+            settingsApi.changeSetting({k: v})
         })
     }
     render() {
@@ -136,19 +137,126 @@ export class SettingsPage extends React.Component<{}, {
     }
 }
 
+let settingNames = {
+    ToggleWebServer: "Use web server",
+    WebServerPort: "Web server port",
+    WebFilePath: "Web file path",
+    TaskServerPort: "Task server port",
+    SkipHostNameResolve: "Skip network hostname resolve",
+    VncPort: "VNC server port",
+    VncProxyPort: "VNC server proxy port",
+    VncPass: "VNC password",
+    AllowTerminal: "Enable Terminal",
+    ScreenSharePort: "Screen Share Port",
+    ScreenSharePass: "Screen Share Password"
+}
+
 interface ModalSettingsProps {
     show: boolean
 }
 
-export class ModalSettings extends Component<ModalSettingsProps, {}> {
+interface ModalSettingsState {
+    store?: SettingsState,
+    newSettings?: any,
+    restartConfirm?: boolean
+}
+
+export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsState> {
+    constructor() {
+        super()
+        this.state = {
+            store: {},
+            newSettings: {},
+            restartConfirm: false
+        } as any
+    }
+    componentDidMount() {
+        this.setStore(settingsStore.getState())
+        settingsStore.listen(this.setStore)
+    }
+    componentWillUnmount() {
+        settingsStore.unlisten(this.setStore)
+    }
+    setStore = (store: SettingsState) => {
+        this.setState({store})
+    }
+    finalizeSettings = () => {
+        _.forIn(this.state.newSettings, (v, k) => {
+            settingsApi.changeSetting({[k]: v})
+        })
+        this.setState({newSettings: {}})
+    }
+    restart = () => {
+        if (this.state.restartConfirm) {
+            //sendCommandToDefault("restartServer")
+            settingsApi.restartServer()
+            this.state.restartConfirm = false
+        }
+        else {
+            this.setState({restartConfirm: true})
+        }
+    }
+    settingsBody() {
+        if (!this.state.store.settings) {
+            return <div className="fixed settings-body" />
+        }
+
+        const s = this.state.store.settings
+        const ns = this.state.newSettings
+        let displaySettings = [
+            _.omit(s.TaskServer, "Encryption"),
+            _.omit(s.Network, "BindLocal"),
+            s.WebServer,
+            s.ScreenShare
+        ]
+        let body = []
+        displaySettings.forEach((category) => {
+            _.forOwn(category, (value, name) => {
+                if (_.isBoolean(value)) {
+                    body.push(
+                        <ToggleSwitch key={name} label={settingNames[name]} defaultState={value} onChange={newValue => {
+                            this.setState({
+                                newSettings: _.assign(this.state.newSettings, {[name]: newValue})
+                            })
+                        }} />
+                    )
+                }
+                else {
+                    body.push(
+                        <Input 
+                            key={name}
+                            type="text"
+                            label={settingNames[name]}
+                            defaultValue={value}
+                            onChange={(e) => {
+                                let text = (e.target as HTMLInputElement).value
+                                this.setState({
+                                    newSettings: _.assign(this.state.newSettings, {[name]: text})
+                                })
+                            }}
+                        />
+                    )
+                }
+            })
+        })
+        return <div className="fixed settings-body">
+            {body}
+        </div>
+    }
     render() {
+
         return <MoveLeftTransition show={this.props.show} distance={500}>
             <div className="settings-panel">
                 <div className="header">settings</div>
                 <div className="panel-button-bar">
-                    <div className="panel-button">apply changes</div>
-                    <div className="green-panel-button">restart server</div>
+                    <div className="panel-button" onClick={this.finalizeSettings}>
+                        apply changes
+                    </div>
+                    <div className="green-panel-button" onClick={this.restart}>
+                        {this.state.restartConfirm ? "confirm restart" : "restart server"}
+                    </div>
                 </div>
+                {this.settingsBody()}
             </div>
         </MoveLeftTransition>
     }

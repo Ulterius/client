@@ -8,8 +8,10 @@ export interface FileSystemState {
     pathStack?: FileSystemInfo.FileTree[]
     downloads?: {
         inProgress: {[key: string]: FileTransfer.Progress},
-        complete: {[key: string]: FileTransfer.Complete}
-    }
+        complete: FileTransfer.Complete
+    },
+    uploads?: {[key: string]: FileTransfer.UploadProgress}
+    searchResult?: SearchResult
 }
 
 export interface FileProgress {
@@ -33,17 +35,20 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
     pathStack: FileSystemInfo.FileTree[]
     downloads: {
         inProgress: {[key: string]: FileTransfer.Progress},
-        complete: {[key: string]: FileTransfer.Complete}
+        complete: FileTransfer.Complete
     }
+    uploads: {[key: string]: FileTransfer.UploadProgress}
     goingBack: boolean
+    searchResult: SearchResult
     constructor() {
         super()
         this.pathStack = []
         this.goingBack = false
         this.downloads = {
             inProgress: {},
-            complete: {}
+            complete: undefined
         }
+        this.uploads = {}
         this.bindListeners({
             handleUpdateFileTree: fileSystemActions.updateFileTree,
             handleBack: fileSystemActions.goBack,
@@ -52,12 +57,48 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
             handleAddDownload: fileSystemActions.addDownload,
             handleDownloadProgress: fileSystemActions.downloadProgress,
             handleDownloadComplete: fileSystemActions.downloadComplete,
-            handleRemoveDownload: fileSystemActions.removeDownload
+            handleRemoveDownload: fileSystemActions.removeDownload,
+            handleUploadProgress: fileSystemActions.uploadProgress,
+            handleSearch: fileSystemActions.search,
+            handleClearSearch: fileSystemActions.clearSearch,
+            handleCreateRoot: fileSystemActions.createRoot
         })
     }
+    handleCreateRoot(drives: DriveInfo[]) {
+        this.handleUpdateFileTree({
+            DeepWalk: false,
+            RootFolder: {
+                Name: "",
+                ChildFolders: drives.map(drive => {
+                    console.log(drive.Name)
+                    return {
+                        Name: drive.Name,
+                        ChildFolders: [],
+                        Files: []
+                    }
+                }),
+                Files: []
+            }
+        })
+    }
+    handleSearch(result: SearchResult) {
+        this.searchResult = result
+    }
+    handleClearSearch() {
+        this.searchResult = undefined
+    }
+    handleUploadProgress(file: FileTransfer.UploadProgress) {
+        console.log("Uploadered shit ass anus dicks")
+        _.assign(this.uploads, {[file.path]: file})
+        if (file.uploaded >= file.total) {
+            setTimeout(() => {
+                this.setState({uploads: _.omit(this.uploads, file.path)})
+            }, 2000)
+        }
+    }
     handleRemoveDownload(path: string) {
-        if (this.downloads.complete[path]) {
-            delete this.downloads.complete[path]
+        if (this.downloads.complete.path == path) {
+            this.downloads.complete = undefined
         }
         if (this.downloads.inProgress[path]) {
             delete this.downloads.inProgress[path]
@@ -65,7 +106,7 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
     }
     handleDownloadComplete(data: FileTransfer.Complete) {
         delete this.downloads.inProgress[data.path]
-        this.downloads.complete[data.path] = data
+        this.downloads.complete = data
     }
     handleDownloadProgress(data: FileTransfer.Progress) {
         
