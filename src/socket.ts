@@ -23,44 +23,6 @@ import {loginEvents, disconnectEvents} from "./component"
 
 let SocketWorker = require("worker?name=socket.worker.js!./socket-worker")
 
-/*
-let pool = new WorkerPool(SocketWorker, 3)
-pool.listen({
-    test(message) {
-        console.log(message)
-    }
-})
-pool.post("test")
-pool.post("test")
-pool.post("test")
-pool.post("test")
-pool.post("test")
-*/
-
-//let connectInterval = undefined
-
-//const logPackets = false
-
-//let keyCounter = 0
-
-/*
-function getSyncKey(prepend: string) {
-    keyCounter++
-    return prepend + String(keyCounter)
-}
-*/
-
-//let promiseChain: Promise<any>
-//let resolves: {[key: string]: any}  = {}
-
-//let callbacks: {[key: string]: Function} = {}
-
-//let requestQueue = []
-
-//let timeoutInterval;
-
-
-
 interface Callback {
     (message: any, connection: Connection): any
 }

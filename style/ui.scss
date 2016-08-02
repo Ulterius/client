@@ -41,11 +41,12 @@
         font-family: ProximaNovaCondSemi;
         font-size: 17px;
         text-transform: uppercase;
-        img {
+        img, .sk-circle {
             width: 40px;
             height: 45px;
             display: inline-block;
             margin-bottom: 10px;
+            margin-top: 0 !important;
         }
     }
     .login-message {

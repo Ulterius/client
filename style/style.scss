@@ -27,6 +27,15 @@
 	src: url("/font/proxima_nova_condensed.otf");
 }
 
+.label {
+	font-family: ProximaNova;
+	font-size: 12px;
+}
+
+.label-success {
+	background-color: $green;
+}
+
 .top-bar {
 	z-index: 2;
 	position: fixed;

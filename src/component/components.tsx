@@ -6,6 +6,7 @@ import {GpuAvailability, bytesToSize, clearFunctions} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
 import {listen} from "../api-layer"
 import * as _ from "lodash"
+import classNames = require("classnames")
 
 
 export function Bar(props: {value?: number, color?: boolean, style?: any}) {
@@ -509,6 +510,8 @@ export function MoveRightTransition(props: {show: boolean, children?: React.Reac
     </TransformTransition>
 }
 
+
+
 export function MoveLeftTransition(props: {
     show: boolean, 
     distance?: number,
@@ -553,6 +556,23 @@ export let disconnectEvents = {
     reconnect() {}
 }
 
+export function Spinner(props: React.HTMLAttributes) {
+    return <div {...props} className={classNames("sk-circle", props.className)}>
+        <div className="sk-circle1 sk-child"></div>
+        <div className="sk-circle2 sk-child"></div>
+        <div className="sk-circle3 sk-child"></div>
+        <div className="sk-circle4 sk-child"></div>
+        <div className="sk-circle5 sk-child"></div>
+        <div className="sk-circle6 sk-child"></div>
+        <div className="sk-circle7 sk-child"></div>
+        <div className="sk-circle8 sk-child"></div>
+        <div className="sk-circle9 sk-child"></div>
+        <div className="sk-circle10 sk-child"></div>
+        <div className="sk-circle11 sk-child"></div>
+        <div className="sk-circle12 sk-child"></div>
+    </div>
+}
+
 export class DisconnectOverlay extends Component<{}, {
     visible?: boolean
 }> {
@@ -575,20 +595,7 @@ export class DisconnectOverlay extends Component<{}, {
         if (this.state.visible) {
             return <div>
                 <Overlay style={{zIndex: 55, color: "white", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-                    <div className="sk-circle">
-                        <div className="sk-circle1 sk-child"></div>
-                        <div className="sk-circle2 sk-child"></div>
-                        <div className="sk-circle3 sk-child"></div>
-                        <div className="sk-circle4 sk-child"></div>
-                        <div className="sk-circle5 sk-child"></div>
-                        <div className="sk-circle6 sk-child"></div>
-                        <div className="sk-circle7 sk-child"></div>
-                        <div className="sk-circle8 sk-child"></div>
-                        <div className="sk-circle9 sk-child"></div>
-                        <div className="sk-circle10 sk-child"></div>
-                        <div className="sk-circle11 sk-child"></div>
-                        <div className="sk-circle12 sk-child"></div>
-                    </div>
+                    <Spinner />
                     <div>Disconnected. Attempting to reconnect...</div>
                 </Overlay>
             </div>

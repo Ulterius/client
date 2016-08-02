@@ -89,6 +89,18 @@ export class Dialogs extends React.Component<{}, {
         
         let {dialogs} = this.state
         let dialog = dialogs[0] || this.lastDialog //the things I do for proper animations...
+        let buttons
+        if (dialog) {
+            buttons = dialog.buttons.map(btn => {
+                return React.cloneElement(btn, {onClick: () => {
+                    if (btn.props.onClick) {
+                        btn.props.onClick()
+                    }
+                    this.closeFirstDialog()
+                }})
+            })
+        }
+        
         return <div>
             <Modal show={dialogs.length > 0} onHide={() => {}}>
                 <Modal.Header>
@@ -98,7 +110,8 @@ export class Dialogs extends React.Component<{}, {
                     {dialog? dialog.body : ""}
                 </Modal.Body>
                 <Modal.Footer>
-                    {dialog? dialog.buttons.map((props, i) => {
+                    {buttons || null}
+                    {/* dialog? dialog.buttons.map((props, i) => {
                         return <Button {...props} key={i} onClick={() => {
                             if (typeof props.onClick == "function") {
                                 props.onClick()
@@ -106,7 +119,8 @@ export class Dialogs extends React.Component<{}, {
                             
                             this.closeFirstDialog()
                         }} />
-                    }): ""}
+                    }): "" */}
+
                 </Modal.Footer>
             </Modal>
         </div>

@@ -2,7 +2,7 @@ import React = require("react")
 import {taskStore, appStore} from "../store"
 import {createSortOnProperty, bytesToSize} from "../util"
 import {sendCommandToDefault} from "../socket"
-import {Stats, LoadingScreen} from "./"
+import {Stats, LoadingScreen, dialogEvents} from "./"
 import {Panel} from "./ui"
 import {Button, Input, Glyphicon} from "react-bootstrap"
 import setIntervals from "../interval"
@@ -105,19 +105,25 @@ export class TaskList extends React.Component<
                 <thead>
                     <tr>
                         <th>Icon</th>
-                        <th className="task-name-head" onClick={() => this.setSort("Name")}>{this.getName("Name")}</th>
-                        <th className="task-id-head" onClick={() => this.setSort("Id")}>{this.getName("Id")}</th>
-                        <th className="task-cpu-head" onClick={() => this.setSort("CpuUsage")}>{this.getName("CpuUsage")}</th>
-                        <th className="task-memory-head" onClick={() => this.setSort("RamUsage")}>{this.getName("RamUsage")}</th>
+                        <th className="task-name-head" onClick={() => this.setSort("Name")}>
+                            {this.getName("Name")}
+                        </th>
+                        <th className="task-id-head" onClick={() => this.setSort("Id")}>
+                            {this.getName("Id")}
+                        </th>
+                        <th className="task-cpu-head" onClick={() => this.setSort("CpuUsage")}>
+                            {this.getName("CpuUsage")}
+                        </th>
+                        <th className="task-memory-head" onClick={() => this.setSort("RamUsage")}>
+                            {this.getName("RamUsage")}
+                        </th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {
-                        this.state.tasks.map(task => {
-                            return (<Task key={task.Id} info={task} />)
-                        })
-                    }
+                    {this.state.tasks.map(task => {
+                        return (<Task key={task.Id} info={task} />)
+                    })}
                 </tbody>
             </table>
         )
@@ -143,6 +149,16 @@ export class Task extends React.Component<
             </button>
             : false)
     }
+    confirmKill() {
+        dialogEvents.dialog({
+            title: "Confirm close process",
+            body: <p>Are you sure you want to kill process {this.props.info.Name}?</p>,
+            buttons: [
+                <Button bsStyle="primary" onClick={this.killSelf}>Yes</Button>,
+                <Button bsStyle="default">No</Button>
+            ]
+        })
+    }
     render() {
         if (!this.state.expanded) {
             return (
@@ -152,13 +168,24 @@ export class Task extends React.Component<
                     <td style={{width: "39px"}}>
                         <img src={"data:image/png;base64," + this.props.info.Icon} />
                     </td>
-                    <td className="task-name">{this.props.info.Name}</td>
-                    <td className="task-id" style={{width: 20}}>{this.props.info.Id}</td>
-                    <td className="task-cpu" style={{width: 20}}>{this.props.info.CpuUsage.toFixed(0) + "%"}</td>
-                    <td className="task-memory">{bytesToSize(this.props.info.RamUsage)}</td>
+                    <td className="task-name">
+                        {this.props.info.Name}
+                    </td>
+                    <td className="task-id" style={{width: 20}}>
+                        {this.props.info.Id}
+                    </td>
+                    <td className="task-cpu" style={{width: 20}}>
+                        {this.props.info.CpuUsage.toFixed(0) + "%"}
+                    </td>
+                    <td className="task-memory">
+                        {bytesToSize(this.props.info.RamUsage)}
+                    </td>
                     <td
                     className="close-button"
-                    onClick={() => this.setState({gonnaDie: !this.state.gonnaDie})}
+                    onClick={() => {
+                        this.confirmKill()
+                        //this.setState({gonnaDie: !this.state.gonnaDie})
+                    }}
                     style={{width: 60, textAlign: "right"}}>
                         {this.closeButton()}
                         <span className={"glyphicon " + (this.state.gonnaDie ?

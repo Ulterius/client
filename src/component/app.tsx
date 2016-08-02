@@ -107,12 +107,22 @@ export default class App extends React.Component<{
         return this.props.location.pathname == path ? {height: "100%"} : {}
     }
     logOut = () => {
+        /*
         dialogEvents.dialog({
             title: "Disconnect?",
             body: <p>Are you sure you want to disconnect?</p>,
             buttons: [
                 { bsStyle: "primary", children: "Yes", onClick: socket.disconnect },
                 { bsStyle: "default", children: "No" }
+            ]
+        })
+        */
+        dialogEvents.dialog({
+            title: "Disconnect?",
+            body: <p>Are you sure you want to disconnect?</p>,
+            buttons: [
+                <Button bsStyle="primary" onClick={socket.disconnect}>Yes</Button>,
+                <Button bsStyle="default">No</Button>
             ]
         })
     }

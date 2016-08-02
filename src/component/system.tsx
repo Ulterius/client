@@ -9,6 +9,7 @@ import Graph = require("react-chartist")
 import {LoadingScreen, Gauge} from "./"
 import {panel, FlexRow, FlexCol, Meter, createDivComponent} from "./ui"
 import * as _ from  "lodash"
+import classNames = require("classnames")
 //import {Gauge} from "./ui"
 
 const {Panel, Fixed, FixedCenter, Flex, FlexFixed, Header, HeaderCenter} = panel
@@ -197,6 +198,8 @@ function Faded(props: {children?: any}) {
     </span>
 }
 
+let updateInterval
+
 export class SystemPage extends React.Component<{}, {
     cpu?: CpuInfo,
     os?: OSInfo,
@@ -209,6 +212,10 @@ export class SystemPage extends React.Component<{}, {
         this.state = {}
     }
     componentDidMount() {
+        updateInterval = setInterval(() => {
+            systemApi.getStats()
+            systemApi.getAuxillaryStats()
+        }, 10000)
         systemApi.getAuxillaryStats()
         systemStore.listen(this.onChange)
         auxillarySystemStore.listen(this.onChange)
@@ -216,6 +223,7 @@ export class SystemPage extends React.Component<{}, {
         this.setState(systemStore.getState())
     }
     componentWillUnmount() {
+        clearInterval(updateInterval)
         systemStore.unlisten(this.onChange)
         auxillarySystemStore.unlisten(this.onChange)
     }
@@ -294,7 +302,12 @@ export class SystemPage extends React.Component<{}, {
                             </FixedCenter>
                             <Flex>
                                 <div className="gauge-box">
-                                    <Gauge title="Temperature" label="° C" value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)} min={0} max={100}/>
+                                    <Gauge 
+                                        title="Temperature" 
+                                        label="° C" 
+                                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)} 
+                                        min={0} max={100}
+                                    />
                                 </div>
                             </Flex>
                             <SystemFooter>
@@ -324,11 +337,16 @@ export class SystemPage extends React.Component<{}, {
                                             {info.Status}
                                         </span>
                                         &nbsp;
-                                        <span className="label label-default">
+                                        <span className="label label-success">
                                             {GpuAvailability[info.Availability]}
                                         </span>
                                         <div className="gauge-box">
-                                            <Gauge title="Temperature" label="° C" value={info.Temperature.toFixed(0)} min={0} max={100} />
+                                            <Gauge 
+                                                title="Temperature" 
+                                                label="° C" 
+                                                value={info.Temperature.toFixed(0)} 
+                                                min={0} max={100} 
+                                            />
                                         </div>
                                     </FixedCenter>
                                 })}

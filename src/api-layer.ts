@@ -128,13 +128,14 @@ export function authenticate(info: AuthInfo) {
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
-        
+        /*
         mainConnection.sendAsync("startScreenShare", msgg => {
             console.log(msgg)
             let {host, port} = appStore.getState().connection
             screen.initialize(host, "22009")
             screen.register()
         })
+        */
         
         
         

@@ -1,5 +1,5 @@
 import React = require("react")
-import {Base64Img} from "./"
+import {Base64Img, SlideDownTransition, Spinner} from "./"
 import {Glyphicon, Button, Input} from "react-bootstrap"
 import {connect, disconnect} from "../socket"
 import {appActions} from "../action"
@@ -11,6 +11,27 @@ export let loginEvents = {
     fail(text: string) {}
 }
 
+function MessageBar({text}: {text?: string}) {
+    return <SlideDownTransition show={!!text}>
+        <div className="login-message error-message">
+            {text}
+        </div>
+    </SlideDownTransition>
+}
+
+interface UlteriusBannerProps {
+    label: string,
+    loading: boolean,
+    loadingLabel?: string
+}
+
+function UlteriusBanner({label, loading, loadingLabel}: UlteriusBannerProps) {
+    return <div className="ulterius-banner">
+        {loading ? <Spinner /> : <img src="img/logo.png" />} <br />
+        {(loading && loadingLabel ? loadingLabel: label)}
+    </div>
+}
+
 export class LoginScreen extends React.Component<{
     username?: string,
     avatar?: string,
@@ -18,28 +39,36 @@ export class LoginScreen extends React.Component<{
 }, {
     password?: string,
     message?: string,
+    loggingIn?: boolean
 }> {
     constructor(props, context) {
         super(props, context)
         this.state = {
-            password: ""
+            password: "",
         }
     }
     componentDidMount() {
         loginEvents.fail = (text: string) => {
-            this.setState({message: text})
+            this.setState({message: text, loggingIn: false})
         }
     }
     componentWillUnmount() {
         clearFunctions(loginEvents)
     }
     message(text: string) {
+        return <SlideDownTransition show={!!text}>
+            <div className="login-message error-message">
+                {text}
+            </div>
+        </SlideDownTransition>
+        /*
         if (text) {
             return <div className="login-message error-message">
                 {text}
             </div>
         }
         return null;
+        */
     }
     inner() {
         const loginButton = 
@@ -50,13 +79,25 @@ export class LoginScreen extends React.Component<{
                 Login
             </Button>
         return <div className="login-panel">
-            <div className="ulterius-banner">
+            <UlteriusBanner 
+                label="login to ulterius" 
+                loadingLabel="logging in..." 
+                loading={this.state.loggingIn} 
+            />
+            {/*<div className="ulterius-banner">
                 <img src="img/logo.png" /> <br />
                 login to ulterius
-            </div>
-            {this.message(this.state.message)}
+            </div> */}
+            {/*this.message(this.state.message)*/}
+            <MessageBar text={this.state.message} />
             <div className="login-portrait">
-                <Base64Img type="image/png" style={{width: 50, height: 50}} className="img-circle" data={this.props.avatar} /> <br />
+                <Base64Img 
+                    type="image/png" 
+                    style={{width: 50, height: 50}} 
+                    className="img-circle" 
+                    data={this.props.avatar} 
+                /> 
+                <br />
                 {this.props.username}
             </div>
             <div className="login-body">
@@ -67,7 +108,7 @@ export class LoginScreen extends React.Component<{
                         onChange={(e) => this.setState({password: (e.target as HTMLInputElement).value})}
                         onKeyDown={(e) => {
                             if (e.keyCode == 13) {
-                                this.props.onLogin(this.state.password)
+                                this.logIn()
                             }
                         }}
                     />
@@ -79,11 +120,15 @@ export class LoginScreen extends React.Component<{
             </div>
         </div>
     }
+    logIn() {
+        this.setState({message: "", loggingIn: true})
+        this.props.onLogin(this.state.password)
+    }
     render() {
         const loginButton = 
             <Button 
             bsStyle="primary" 
-            onClick={() => this.props.onLogin(this.state.password)}>
+            onClick={() => this.logIn()}>
                 <Glyphicon glyph="arrow-right" />
             </Button>
         /*
@@ -114,7 +159,8 @@ export class LoginScreen extends React.Component<{
 export class ConnectScreen extends React.Component<{}, {
     host?: string,
     port?: string,
-    message?: string
+    message?: string,
+    connecting?: boolean
 }> {
     constructor(props, context) {
         super(props, context)
@@ -130,7 +176,7 @@ export class ConnectScreen extends React.Component<{}, {
             connect(host, port)
         }
         loginEvents.fail = (text: string) => {
-            this.setState({message: text})
+            this.setState({message: text, connecting: false})
         }
     }
     componentWillUnmount() {
@@ -146,11 +192,17 @@ export class ConnectScreen extends React.Component<{}, {
     }
     inner() {
         return <div className="login-panel" >
-            <div className="ulterius-banner">
+            {/*<div className="ulterius-banner">
                 <img src="img/logo.png" /> <br />
                 connect to ulterius
-            </div>
-            {this.message(this.state.message)}
+            </div>*/}
+            <UlteriusBanner 
+                label="connect to ulterius" 
+                loadingLabel="connecting..." 
+                loading={this.state.connecting} 
+            />
+            <MessageBar text={this.state.message} />
+            {/*this.message(this.state.message)*/}
             <div className="login-body">
                 <div className="hostname">
                     <Input type="text" defaultValue="localhost" placeholder="host" onChange={e => 
@@ -165,9 +217,10 @@ export class ConnectScreen extends React.Component<{}, {
                 <br />
             </div>
             <div className="login-foot">
-                <Button bsStyle="primary" onClick={() => 
+                <Button bsStyle="primary" onClick={() => {
+                    this.setState({message: "", connecting: true})
                     connect(this.state.host, this.state.port)
-                }>
+                }}>
                     Connect
                 </Button>
             </div>
