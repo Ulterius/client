@@ -159,6 +159,17 @@ export class Gauge extends Component<GaugeProps, {}> {
     }
 }
 
+export function Center(props: React.HTMLAttributes & {noHeight?: boolean}) {
+    //what the fuck is wrong with me again?
+    return <div {...props} className={classNames({
+                "center-parent": !props.noHeight, 
+                "center-parent-no-height": props.noHeight
+            }, props.className)}>
+        <div className="center-child">
+            {props.children}
+        </div>
+    </div>
+}
 
 /*
 export function ToggleSwitch({on, onClick, label, key}: ToggleSwitchProps) {

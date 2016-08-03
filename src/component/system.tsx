@@ -243,9 +243,7 @@ export class SystemPage extends React.Component<{}, {
         }
 
         return (
-            <div 
-            className="animated fadeInDown" 
-            style={{marginLeft: 30, marginTop: 40}}>
+            <div>
                 <FlexCol>
                     <FlexRow>
                         <FlexCol style={{width: "66%"}}>

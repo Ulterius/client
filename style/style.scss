@@ -109,7 +109,10 @@ td {
 }
 
 .page {
-	padding-top: 70px;
+	padding: {
+		top: 70px;
+		bottom: 20px;
+	}
 	box-sizing: border-box;
 	float: right;
 }
@@ -224,9 +227,6 @@ td {
 	margin-top: 300px;
 }
 
-.camera-page {
-	margin-top: 20px;
-}
 
 .login {
 	position: absolute;

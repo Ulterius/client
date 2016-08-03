@@ -1,5 +1,5 @@
 import React = require("react")
-import {EntryBox, Dropdown, Bar} from "./"
+import {EntryBox, Dropdown, Bar, Spinner} from "./"
 import {Button, ButtonGroup, ButtonToolbar, Table, Glyphicon, Input, ListGroup, ListGroupItem} from "react-bootstrap"
 import {FileSystemState, fileSystemStore, isLoaded} from "../store"
 import {fileSystemActions, messageActions} from "../action"
@@ -29,7 +29,11 @@ function UploadList({uploads}: {uploads: {[key: string]: FileTransfer.UploadProg
     </div>
 }
 
-export class FileList extends React.Component<{}, FileSystemState & {searchQuery?: string}> {
+export class FileList extends React.Component<{}, FileSystemState & {
+    searchQuery?: string,
+    searchResultCount?: number,
+    searching?: boolean
+}> {
     box: EntryBox
     upload: any
     fileDownloading: string = ""
@@ -38,7 +42,11 @@ export class FileList extends React.Component<{}, FileSystemState & {searchQuery
     lastComplete: string = ""
     constructor(props, context) {
         super(props, context)
-        this.state = {searchQuery: ""}
+        this.state = {
+            searchQuery: "",
+            searchResultCount: 200,
+            searching: false
+        }
     }
     componentDidMount() {
         fsApi.createFileTree("")
@@ -62,6 +70,9 @@ export class FileList extends React.Component<{}, FileSystemState & {searchQuery
     }
     updateState = (state: FileSystemState) => {
         this.setState(state)
+        if (state.searchResult) {
+            this.setState({searching: false})
+        }
         if (this.box) {
             this.box.setState({customized: false})
         }
@@ -159,20 +170,36 @@ export class FileList extends React.Component<{}, FileSystemState & {searchQuery
         ]
     }
     getSearchList() {
-        let {searchResult} = this.state
-        return searchResult.searchResults.map(result => {
+        let {searchResult, searchResultCount} = this.state
+        return searchResult.searchResults.slice(0, searchResultCount).map(result => {
             return <tr key={result}>
                 <td width="16"><Glyphicon glyph="file"/></td>
                 <td>
                     <Dropdown text={lastPathSegment(result)} dropStyle={{width: 150}}>
                         <ListGroup>
-                            <ListGroupItem onClick={() => this.download(result)}><Glyphicon glyph="download"/> &nbsp; Download</ListGroupItem>
+                            <ListGroupItem onClick={() => this.download(result)}>
+                                <Glyphicon glyph="download"/> &nbsp; Download
+                            </ListGroupItem>
                         </ListGroup>
                     </Dropdown>
                     <span className="small-grey-text">{result}</span>
                 </td>
             </tr>
         })
+    }
+    outerTable() {
+        return <Table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                {this.state.searchResult ? this.getSearchList() : this.getFileList()}
+            </tbody>
+        </Table>
     }
     render() {
         if (!this.state || !this.state.tree) {
@@ -185,7 +212,6 @@ export class FileList extends React.Component<{}, FileSystemState & {searchQuery
         }
         let {tree, uploads} = this.state
         return <div className="fs-panel">
-            {JSON.stringify(this.state.downloads.inProgress)}
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
             <div className="fs-controls" ref={ref => this.headerBar = ref}>
                 <div className="control-button" onClick={fileSystemActions.goBack}>
@@ -207,36 +233,34 @@ export class FileList extends React.Component<{}, FileSystemState & {searchQuery
                         ref={box => this.box = box}
                         onConfirmation={this.openFolder}
                         defaultValue={tree.RootFolder.Name}
-                        buttonText="go" />
+                        buttonText="go" 
+                    />
                 </div>
                 <div className="search-bar">
                     <EntryBox onConfirmation={(text) => {
                         if (text == "") {
                             fileSystemActions.clearSearch()
+                            this.setState({searching: false})
                         }
                         else {
                             fsApi.search(text)
+                            this.setState({searching: true})
                         }
                     }}
-                    onEscape={() => 
+                    onEscape={() => {
                         fileSystemActions.clearSearch()
-                    } placeholder="Search..." glyph="search" />
+                        this.setState({searching: false})
+                    }} placeholder="Search..." glyph="search" />
                 </div>
             </div>
             <div className="row">
                 <div className="col-xs-12" style={{marginTop: 50}} ref={ref => this.fileList = ref}>
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Name</th>
-                                <th>Size</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.searchResult ? this.getSearchList() : this.getFileList()}
-                        </tbody>
-                    </Table>
+                    {this.state.searching ? <Spinner dark/> : this.outerTable()}
+                    <div style={{textAlign: "center", marginBottom: 30}}>
+                        {this.state.searchResult ? <Button bsStyle="link" onClick={() => {
+                        this.setState({searchResultCount: this.state.searchResultCount + 200})
+                    }}>Load more...</Button> : null}
+                    </div>  
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import {helpers as api} from "../api-layer"
 import React = require("react")
 import * as _ from "lodash"
 import {SortablePane, Pane} from "react-sortable-pane"
-import {DragGroup, DragElement} from "./"
+import {DragGroup, DragElement, Center} from "./"
 import classNames = require("classnames")
 
 const style = {
@@ -87,6 +87,16 @@ export class CameraPage extends React.Component<{}, CameraState> {
     getCamAtomic(id: string) {
         return _.find(this.state.activeCameras, cam => cam.cameraId == id)
     }
+    emptyPage() {
+        return <Center className="camera-page">
+            No cameras found.
+        </Center>
+        /*
+        return <div className="camera-page center-parent">
+            <div className="center-child">No cameras found.</div>
+        </div>
+        */
+    }
     render() {
         if (!this.state.cameras) {
             return <div>Loading...</div>
@@ -94,9 +104,11 @@ export class CameraPage extends React.Component<{}, CameraState> {
             
         
         let {cameras, activeCameras} = this.state
-        
+        cameras = []
+        if (cameras.length == 0) {
+            return this.emptyPage()
+        }
         return <div className="camera-page">
-            {cameras.length == 0 ? "No cameras found." : null}
             <DragGroup>
                 {cameras.map(cam => {
                     let active = cu(this.state).cameraIsActive(cam.Id)

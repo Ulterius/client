@@ -28,7 +28,7 @@ interface UlteriusBannerProps {
 function UlteriusBanner({label, loading, loadingLabel}: UlteriusBannerProps) {
     return <div className="ulterius-banner">
         {loading ? <Spinner /> : <img src="img/logo.png" />} <br />
-        {(loading && loadingLabel ? loadingLabel: label)}
+        {loading && loadingLabel ? loadingLabel : label}
     </div>
 }
 

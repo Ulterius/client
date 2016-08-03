@@ -1,7 +1,7 @@
 import React = require("react")
 import Component = React.Component
 import {Button} from "react-bootstrap"
-import {Base64Img} from "./"
+import {Base64Img, Center} from "./"
 import {screenShareApi} from "../api/screen"
 import {tryUntil, clearFunctions} from "../util"
 
@@ -12,7 +12,7 @@ export let screenEvents = {
 }
 
 export function ScreenPage() {
-    return <div className="screen-page">
+    return <div className="screen-page" style={{height: "100%"}}>
         <ScreenShare />
     </div>
 }
@@ -144,21 +144,34 @@ class ScreenShare extends Component<{}, {
     }
     connected() {
         if (this.state.screenWidth) {
-            return <div className="proxima-nova-14">Connected &nbsp; <span style={{color: "green"}} className="glyphicon glyphicon-record"/></div>
+            return <div className="proxima-nova-14">
+                Connected &nbsp; <span style={{color: "green"}} className="glyphicon glyphicon-record"/>
+            </div>
         }
-         return <div className="proxima-nova-14">Not Connected &nbsp; <span style={{color: "red"}} className="glyphicon glyphicon-record"/></div>
+         return <div className="proxima-nova-14">
+            Not Connected &nbsp; <span style={{color: "red"}} className="glyphicon glyphicon-record"/>
+        </div>
+    }
+    frame() {
+        if (this.state.screenWidth) {
+            return <div className="fixed">this.frameImg()</div>
+        }
+        return <Center noHeight style={{flexGrow: 1}}>
+            <p>Not connected to Screen Share.</p>
+            <button className="btn btn-primary text-button" onClick={() => {
+                screenShareApi.login()
+            }}>Connect</button>
+        </Center>
     }
     render() {
-        return <div className="ulterius-panel">
+        return <div className="ulterius-panel" style={{height: "100%"}}>
             <div className="double-header" onClick={() => {
                 screenShareApi.login()
             }}>
                 <div>screen share</div>
                 {this.connected()}
             </div>
-            <div className="fixed">
-                {this.frameImg()}
-            </div>
+            {this.frame()}
             {/* 
             <Button onClick={() => {
                 screenShareApi.login()

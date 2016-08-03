@@ -251,9 +251,25 @@ export class EntryBox extends React.Component<
     }
 }
 
+/*
 export function LoadingScreen(props: {percentage?: number, children?: string}) {
     return <div style={{width: "100%", height: "100%"}}>
         <div style={{position: "absolute", top: "calc(50% - 20px)", left:"calc(50% - 60px)", height: 40, width: 120, textAlign: "center"}}>
+            <Bar value={props.percentage} color={false}/> <br />
+            {props.children}
+        </div>
+    </div>
+}
+*/
+
+export function LoadingScreen(props: {percentage?: number, children?: string}) {
+    return <div style={{width: "100%", height: "100%"}}>
+        <div style={{
+            position: "absolute", 
+            top: "calc(50% - 20px)", left:"calc(50% - 60px)", 
+            height: 40, width: 120, 
+            textAlign: "center"
+        }}>
             <Bar value={props.percentage} color={false}/> <br />
             {props.children}
         </div>
@@ -556,8 +572,8 @@ export let disconnectEvents = {
     reconnect() {}
 }
 
-export function Spinner(props: React.HTMLAttributes) {
-    return <div {...props} className={classNames("sk-circle", props.className)}>
+export function Spinner(props: React.HTMLAttributes & {dark?: boolean}) {
+    return <div {...props} className={classNames("sk-circle", {"circle-dark": props.dark}, props.className)}>
         <div className="sk-circle1 sk-child"></div>
         <div className="sk-circle2 sk-child"></div>
         <div className="sk-circle3 sk-child"></div>

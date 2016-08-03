@@ -30,6 +30,12 @@
     font-size: 14px;
 }
 
+.circle-dark {
+    .sk-child:before {
+        background-color: black !important;
+    }
+}
+
 .login-panel {
     @extend .ulterius-panel;
     flex-wrap: wrap;
@@ -111,4 +117,25 @@
             color: $highlight;
         }
     }
+}
+
+.center-parent {
+    display: flex;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.center-parent-no-height {
+    display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.center-child {
+    text-align: center;
 }
