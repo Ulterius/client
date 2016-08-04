@@ -1,6 +1,7 @@
 import {terminalConnection} from "../socket"
 import {generateHexString} from "../util"
 import {generateKey} from "../util/crypto"
+import {appStore} from "../store"
 import {terminalActions} from "../action"
 import Ti = TerminalInfo
 const tC = terminalConnection
@@ -37,7 +38,7 @@ export let terminalApi = {
 }
 
 export function initialize() {
-    terminalConnection.connect("localhost", "22008")
+    terminalConnection.connect(appStore.getState().connection.host, "22008")
 }
 
 tC.fallbackListen(console.log.bind(console))
