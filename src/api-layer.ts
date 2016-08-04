@@ -49,6 +49,22 @@ export let helpers = {
     },
     stopCamera: function(id: string) {
         sendCommandToDefault("stopCameraStream", id)
+    },
+    startScreenShare(callback: Function) {
+        //callback()
+        
+        mainConnection.sendAsync("startScreenShare", msgg => {
+            console.log(msgg)
+            let {host, port} = appStore.getState().connection
+            screen.initialize(host, "22009")
+            screen.register()
+        })
+    },
+    stopScreenShare() {
+        mainConnection.sendAsync("stopScreenShare", msg => {
+            console.log(msg)
+            screen.disconnect()
+        })
     }
 }
 
@@ -128,15 +144,6 @@ export function authenticate(info: AuthInfo) {
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
-        /*
-        mainConnection.sendAsync("startScreenShare", msgg => {
-            console.log(msgg)
-            let {host, port} = appStore.getState().connection
-            screen.initialize(host, "22009")
-            screen.register()
-        })
-        */
-        
         
         
         /*
@@ -161,6 +168,14 @@ export function authenticate(info: AuthInfo) {
         if (config.cachePassword && !window.localStorage.getItem(`${appStore.getState().connection.host}:password`)) {
             window.localStorage.setItem(`${appStore.getState().connection.host}:password`, appStore.getState().auth.password)
         }
+        /*
+        mainConnection.sendAsync("startScreenShare", msgg => {
+            console.log(msgg)
+            let {host, port} = appStore.getState().connection
+            screen.initialize(host, "22009")
+            screen.register()
+        })
+        */
     }
     else {
         appActions.login(false)

@@ -207,7 +207,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
             _.omit(s.TaskServer, "Encryption"),
             _.omit(s.Network, "BindLocal"),
             s.WebServer,
-            s.ScreenShare
+            s.ScreenShareService
         ]
         let body = []
         displaySettings.forEach((category) => {
@@ -256,6 +256,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                         {this.state.restartConfirm ? "confirm restart" : "restart server"}
                     </div>
                 </div>
+                {JSON.stringify(this.state.newSettings)}
                 {this.settingsBody()}
             </div>
         </MoveLeftTransition>

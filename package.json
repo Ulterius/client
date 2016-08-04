@@ -5,6 +5,7 @@
   "main": "public/index.html",
   "scripts": {
     "dev": "node ./webpack/dev-server.js",
+    "build": "node ./webpack/build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Frob the Builder",

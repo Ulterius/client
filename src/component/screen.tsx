@@ -3,12 +3,14 @@ import Component = React.Component
 import {Button} from "react-bootstrap"
 import {Base64Img, Center} from "./"
 import {screenShareApi} from "../api/screen"
+import {helpers} from "../api-layer"
 import {tryUntil, clearFunctions} from "../util"
 
 export let screenEvents = {
     frame(data: ScreenTile) {},
     frameData(data: FrameData) {},
-    login() {}
+    login() {},
+    disconnect() {}
 }
 
 export function ScreenPage() {
@@ -64,8 +66,18 @@ class ScreenShare extends Component<{}, {
             })
         }
         screenEvents.login = () => {
+            console.log("login")
             tryUntil(() => !!this.state.screenWidth, () => {
+                console.log("try")
                 screenShareApi.requestFrame()
+            })
+        }
+        screenEvents.disconnect = () => {
+            console.log("disconnect")
+            this.setState({
+                screenWidth: 0,
+                screenHeight: 0,
+                hasFrame: false
             })
         }
         document.addEventListener("keydown", this.onKeyDown)
@@ -143,11 +155,11 @@ class ScreenShare extends Component<{}, {
         />
     }
     connected() {
-        if (!this.state.screenWidth) {
+        if (this.state.screenWidth) {
             return <div className="proxima-nova-14">
                 Connected &nbsp; 
                 <span style={{color: "green"}} className="glyphicon glyphicon-record"/>
-                <button className="text-button">disconnect</button>
+                <button className="text-button" onClick={helpers.stopScreenShare}>disconnect</button>
             </div>
         }
          return <div className="proxima-nova-14">
@@ -156,20 +168,18 @@ class ScreenShare extends Component<{}, {
     }
     frame() {
         if (this.state.screenWidth) {
-            return <div className="fixed">this.frameImg()</div>
+            return <div className="fixed">{this.frameImg()}</div>
         }
         return <Center noHeight style={{flexGrow: 1}}>
             <p>Not connected to Screen Share.</p>
             <button className="btn btn-primary text-button" onClick={() => {
-                screenShareApi.login()
+                helpers.startScreenShare(screenShareApi.login)
             }}>Connect</button>
         </Center>
     }
     render() {
         return <div className="ulterius-panel" style={{height: "100%"}}>
-            <div className="double-header" onClick={() => {
-                screenShareApi.login()
-            }}>
+            <div className="double-header">
                 <div>screen share</div>
                 {this.connected()}
             </div>

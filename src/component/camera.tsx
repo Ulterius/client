@@ -104,7 +104,6 @@ export class CameraPage extends React.Component<{}, CameraState> {
             
         
         let {cameras, activeCameras} = this.state
-        cameras = []
         if (cameras.length == 0) {
             return this.emptyPage()
         }

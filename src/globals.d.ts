@@ -449,7 +449,7 @@ declare namespace SettingsInfo {
         General: General,
         Network: Network,
         Plugins: Plugins,
-        ScreenShare: ScreenShare,
+        ScreenShareService: ScreenShare,
         TaskServer: TaskServer,
         Terminal: Terminal,
         WebServer: WebServer

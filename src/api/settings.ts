@@ -17,6 +17,7 @@ export function register(mC: typeof _mainConnection) {
         }
     })
     mC.listen(msg => msg.endpoint && msg.endpoint.indexOf("change") === 0, (msg: SettingsInfo.Updated) => {
+        console.log(msg)
         if (msg.changedStatus) {
 
         }

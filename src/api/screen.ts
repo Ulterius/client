@@ -72,6 +72,11 @@ export function initialize(host, port) {
     sC.connect(host, port)
 }
 
+export function disconnect() {
+    screenEvents.disconnect()
+    sC.disconnect()
+}
+
 export function isTile(message): message is ScreenTile {
     let {top, bottom, left, right, image} = message
     return [top, bottom, left, right].every(prop => typeof prop === "number") &&
@@ -89,6 +94,7 @@ const packetGuards = {
 
 export function register() {
     sC.fallbackListen(console.log.bind(console))
+    sC.listen(()=>true, console.log.bind(console))
     sC.listenKeys<typeof sC>((key, msg) => msg.endpoint && msg.endpoint.toLowerCase() == key.toLowerCase(), {
         connectedToScreenShare(msg, sc) {
             sc.unencrypt()
@@ -102,16 +108,17 @@ export function register() {
         },
         aesHandshake(msg, sc) {
             console.log("Screen share AES handshake dun.")
-            /*
+            
             if (msg.results.shook) {
                 sc.send({
                     endpoint: "login",
-                    args: ["ayy"]
+                    args: ["password"]
                 })
             }
-            */
+            
         },
         login(msg, sc) {
+            console.log("login")
             sc.ofb = true
             screenEvents.login()
         },
