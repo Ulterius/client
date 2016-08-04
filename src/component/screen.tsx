@@ -84,6 +84,7 @@ class ScreenShare extends Component<{}, {
         document.addEventListener("keyup", this.onKeyUp)
     }
     componentWillUnmount() {
+        helpers.stopScreenShare()
         clearFunctions(screenEvents)
         document.removeEventListener("keydown", this.onKeyDown)
         document.removeEventListener("keyup", this.onKeyUp)
