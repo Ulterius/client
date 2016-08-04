@@ -1,6 +1,6 @@
 import React = require("react")
 import * as _ from "lodash"
-import {terminalStore, TerminalState} from "../store"
+import {terminalStore, TerminalState, FullTerminal} from "../store"
 import {terminalActions} from "../action"
 import {terminalApi} from "../api-layer"
 
@@ -10,14 +10,19 @@ export function TerminalPage() {
 
 class InputEntry extends React.Component<{
     onChange?: (text: string) => any,
-    onEntry?: (text: string) => any
+    onEntry?: (text: string) => any,
+    invisible?: boolean
 }, {}> {
     inputElement: HTMLSpanElement
     render() {
         const {onChange, onEntry} = this.props
+        let style = {outline: "none"}
+        if (this.props.invisible) {
+            style["opacity"] = "0"
+        }
         return <span
             contentEditable
-            style={{outline: "none"}}
+            style={style}
             ref={ref => this.inputElement = ref}
             onInput={e => {
                 let ea = e as any
@@ -53,10 +58,14 @@ const inputStyle: React.CSSProperties = {
 }
 
 interface TermComponentState {
-    store?: TerminalState,
+    store?: TerminalState
 }
 
 export class Terminal extends React.Component<{}, TermComponentState> {
+    constructor(props, context) {
+        super(props, context)
+        this.state = {}
+    }
     componentWillMount() {
         this.setStore(terminalStore.getState())
         terminalStore.listen(this.setStore)
@@ -67,24 +76,36 @@ export class Terminal extends React.Component<{}, TermComponentState> {
     setStore = (store: TerminalState) => {
         this.setState({store})
     }
+    isHidden(terminal: FullTerminal) {
+        //return terminal.lines[terminal.lines.length-1]
+                    //.output.indexOf("password") != -1
+        return terminal.lines[terminal.lines.length-1] && 
+            terminal.lines[terminal.lines.length-1].sensitive
+    }
+    isIndexSensitive(terminal: FullTerminal, index: number) {
+        return terminal.lines[index] && terminal.lines[index].sensitive
+    }
     render() {
         const {terminals} = this.state.store
         return <div style={{height: "100%"}}>
             {/*JSON.stringify(this.state.store)*/}
             <div style={terminalStyle}>
                 {_.map(terminals, (terminal, id) => {
-                    return terminal.lines.map(line => {
-                        return <p>{line}</p>
+                    return terminal.lines.map((line, lineNo) => {
+                        return <p key={lineNo}>
+                            {this.isIndexSensitive(terminal, lineNo-1) || line.output + " " +line.correlationId}
+                        </p>
                     })
                 })}
                 {_.map(terminals, (terminal, id) => {
                     return <p>
-                        {terminal.descriptor.currentPath}{">"}
+                        {terminal.endOfCommand ? terminal.descriptor.currentPath +">": null}
                         <InputEntry
+                            invisible={this.isHidden(terminal)}
                             onEntry={text => {
                                 terminalActions.output({
                                     terminalId: terminal.descriptor.id, 
-                                    output: terminal.descriptor.currentPath + ">" + text
+                                    output: terminal.descriptor.currentPath + ">" + text,
                                 })
                                 terminalApi.send(text, terminal.descriptor.id)
                             }} 

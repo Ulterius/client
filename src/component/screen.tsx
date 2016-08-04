@@ -143,9 +143,11 @@ class ScreenShare extends Component<{}, {
         />
     }
     connected() {
-        if (this.state.screenWidth) {
+        if (!this.state.screenWidth) {
             return <div className="proxima-nova-14">
-                Connected &nbsp; <span style={{color: "green"}} className="glyphicon glyphicon-record"/>
+                Connected &nbsp; 
+                <span style={{color: "green"}} className="glyphicon glyphicon-record"/>
+                <button className="text-button">disconnect</button>
             </div>
         }
          return <div className="proxima-nova-14">

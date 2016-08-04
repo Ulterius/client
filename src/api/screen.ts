@@ -27,6 +27,9 @@ export let screenShareApi = {
             args: ["password"]
         })
     },
+    disconnect() {
+        sC.disconnect()
+    },
     mouse: {
         move(PointerX: number, PointerY: number) {
             sC.sendEvent("Mouse", "Move", {

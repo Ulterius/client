@@ -638,6 +638,11 @@ declare namespace TerminalInfo {
         type?: string,
         correlationId?: number
     }
+    interface Line {
+        output: string,
+        correlationId: number,
+        sensitive: boolean
+    }
     interface Input extends Message {
         input: string,
         terminalId: string

@@ -6,13 +6,15 @@ import Ti = TerminalInfo
 
 export interface FullTerminal {
     descriptor: TerminalInfo.Terminal,
-    lines: string[]
+    lines: TerminalInfo.Line[],
+    endOfCommand: boolean
 }
 
 function createFullTerminal(descriptor: Ti.Terminal): FullTerminal {
     return {
         lines: [],
-        descriptor
+        descriptor,
+        endOfCommand: true
     }
 }
 
@@ -35,10 +37,12 @@ class TerminalStore extends AbstractStoreModel<TerminalState> {
         this.terminals[descriptor.id] = createFullTerminal(descriptor)
     }
     
-    handleOutput(output: Ti.Output) {
-        let id = output.terminalId
+    handleOutput(out: Ti.Output) {
+        let id = out.terminalId
+        let {correlationId, output, sensitive, endOfCommand} = out
         if (this.terminals[id]) {
-            this.terminals[id].lines.push(output.output)
+            this.terminals[id].lines.push({correlationId, output, sensitive})
+            this.terminals[id].endOfCommand = endOfCommand
         }
     }
 }

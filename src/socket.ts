@@ -602,7 +602,7 @@ class ScreenShareConnection extends Connection {
 }
 
 export let terminalConnection = new TerminalConnection(1, false)
-terminalConnection.logPackets = false
+terminalConnection.logPackets = true
 
 export let screenConnection = new ScreenShareConnection(3, false)
 screenConnection.logPackets = false
