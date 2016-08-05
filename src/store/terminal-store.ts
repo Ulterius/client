@@ -43,6 +43,7 @@ class TerminalStore extends AbstractStoreModel<TerminalState> {
         if (this.terminals[id]) {
             this.terminals[id].lines.push({correlationId, output, sensitive})
             this.terminals[id].endOfCommand = endOfCommand
+            this.terminals[id].descriptor.currentPath = out.currentPath
         }
     }
 }

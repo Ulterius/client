@@ -22,6 +22,14 @@
 	src: url("/font/proxima_nova_italic.otf");
 }
 
+pre {
+	border: none !important;
+	background: none !important;
+	color: inherit !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
 @font-face {
 	font-family: ProximaNovaCond;
 	src: url("/font/proxima_nova_condensed.otf");

@@ -1,6 +1,14 @@
 declare let JSEncrypt: any
-import {generateHexString, arrayBufferToBase64} from "./"
+
+import {
+	generateHexString, 
+	arrayBufferToBase64,
+	SocketType
+} from "./"
+
 import pako = require("pako")
+import asmCrypto = require("asmcrypto.js")
+import jDataView = require("jdataview")
 
 export function generateKey(base64Key: string) {
     let encrypt = new JSEncrypt()
@@ -79,6 +87,8 @@ export let Base64Binary = {
 	}
 }
 
+
+
 export function ab2str(buf) {
   return String.fromCharCode.apply(null, buf);
 }
@@ -88,4 +98,92 @@ export function decompressData(data: Uint8Array) {
 	let blob = new Blob([inflated], {type: "image/jpeg"})
 	return URL.createObjectURL(blob)
     //return arrayBufferToBase64(pako.inflate(data))
+}
+
+
+
+
+declare let require: (string) => any
+
+if (!TextEncoder) {
+    let encoding = require("text-encoding")
+    TextEncoder = encoding.TextEncoder as typeof TextEncoder
+    TextDecoder = encoding.TextDecoder as typeof TextDecoder
+}
+
+let encoder = new TextEncoder("utf-8")
+let decoder = new TextDecoder("utf-8")
+
+export function encrypt(key, iv, packet) {
+    let encodedPacket = encoder.encode(JSON.stringify(packet))
+    let encryptedPacket = asmCrypto.AES_CBC.encrypt(
+        encodedPacket,
+        encoder.encode(key), 
+        true,
+        encoder.encode(iv)
+    )
+    return encryptedPacket
+}
+
+export function decrypt(key, iv, data, type, ofb?) {
+    let decrypted
+    let [encKey, encIv] = [encoder.encode(key), encoder.encode(iv)]
+
+    if (ofb) {
+        decrypted = asmCrypto.AES_OFB.decrypt(data, encKey, encIv)
+    }
+    else {
+        decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
+    }
+    
+    let decoded = decoder.decode(decrypted)
+    let ret
+    try {
+        ret = JSON.parse(decoded)
+    }
+    catch (errr) {
+        try {
+            if (type === SocketType.ScreenShare) {
+                ret = unpackFrameData(decrypted)
+            }
+            else {
+                ret = unpackCameraFrameData(decrypted)
+            }
+            
+        }
+        catch (e) {
+            console.log(e)
+            //means it's actually not ofb
+            decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
+            decoded = decoder.decode(decrypted)
+            ret = JSON.parse(decoded)
+        }
+    }
+    return ret
+}
+
+export function unpackFrameData(data: Uint8Array) {
+    let fv = new jDataView(data, 0, data.length, true)
+    //let uid = fv.getString(16)
+    let x = fv.getInt32(16)
+    let y = fv.getInt32()
+    let top = fv.getInt32()
+    let bottom = fv.getInt32()
+    let left = fv.getInt32()
+    let right = fv.getInt32()
+    let image = decompressData(data.subarray(16 + (4*6)))
+    return {
+        x, y, top, bottom, left, right, image
+    }
+}
+
+export function unpackCameraFrameData(data: Uint8Array) {
+    let fv = new jDataView(data, 0, data.length, true)
+    let guid = fv.getString(32)
+    let cameraImage = decompressData(data.subarray(32))
+    return {
+        results: {
+            guid, cameraImage
+        }
+    }
 }

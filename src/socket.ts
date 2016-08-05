@@ -16,6 +16,7 @@ import {
     SocketType,
     isCameraFrame
 } from "./util"
+import {encrypt, decrypt} from "./util/crypto"
 import {WorkerPool} from "./util/worker"
 import {appActions, messageActions} from "./action"
 import {loginEvents, disconnectEvents} from "./component"
@@ -70,6 +71,10 @@ abstract class Connection {
     constructor(public poolSize = 3, public isDefault: boolean = false) {
 
     }
+
+    useWorker() {
+        return this.poolSize !== 0
+    }
     
     abstract onMessage(message?: any)
     
@@ -82,8 +87,11 @@ abstract class Connection {
             this.socket.close()
         }
 
-        this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
-        this.setWorkerEvents()
+        if (this.useWorker) {
+            this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
+            this.setWorkerEvents()
+        }
+        
         this.socket = undefined
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
@@ -110,7 +118,7 @@ abstract class Connection {
             this.socket.close(1000)
             this.socket = undefined
         }
-        this.socketPool.terminate()
+        this.useWorker() && this.socketPool.terminate()
         this.connected = false
         if (this.isDefault)
             appActions.setHost({ host: "", port: "" })
@@ -153,12 +161,15 @@ abstract class Connection {
             console.log("Waiting messages: " + requestQueue.length)
             console.groupEnd()
         }
+        this.serialize(packet)
+        /*
         socketPool.post("serialize", {
             encrypted: this.encrypted,
             key: this.key,
             iv: this.iv,
             data: packet
         })
+        */
         /*
         socketPool.postMessage({
             type: "serialize",
@@ -273,7 +284,7 @@ abstract class Connection {
             if (this.reconnectInterval === undefined) {
                 socket.onerror = (e) => {
                     this.socket.close(1000)
-                    this.socketPool.terminate()
+                    if (this.useWorker) this.socketPool.terminate()
                     if (this.isDefault && appStore.getState().connection.host) {
                         this.reconnectInterval = setInterval(() => {
                             console.log("Not connected... trying to reconnect.")
@@ -299,32 +310,21 @@ abstract class Connection {
             }
             socket.onmessage = (e) => {
                 const {key, iv, ofb} = this
-                if (typeof e.data === "string") {
-                    this.onString()
-                    this.socketPool.post("deserialize", {
-                        key: this.key,
-                        iv: this.iv,
-                        data: e.data,
-                        type: this.socketType
-                    })
-                }
-                else if (e.data instanceof ArrayBuffer) {
-                    this.socketPool.post("deserialize", {
-                        key,
-                        iv,
-                        ofb,
-                        data: e.data,
-                        type: this.socketType
-                    }, [e.data])
+                if (typeof e.data === "string" || e.data instanceof ArrayBuffer) {
+                    this.deserialize(e.data)
                 }
                 else if (e.data instanceof Blob) {
                     console.log("Blob get " + e.data)
                 }
             }
-            
             socket.onclose = (e) => {
                 console.log(e.code)
-                if (!this.disconnecting && e.code !== 1000 && this.reconnectInterval === undefined && appStore.getState().connection.host) {
+                if (
+                    !this.disconnecting && 
+                    e.code !== 1000 && 
+                    this.reconnectInterval === undefined && 
+                    appStore.getState().connection.host
+                ) {
                     console.log("Socket... died? Trying to reconnect in a sec...")
                     if (isDefault) { 
                         apiLayer.disconnectedFromUlterius()
@@ -342,6 +342,67 @@ abstract class Connection {
         catch (e) {
             console.log(e)
         }
+    }
+    deserialize(data: string | ArrayBuffer) {
+        const {key, iv, ofb, socketType} = this
+        if (this.useWorker()) {
+            if (data instanceof ArrayBuffer) {
+                this.socketPool.post("deserialize", {
+                    key, iv, ofb, data: data, type: socketType
+                }, [data])
+            }
+            else if (typeof data === "string") {
+                this.socketPool.post("deserialize", {
+                    key, iv, ofb, data: data, type: socketType
+                })
+            }
+        }
+        else {
+            let dataAny = data as any
+            let ret
+            if (!(key && iv)) {
+                ret = JSON.parse(dataAny)
+            }
+            try {
+                ret = JSON.parse(dataAny)
+            }
+            catch (err) {
+                ret = decrypt(key, iv, dataAny, socketType, ofb)
+            }
+            if (typeof ret === "string") {
+                this.onArrayBuffer(ret)
+            }
+            else {
+                this.onDeserialize(ret)
+            }
+        }
+    }
+    serialize(packet: any) {
+        const {encrypted, key, iv} = this
+        if (this.useWorker()) {
+            this.socketPool.post("serialize", {
+                encrypted: encrypted,
+                key: this.key,
+                iv: this.iv,
+                data: packet
+            })
+        }
+        else {
+            let encryptedPacket
+            if (encrypted && key && iv) {
+                encryptedPacket =  encrypt(key, iv, packet)
+            }
+            else {
+                encryptedPacket = JSON.stringify(packet)
+            }
+            try {
+                this.socket.send(encryptedPacket)
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+        
     }
     messageFilter(message) {
         return message
@@ -550,7 +611,6 @@ class TerminalConnection extends Connection {
     }
     onMessage(message: any) {
         this.requestQueue = []
-        console.log("Terminal message got.")
     }
     nextCorrelationId() {
         return this.correlationId++
@@ -601,7 +661,7 @@ class ScreenShareConnection extends Connection {
     }
 }
 
-export let terminalConnection = new TerminalConnection(1, false)
+export let terminalConnection = new TerminalConnection(0, false)
 terminalConnection.logPackets = true
 
 export let screenConnection = new ScreenShareConnection(3, false)

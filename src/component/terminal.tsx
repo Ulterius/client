@@ -62,6 +62,7 @@ interface TermComponentState {
 }
 
 export class Terminal extends React.Component<{}, TermComponentState> {
+    terminalElement: HTMLDivElement
     constructor(props, context) {
         super(props, context)
         this.state = {}
@@ -75,6 +76,9 @@ export class Terminal extends React.Component<{}, TermComponentState> {
     }
     setStore = (store: TerminalState) => {
         this.setState({store})
+        if (this.terminalElement) {
+            this.terminalElement.scrollTop = this.terminalElement.scrollHeight
+        }
     }
     isHidden(terminal: FullTerminal) {
         //return terminal.lines[terminal.lines.length-1]
@@ -89,12 +93,19 @@ export class Terminal extends React.Component<{}, TermComponentState> {
         const {terminals} = this.state.store
         return <div style={{height: "100%"}}>
             {/*JSON.stringify(this.state.store)*/}
-            <div style={terminalStyle}>
+            <div style={terminalStyle} ref={ref => {
+                this.terminalElement = ref
+                if (this.terminalElement) {
+                    this.terminalElement.scrollTop = this.terminalElement.scrollHeight
+                }
+            }}>
                 {_.map(terminals, (terminal, id) => {
                     return terminal.lines.map((line, lineNo) => {
-                        return <p key={lineNo}>
-                            {this.isIndexSensitive(terminal, lineNo-1) || line.output + " " +line.correlationId}
-                        </p>
+                        return <pre 
+                            key={lineNo} 
+                        >
+                            {this.isIndexSensitive(terminal, lineNo-1) ? " " : line.output}
+                        </pre>
                     })
                 })}
                 {_.map(terminals, (terminal, id) => {

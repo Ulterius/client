@@ -636,7 +636,8 @@ declare namespace TerminalInfo {
         sensitive?: boolean,
         terminalId: string,
         type?: string,
-        correlationId?: number
+        correlationId?: number,
+        currentPath?: string
     }
     interface Line {
         output: string,
