@@ -678,5 +678,6 @@ declare interface SearchResult {
     searchGenerationTime: number,
     searchResults: string[],
     success: boolean,
-    totalResults: number
+    totalResults: number,
+    message?: string
 }

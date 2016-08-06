@@ -94,7 +94,6 @@ const packetGuards = {
 
 export function register() {
     sC.fallbackListen(console.log.bind(console))
-    sC.listen(()=>true, console.log.bind(console))
     sC.listenKeys<typeof sC>((key, msg) => msg.endpoint && msg.endpoint.toLowerCase() == key.toLowerCase(), {
         connectedToScreenShare(msg, sc) {
             sc.unencrypt()

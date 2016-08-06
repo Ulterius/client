@@ -215,15 +215,15 @@ export function startCameraStream(status: CameraStatus.StreamStarted) {
 export function stopCameraStream(status: CameraStatus.StreamStopped) {
     if (status.cameraStreamStopped) {
         cameraActions.stopCameraStream(status.cameraId)
-        sendCommandToDefault("stopCamera", status.cameraId)
+        //sendCommandToDefault("stopCamera", status.cameraId)
     }
 }
 
 export function stopCamera(status: CameraStatus.Stopped) {
     if (resLog) console.log(status)
-    //if (!status.cameraRunning) {
-        //cameraActions.stopCameraStream(status.cameraId)
-    //}
+    if (!status.cameraRunning) {
+        cameraActions.stopCameraStream(status.cameraId)
+    }
 }
 
 /*

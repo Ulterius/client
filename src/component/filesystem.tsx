@@ -171,6 +171,20 @@ export class FileList extends React.Component<{}, FileSystemState & {
     }
     getSearchList() {
         let {searchResult, searchResultCount} = this.state
+        if(!searchResult.success) {
+            let details = ""
+            if (searchResult.message.indexOf("scanning") !== -1) {
+                details = "Try again in a minute."
+            }
+            return [
+                <tr>
+                    <td>Search failed: {searchResult.message}</td>
+                </tr>,
+                <tr>
+                    <td>{details}</td>
+                </tr>
+            ]
+        }
         return searchResult.searchResults.slice(0, searchResultCount).map(result => {
             return <tr key={result}>
                 <td width="16"><Glyphicon glyph="file"/></td>

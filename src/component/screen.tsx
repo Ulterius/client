@@ -19,9 +19,9 @@ export function ScreenPage() {
     </div>
 }
 
-interface OffsetCoordinates {
-    offsetX: number,
-    offsetY: number
+interface ScreenCoordinates {
+    screenX: number,
+    screenY: number
 }
 
 //let img = new Image()
@@ -93,14 +93,21 @@ class ScreenShare extends Component<{}, {
         e.preventDefault()
         e.stopPropagation()
     }
-    offsetMouse(e: React.MouseEvent) {
+    transformMouse(e: React.MouseEvent) {
+        
         let target = e.target as HTMLCanvasElement
         let rect = target.getBoundingClientRect()
+        let sH = this.state.screenHeight || 1
+        let sW = this.state.screenWidth || 1
+        let vX = e.clientX - rect.left
+        let vY = e.clientY - rect.top
+        let screenX = sW * (vX / rect.width)
+        let screenY = sH * (vY / rect.height)
         _.assign(e, {
-            offsetX: e.clientX - rect.left,
-            offsetY: e.clientY - rect.top
+            screenX,
+            screenY
         })
-        return e as React.MouseEvent & OffsetCoordinates
+        return e as React.MouseEvent & ScreenCoordinates
     }
     onKeyDown = (e: KeyboardEvent) => {
         console.log("key press")
@@ -113,13 +120,14 @@ class ScreenShare extends Component<{}, {
     }
     processMouse(e: React.MouseEvent) {
         this.cancelEvents(e)
-        return this.offsetMouse(e)
+        return this.transformMouse(e)
     }
     frameImg() {
         let {screenWidth, screenHeight} = this.state
         return <canvas 
             width={screenWidth || "500"}
             height={screenHeight || "500"}
+            style={{width: "100%", height: "auto"}}
             tabIndex="1"
             ref={(ref) => {
                 this.canvas = ref
@@ -128,17 +136,17 @@ class ScreenShare extends Component<{}, {
                 }
             }} 
             onMouseMove={(e) => {
-                let {offsetX, offsetY} = this.processMouse(e)
-                screenShareApi.mouse.move(offsetX, offsetY)
+                let {screenX, screenY} = this.processMouse(e)
+                screenShareApi.mouse.move(screenX, screenY)
             }}
             onContextMenu={(e) => {
                 this.processMouse(e)
                 screenShareApi.mouse.rightClick()
             }}
             onClick={(e) => {
-                let {offsetX, offsetY} = this.processMouse(e)
+                let {screenX, screenY} = this.processMouse(e)
                 if (e.button == 0) {
-                    screenShareApi.mouse.leftClick(offsetX, offsetY)
+                    screenShareApi.mouse.leftClick(screenX, screenY)
                 }
             }} 
             onMouseDown={(e) => {
