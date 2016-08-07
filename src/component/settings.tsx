@@ -256,7 +256,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                         {this.state.restartConfirm ? "confirm restart" : "restart server"}
                     </div>
                 </div>
-                {JSON.stringify(this.state.newSettings)}
+                {/*JSON.stringify(this.state.newSettings*/}
                 {this.settingsBody()}
             </div>
         </MoveLeftTransition>

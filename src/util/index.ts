@@ -427,3 +427,11 @@ export function bytesToGuid(x) {
     var y = bytes.map(function(item) {return ('00'+item.toString(16).toUpperCase()).substr(-2,2)})
     return y
 }
+
+export function onEnter(callback: (e: React.KeyboardEvent) => any) {
+    return (e: React.KeyboardEvent) => {
+        if (e.keyCode == 13) {
+            callback(e)
+        }
+    }
+}

@@ -263,9 +263,14 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", config.auth.password)
         }
         */
-        if (config.cachePassword && window.localStorage.getItem(`${appStore.getState().connection.host}:password`)) {
-            sendCommandToDefault("authenticate", window.localStorage.getItem(`${appStore.getState().connection.host}:password`))
+        let {host, port} = appStore.getState().connection
+        if (config.cachePassword && window.localStorage.getItem(`${host}:password`)) {
+            sendCommandToDefault("authenticate", window.localStorage.getItem(`${host}:password`))
         }
+
+
+        window.localStorage.setItem("last-host", host)
+        window.localStorage.setItem("last-port", port)
         
         let password
         if (password = appStore.getState().auth.password) {

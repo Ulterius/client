@@ -3,7 +3,7 @@ import {Base64Img, SlideDownTransition, Spinner} from "./"
 import {Glyphicon, Button, Input} from "react-bootstrap"
 import {connect, disconnect} from "../socket"
 import {appActions} from "../action"
-import {verticalCenter, media, clearFunctions} from "../util"
+import {verticalCenter, media, clearFunctions, onEnter} from "../util"
 import config from "../config"
 import MediaQuery = require("react-responsive")
 
@@ -191,6 +191,10 @@ export class ConnectScreen extends React.Component<{}, {
         return null;
     }
     inner() {
+        const [lastHost, lastPort] = [
+            window.localStorage.getItem("last-host") || "",
+            window.localStorage.getItem("last-port") || ""
+        ]
         return <div className="login-panel" >
             {/*<div className="ulterius-banner">
                 <img src="img/logo.png" /> <br />
@@ -205,26 +209,27 @@ export class ConnectScreen extends React.Component<{}, {
             {/*this.message(this.state.message)*/}
             <div className="login-body">
                 <div className="hostname">
-                    <Input type="text" defaultValue="localhost" placeholder="host" onChange={e => 
+                    <Input type="text" defaultValue={lastHost} placeholder="host" onChange={e => 
                         this.setState({host: (e.target as HTMLInputElement).value})
-                    } />
+                    } onKeyDown={onEnter(this.connect)}/>
                 </div>
                 <div className="port">
-                    <Input type="text" defaultValue="22007" placeholder="port" onChange={e => 
+                    <Input type="text" defaultValue={lastPort} placeholder="port" onChange={e => 
                         this.setState({port: (e.target as HTMLInputElement).value})
-                    } />
+                    } onKeyDown={onEnter(this.connect)}/>
                 </div>
                 <br />
             </div>
             <div className="login-foot">
-                <Button bsStyle="primary" onClick={() => {
-                    this.setState({message: "", connecting: true})
-                    connect(this.state.host, this.state.port)
-                }}>
+                <Button bsStyle="primary" onClick={this.connect}>
                     Connect
                 </Button>
             </div>
         </div>
+    }
+    connect = () => {
+        this.setState({message: "", connecting: true})
+        connect(this.state.host, this.state.port)
     }
     render() {
         
