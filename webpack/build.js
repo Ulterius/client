@@ -5,14 +5,25 @@ let merge = require("webpack-merge")
 
 //config.devtool = undefined
 
-let buildConfig = merge(config, {
+let setFreeVariable = function(key, value) {
+    const env = {}
+    env[key] = JSON.stringify(value)
+
+    return {
+        plugins: [
+            new webpack.DefinePlugin(env)
+        ]
+    }
+}
+
+let buildConfig = merge(config, setFreeVariable('process.env.NODE_ENV', 'production'), {
     devtool: false,
     plugins: [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {
-          warnings: false
-        }
-      })
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        })
     ]
 })
 
