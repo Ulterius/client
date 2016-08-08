@@ -164,9 +164,13 @@ export class ConnectScreen extends React.Component<{}, {
 }> {
     constructor(props, context) {
         super(props, context)
+        const [lastHost, lastPort] = [
+            window.localStorage.getItem("last-host") || "",
+            window.localStorage.getItem("last-port") || ""
+        ]
         this.state = {
-            host: "localhost",
-            port: "22007"
+            host: lastHost || "localhost",
+            port: lastPort || "22007"
         }
     }
     componentDidMount() {
@@ -191,10 +195,6 @@ export class ConnectScreen extends React.Component<{}, {
         return null;
     }
     inner() {
-        const [lastHost, lastPort] = [
-            window.localStorage.getItem("last-host") || "",
-            window.localStorage.getItem("last-port") || ""
-        ]
         return <div className="login-panel" >
             {/*<div className="ulterius-banner">
                 <img src="img/logo.png" /> <br />
@@ -209,12 +209,12 @@ export class ConnectScreen extends React.Component<{}, {
             {/*this.message(this.state.message)*/}
             <div className="login-body">
                 <div className="hostname">
-                    <Input type="text" defaultValue={lastHost} placeholder="host" onChange={e => 
+                    <Input type="text" value={this.state.host} placeholder="host" onChange={e => 
                         this.setState({host: (e.target as HTMLInputElement).value})
                     } onKeyDown={ifEnter(this.connect)}/>
                 </div>
                 <div className="port">
-                    <Input type="text" defaultValue={lastPort} placeholder="port" onChange={e => 
+                    <Input type="text" value={this.state.port} placeholder="port" onChange={e => 
                         this.setState({port: (e.target as HTMLInputElement).value})
                     } onKeyDown={ifEnter(this.connect)}/>
                 </div>
