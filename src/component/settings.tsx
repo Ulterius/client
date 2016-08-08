@@ -225,7 +225,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                     body.push(
                         <Input 
                             key={name}
-                            type="text"
+                            type={name == "ScreenSharePass" ? "password" : "text"}
                             label={settingNames[name]}
                             defaultValue={value}
                             onChange={(e) => {

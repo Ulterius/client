@@ -45,7 +45,6 @@ module.exports = function(opts) {
             poll: 1000
         },
         node: nodeops,
-        devtool: "eval-source-maps",
         resolve: {
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },

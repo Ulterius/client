@@ -152,11 +152,18 @@ export function decrypt(key, iv, data, type, ofb?) {
             
         }
         catch (e) {
-            console.log(e)
             //means it's actually not ofb
-            decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
-            decoded = decoder.decode(decrypted)
-            ret = JSON.parse(decoded)
+            try {
+                decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
+                decoded = decoder.decode(decrypted)
+                ret = JSON.parse(decoded)
+            }
+            catch (fuckingError) {
+                console.log("Undecryptable packet recieved.")
+                console.log(fuckingError)
+                ret = new Uint8Array([])
+            }
+            
         }
     }
     return ret

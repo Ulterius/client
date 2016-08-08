@@ -86,13 +86,13 @@ abstract class Connection {
         if (this.socket) {
             this.socket.close()
         }
+        this.socket = undefined
 
         if (this.useWorker) {
             this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
             this.setWorkerEvents()
         }
         
-        this.socket = undefined
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
             this.socket.binaryType = "arraybuffer"

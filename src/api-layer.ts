@@ -12,7 +12,7 @@ import {
     dialogActions
 } 
 from "./action"
-import {appStore} from "./store"
+import {appStore, settingsStore} from "./store"
 import {loginEvents} from "./component"
 import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
 import setIntervals from "./interval"
@@ -56,15 +56,18 @@ export let helpers = {
         mainConnection.sendAsync("startScreenShare", msgg => {
             console.log(msgg)
             let {host, port} = appStore.getState().connection
-            screen.initialize(host, "22009")
-            screen.register()
+            let screenPort = settingsStore.getState().settings.ScreenShareService.ScreenSharePort
+            screen.initialize(host, String(screenPort))
         })
     },
     stopScreenShare() {
+        screen.disconnect()
+        /*
         mainConnection.sendAsync("stopScreenShare", msg => {
             console.log(msg)
-            screen.disconnect()
+            
         })
+        */
     }
 }
 
@@ -160,6 +163,8 @@ export function authenticate(info: AuthInfo) {
             })
         })
         */
+
+        screen.register()
         terminal.initialize()
         //screen.initialize()
         helpers.requestAuxillarySystemInformation()

@@ -1,8 +1,12 @@
 import {screenConnection as sC} from "../socket"
 import {generateKey, decompressData} from "../util/crypto"
 import {base64toArray, arrayToBase64, addImageHeader} from "../util"
-import {screenEvents} from "../component/screen"
+//import {screenEvents} from "../component/screen"
+import {settingsStore} from "../store"
+import {messageActions} from "../action"
 import pako = require("pako")
+import EventEmitter = require("events")
+import {SyncEvent} from "ts-events"
 
 let debug: any = {}
 window["debug"].screen = debug
@@ -12,6 +16,13 @@ export function eventPacket(type: string, action: string) {
         EventType: type,
         Action: action
     }
+}
+
+export let screenEvents = {
+    disconnect: new SyncEvent,
+    frame: new SyncEvent<ScreenTile>(),
+    frameData: new SyncEvent<FrameData>(),
+    login: new SyncEvent
 }
 
 export let screenShareApi = {
@@ -73,7 +84,7 @@ export function initialize(host, port) {
 }
 
 export function disconnect() {
-    screenEvents.disconnect()
+    screenEvents.disconnect.post({})
     sC.disconnect()
 }
 
@@ -107,25 +118,36 @@ export function register() {
         },
         aesHandshake(msg, sc) {
             console.log("Screen share AES handshake dun.")
-            
+            console.log(msg)
+            let password = settingsStore.getState().settings.ScreenShareService.ScreenSharePass
+            console.log(password)
+            console.log(settingsStore.getState())
             if (msg.results.shook) {
-                sc.send({
-                    endpoint: "login",
-                    args: ["password"]
-                })
+                if (password) {
+                    console.log("Password good, logging in.")
+                    sc.send({
+                        endpoint: "login",
+                        args: [password]
+                    })
+                }
+                else {
+                    messageActions.message({
+                        style: "danger", 
+                        text: "No screen share password. Set one!"
+                    })
+                }
             }
-            
         },
         login(msg, sc) {
             console.log("login")
             sc.ofb = true
-            screenEvents.login()
+            screenEvents.login.post({})
         },
         frameData(msg, sc) {
             let result: FrameData = msg.results
             let includedFrame = decompressData(new Uint8Array(msg.results.frameData)) 
-            screenEvents.frameData(result)
-            screenEvents.frame({
+            screenEvents.frameData.post(result)
+            screenEvents.frame.post({
                 x: 0,
                 y: 0,
                 top: 0,
@@ -137,7 +159,7 @@ export function register() {
         }
     })
     sC.listen(isTile, (msg: ScreenTile, sc) => {
-        screenEvents.frame(msg)
+        screenEvents.frame.post(msg)
     })
     /*
     sC.listenBuffer(data => {
@@ -148,3 +170,5 @@ export function register() {
     })
     */
 }
+
+

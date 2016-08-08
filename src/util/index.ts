@@ -428,7 +428,7 @@ export function bytesToGuid(x) {
     return y
 }
 
-export function onEnter(callback: (e: React.KeyboardEvent) => any) {
+export function ifEnter(callback: (e: React.KeyboardEvent) => any) {
     return (e: React.KeyboardEvent) => {
         if (e.keyCode == 13) {
             callback(e)

@@ -3,7 +3,7 @@ import {Base64Img, SlideDownTransition, Spinner} from "./"
 import {Glyphicon, Button, Input} from "react-bootstrap"
 import {connect, disconnect} from "../socket"
 import {appActions} from "../action"
-import {verticalCenter, media, clearFunctions, onEnter} from "../util"
+import {verticalCenter, media, clearFunctions, ifEnter} from "../util"
 import config from "../config"
 import MediaQuery = require("react-responsive")
 
@@ -211,12 +211,12 @@ export class ConnectScreen extends React.Component<{}, {
                 <div className="hostname">
                     <Input type="text" defaultValue={lastHost} placeholder="host" onChange={e => 
                         this.setState({host: (e.target as HTMLInputElement).value})
-                    } onKeyDown={onEnter(this.connect)}/>
+                    } onKeyDown={ifEnter(this.connect)}/>
                 </div>
                 <div className="port">
                     <Input type="text" defaultValue={lastPort} placeholder="port" onChange={e => 
                         this.setState({port: (e.target as HTMLInputElement).value})
-                    } onKeyDown={onEnter(this.connect)}/>
+                    } onKeyDown={ifEnter(this.connect)}/>
                 </div>
                 <br />
             </div>

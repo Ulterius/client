@@ -2,8 +2,13 @@
 let webpack = require("webpack")
 let WebpackDevServer = require("webpack-dev-server")
 let config = require("./config")()
+let merge = require("webpack-merge")
 
-new WebpackDevServer(webpack(config), {
+let devConfig = merge(config, {
+    devtool: "eval-source-maps"
+})
+
+new WebpackDevServer(webpack(devConfig), {
     watch: true,
     contentBase: "public",
     progress: true,

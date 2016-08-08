@@ -1,9 +1,22 @@
 "use strict"
 let webpack = require("webpack")
-
 let config = require("./config")()
+let merge = require("webpack-merge")
 
-let compiler = webpack(config)
+//config.devtool = undefined
+
+let buildConfig = merge(config, {
+    devtool: false,
+    plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false
+        }
+      })
+    ]
+})
+
+let compiler = webpack(buildConfig)
 
 compiler.run((err, stats) => {
     if (err) {

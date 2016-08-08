@@ -2,16 +2,18 @@ import React = require("react")
 import Component = React.Component
 import {Button} from "react-bootstrap"
 import {Base64Img, Center} from "./"
-import {screenShareApi} from "../api/screen"
+import {screenShareApi, screenEvents} from "../api/screen"
 import {helpers} from "../api-layer"
 import {tryUntil, clearFunctions} from "../util"
 
+/*
 export let screenEvents = {
     frame(data: ScreenTile) {},
     frameData(data: FrameData) {},
     login() {},
     disconnect() {}
 }
+*/
 
 export function ScreenPage() {
     return <div className="screen-page" style={{height: "100%"}}>
@@ -39,7 +41,7 @@ class ScreenShare extends Component<{}, {
         this.state = {}
     }
     componentDidMount() {
-        screenEvents.frame = (tile: ScreenTile) => {
+        screenEvents.frame.attach((tile: ScreenTile) => {
             if (this.canvasCtx) {
                 const {x, y, top, bottom, left, right, image} = tile
                 const width = right - left
@@ -58,34 +60,36 @@ class ScreenShare extends Component<{}, {
                     }, 200)
                 }
             }
-        }
-        screenEvents.frameData = (data: FrameData) => {
+        })
+        screenEvents.frameData.attach((data: FrameData) => {
             this.setState({
                 screenWidth: data.Bounds.Right,
                 screenHeight: data.Bounds.Bottom
             })
-        }
-        screenEvents.login = () => {
+        })
+        screenEvents.login.attach(() => {
             console.log("login")
             tryUntil(() => !!this.state.screenWidth, () => {
                 console.log("try")
                 screenShareApi.requestFrame()
             })
-        }
-        screenEvents.disconnect = () => {
+        })
+        screenEvents.disconnect.attach(() => {
             console.log("disconnect")
             this.setState({
                 screenWidth: 0,
                 screenHeight: 0,
                 hasFrame: false
             })
-        }
+        })
         document.addEventListener("keydown", this.onKeyDown)
         document.addEventListener("keyup", this.onKeyUp)
     }
     componentWillUnmount() {
         helpers.stopScreenShare()
-        clearFunctions(screenEvents)
+        _.forOwn(screenEvents, (event) => {
+            event.detach()
+        })
         document.removeEventListener("keydown", this.onKeyDown)
         document.removeEventListener("keyup", this.onKeyUp)
     }
@@ -103,11 +107,11 @@ class ScreenShare extends Component<{}, {
         let vY = e.clientY - rect.top
         let screenX = sW * (vX / rect.width)
         let screenY = sH * (vY / rect.height)
-        _.assign(e, {
+        let transformed = _.assign({}, e, {
             screenX,
             screenY
         })
-        return e as React.MouseEvent & ScreenCoordinates
+        return transformed as React.MouseEvent & ScreenCoordinates
     }
     onKeyDown = (e: KeyboardEvent) => {
         console.log("key press")
