@@ -328,5 +328,5 @@ export function disconnectedFromUlterius() {
 }
 
 function onAuthenticate() {
-    sendCommandAsync("searchFiles", "*.gif", console.log.bind(console))
+    
 }
