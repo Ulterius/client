@@ -274,7 +274,10 @@ export class SystemPage extends React.Component<{}, {
                                     <Flex />
                                     <SystemFooter>
                                         <StatItem isFooter head="public ip">
-                                            {network.publicIp}
+                                            <span className="hover-container">
+                                                <span className="hover">{network.publicIp}</span>
+                                                <span className="unhovered highlighted">Hidden</span>
+                                            </span>
                                         </StatItem>
                                         <StatItem isFooter head="internal ip">
                                             {network.internalIp}

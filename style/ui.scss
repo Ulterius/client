@@ -139,3 +139,23 @@
 .center-child {
     text-align: center;
 }
+
+.hover-container .unhovered {
+    display: inline;
+}
+
+.hover-container .hover {
+    display: none;
+}
+
+.hover-container:hover .hover, .hover-container:active .hover {
+    display: inline
+}
+
+.hover-container:hover .unhovered, .hover-container:active .unhovered {
+    display: none;
+}
+
+.highlighted {
+    color: $highlight;
+}
