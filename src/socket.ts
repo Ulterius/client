@@ -112,13 +112,18 @@ abstract class Connection {
     onConnect() {}
 
     disconnect = () => {
+        if (!this.connected) {
+            return;
+        }
         this.disconnecting = true
         if (this.socket) {
             this.socket.onclose = () => {}
             this.socket.close(1000)
             this.socket = undefined
         }
-        this.useWorker() && this.socketPool.terminate()
+        if (this.useWorker() && this.socketPool) {
+            this.socketPool.terminate()
+        }
         this.connected = false
         if (this.isDefault)
             appActions.setHost({ host: "", port: "" })
