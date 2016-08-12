@@ -1,7 +1,7 @@
 # Ulterius Client
 A web-based frontend for Ulterius Server. Written in Typescript using React, Alt and other assorted bits.
 
-<img alt="screenshot" src="img/screen.png" />
+<img alt="screenshot" src="screenshot/screen.png" />
 
 ## Build Instructions
 1. Clone repo
