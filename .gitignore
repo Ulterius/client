@@ -6,6 +6,7 @@ src/node_modules/asmcrypto.js/node_modules/**
 .DS_Store
 src/config.ts
 npm-debug.log
+public
 public/bundle.js*
 public/filesystem.worker.js*
 public/socket.worker.js*

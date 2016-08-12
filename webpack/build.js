@@ -2,6 +2,7 @@
 let webpack = require("webpack")
 let config = require("./config")()
 let merge = require("webpack-merge")
+let copyStatic = require("./copy-static")
 
 //config.devtool = undefined
 
@@ -29,12 +30,14 @@ let buildConfig = merge(config, setFreeVariable('process.env.NODE_ENV', 'product
 
 let compiler = webpack(buildConfig)
 
+copyStatic("prod.html")
+
 compiler.run((err, stats) => {
     if (err) {
         console.log(err)
     }
     else {
-        console.log("Success.")
+        console.log("Build success.")
         console.log(stats)
     }
 })

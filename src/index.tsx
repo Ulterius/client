@@ -3,6 +3,12 @@ window["debug"] = {}
 
 declare let require: (string) => any
 require("../style/style.scss")
+//require("html/index.html")
+//require("vendor/eve.js")
+//require("vendor/chartist.min.css")
+//require("vendor/jsencrypt.js")
+//require("vendor/raphael.min.js")
+//require("vendor/bootstrap-filestyle.min.js")
 
 import React = require("react")
 import ReactDOM = require("react-dom")

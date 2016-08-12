@@ -2,6 +2,11 @@
 let path = require("path")
 let webpack = require("webpack")
 
+const assetPath = path.resolve(__dirname, "../assets")
+const htmlPath = path.resolve(__dirname, "../html")
+const indexPage = path.resolve(htmlPath, "index.html")
+const validate = require("webpack-validator")
+
 let loaders = [
     {
         test: /\.tsx?$/,
@@ -17,7 +22,21 @@ let loaders = [
     {
         test: /\.json$/,
         loader: "json-loader"
+    },
+    {
+        include: [
+            assetPath
+        ],
+        test: /(\.png|\.svg|\.otf|\.css|\.js)$/,
+        loader: "file-loader?name=[path][name].[ext]"
     }
+    /*
+    {
+        test: indexPage,
+        include: [htmlPath],
+        loaders: ["file?name=[name].[ext]", "extract", "html?attrs=script:src"]
+    }
+    */
 ]
 
 let nodeops = {
@@ -27,7 +46,8 @@ let nodeops = {
 
 
 module.exports = function(opts) {
-    return {
+    return validate({
+        context: path.resolve(__dirname, ".."),
         entry: [
             //'webpack-dev-server/client?http://0.0.0.0:8080',
             'webpack/hot/dev-server',
@@ -46,6 +66,11 @@ module.exports = function(opts) {
         },
         node: nodeops,
         resolve: {
+            alias: {
+                img: path.resolve(assetPath, "img"),
+                icon: path.resolve(assetPath, "img/newicon"),
+                font: path.resolve(assetPath, "font"),
+            },
             extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
         },
         module: {loaders},
@@ -53,11 +78,8 @@ module.exports = function(opts) {
             new webpack.HotModuleReplacementPlugin({
                 multiStep: true
             })
-        ],
-        ts: {
-            transpileOnly: true
-        } 
-    }
+        ]
+    })
     
     /*
     if (opts.development) {

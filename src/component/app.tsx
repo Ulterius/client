@@ -41,7 +41,7 @@ function NavItem(props: {className: string, path: string, label: string, icon: s
     let {className, path, label, icon} = props
     return <li className={className}>
         <Link to={path}>
-            <img src={"img/newicon/"+icon+".svg"} />
+            <img src={require("icon/"+icon+".svg")} />
             <span className="tab-label">&nbsp; &nbsp; {label}</span>
         </Link>
     </li>
@@ -198,7 +198,7 @@ class Sidebar extends React.Component<{activePath: string}, {
     sidebarContent() {
         return <div className="sidebar col-md-4" data-spy="affix">
             <div className="header">
-                <img src="img/logo.png" height="20" /> &nbsp; ULTERIUS
+                <img src={require("img/logo.png")} height="20" /> &nbsp; ULTERIUS
             </div>
             <UserWidget />
             <ul className="nav nav-pills nav-stacked">

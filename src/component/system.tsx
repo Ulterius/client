@@ -249,7 +249,7 @@ export class SystemPage extends React.Component<{}, {
                         <FlexCol style={{width: "66%"}}>
                             <FlexRow>
                                 <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="operating system" image={
-                                    <img src="/img/newicon/pc.svg" width="62" height="49" />
+                                    <img src={require("icon/pc.svg")} width="62" height="49" />
                                 }>
                                     {os.name} {os.architecture} <br />
                                     <Faded>
@@ -258,7 +258,7 @@ export class SystemPage extends React.Component<{}, {
                                     </Faded>
                                 </SystemPanel>
                                 <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="motherboard" image={
-                                    <img src="/img/newicon/motherboard.svg" width="45" height="40" />
+                                    <img src={require("icon/motherboard.svg")} width="45" height="40" />
                                 }>
                                     {stats.motherBoard} <br />
                                     <Faded>
@@ -269,7 +269,7 @@ export class SystemPage extends React.Component<{}, {
                             </FlexRow>
                             <FlexRow>
                                 <SystemPanel flexGrow={1} title="network" image={
-                                    <img src="/img/newicon/network.svg" width="52" height="40" />
+                                    <img src={require("icon/network.svg")} width="52" height="40" />
                                 }>
                                     <Flex />
                                     <SystemFooter>
@@ -296,7 +296,7 @@ export class SystemPage extends React.Component<{}, {
                             </FlexRow>
                         </FlexCol>
                         <SystemPanel flexGrow={1} title="CPU" image={
-                            <img src="/img/newicon/cpu.svg" width="40" height="40" />
+                            <img src={require("icon/cpu.svg")} width="40" height="40" />
                         }>
                             <FixedCenter>
                                 {cpu.cpuName}
@@ -326,7 +326,7 @@ export class SystemPage extends React.Component<{}, {
                     </FlexRow>
                     <FlexRow>
                         <SystemPanel style={{width: "66%"}} title="video cards" image={
-                            <img src="/img/newicon/gpu.svg" width="54" height="40" />
+                            <img src={require("icon/gpu.svg")} width="54" height="40" />
                         }>
                             <FlexFixed>
                                 {gpu.gpus.map(info => {
@@ -355,7 +355,7 @@ export class SystemPage extends React.Component<{}, {
                             <Flex />
                         </SystemPanel>
                         <SystemPanel flexGrow={1} title="drives" image={
-                            <img src="/img/newicon/drive.svg" width="30" height="40" />
+                            <img src={require("icon/drive.svg")} width="30" height="40" />
                         }>
                             <Fixed>
                                 {stats.drives.map(drive => {

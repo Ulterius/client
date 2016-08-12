@@ -9,17 +9,32 @@
 
 @font-face {
 	font-family: ProximaNova;
-	src: url("/font/proxima_nova.otf");
+	src: url("font/proxima_nova.otf");
 }
 
 @font-face {
 	font-family: ProximaNovaCondSemi;
-	src: url("/font/proxima_nova_condensed_semibold.otf");
+	src: url("font/proxima_nova_condensed_semibold.otf");
 }
 
 @font-face {
 	font-family: ProximaNovaIt;
-	src: url("/font/proxima_nova_italic.otf");
+	src: url("font/proxima_nova_italic.otf");
+}
+
+@font-face {
+	font-family: ProximaNovaCond;
+	src: url("font/proxima_nova_condensed.otf");
+}
+
+@font-face {
+	font-family: ProximaNovaSemi;
+	src: url("font/proxima_nova_semibold.otf");
+}
+
+@font-face {
+	font-family: ProximaNovaBold;
+	src: url("font/proxima_nova_bold.otf");
 }
 
 pre {
@@ -30,10 +45,7 @@ pre {
 	padding: 0 !important;
 }
 
-@font-face {
-	font-family: ProximaNovaCond;
-	src: url("/font/proxima_nova_condensed.otf");
-}
+
 
 .label {
 	font-family: ProximaNova;
