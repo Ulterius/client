@@ -1,42 +1,13 @@
 let productionSettings = {
-    server: "ws://127.0.0.1:22007/",
-    key: "test",
     cachePassword: false,
-    
-    /*
-    autoConnect: {
-        port: "22007",
-        host: "localhost"
-        //host: "192.168.1.208"
-    },
-    */
-    
-    
-    autoConnect: false,
-    auth: {
-        user: "frob",
-        password: ""
-    }
+    autoConnect: false
 }
 
 let devSettings = {
-    server: "ws://127.0.0.1:22007/",
-    key: "test",
     cachePassword: true,
-    
-    
     autoConnect: {
         port: "22007",
         host: "localhost"
-        //host: "192.168.1.208"
-    },
-    
-    
-    
-    //autoConnect: false,
-    auth: {
-        user: "frob",
-        password: ""
     }
 }
 

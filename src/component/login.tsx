@@ -169,7 +169,7 @@ export class ConnectScreen extends React.Component<{}, {
             window.localStorage.getItem("last-port") || ""
         ]
         this.state = {
-            host: lastHost || "localhost",
+            host: lastHost || window.location.hostname,
             port: lastPort || "22007"
         }
     }

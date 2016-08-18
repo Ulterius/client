@@ -1,8 +1,6 @@
 import * as _ from "lodash"
 import React = require("react")
 
-//global event emitter for components that shouldn't need stores
-
 export function createSortOnProperty<T>(prop: string, how: string) {
     return function(a: T, b: T) {
         if (!_(a).has(prop) || !_(b).has(prop)) {

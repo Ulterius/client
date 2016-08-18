@@ -23,11 +23,11 @@ import {
 
 declare let require: (string) => any
 
+let encoderShim = require("text-encoding")
 
-if (!TextEncoder) {
-    let encoding = require("text-encoding")
-    TextEncoder = encoding.TextEncoder as typeof TextEncoder
-    TextDecoder = encoding.TextDecoder as typeof TextDecoder
+if (typeof TextEncoder === "undefined") {
+    self["TextEncoder"] = encoderShim.TextEncoder as typeof TextEncoder
+    self["TextDecoder"] = encoderShim.TextDecoder as typeof TextDecoder
 }
 
 let encoder = new TextEncoder("utf-8")
@@ -36,15 +36,6 @@ let decoder = new TextDecoder("utf-8")
 let pm = postMessage as (any) => void
 
 let handle = getHandler(postMessage, addEventListener)
-
-handle("test", () => {
-    console.log("Started...")
-    let counter = 0;
-    for(let i = 0; i < 600000000; i++) {
-        counter++;
-    }
-    return "successful! " + counter
-})
 
 interface DeserializeArgs {
     key: string,

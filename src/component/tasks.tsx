@@ -212,9 +212,7 @@ export function TaskPage(props: any) {
         <div className="row" style={{height: "100%"}}>
             <div className="col-md-7" style={{minHeight: "600px", height: "100%"}}>
                 <Panel className="full-height">
-                    <div className="header">
-                        processes
-                    </div>
+                    <div className="header">processes</div>
                     <div className="fixed dashed-bottom" style={{height: 43}}>
                         <ProcessCreator />
                     </div>
@@ -225,11 +223,9 @@ export function TaskPage(props: any) {
             </div>
             
             <div className="col-md-5 col-collapsed-left">
-                {/*<AutoAffix viewportOffsetTop={15} container={this}>*/}
-                    <div>
-                        <Stats />
-                    </div>
-                {/*</AutoAffix>*/}
+                <div>
+                    <Stats />
+                </div>
             </div>
         </div>
     </div>
