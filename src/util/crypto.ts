@@ -105,14 +105,46 @@ export function decompressData(data: Uint8Array) {
 
 declare let require: (string) => any
 
-if (!TextEncoder) {
+let encoderShim = require("text-encoding")
+
+/*
+if (typeof TextEncoder === "undefined") {
     let encoding = require("text-encoding")
     TextEncoder = encoding.TextEncoder as typeof TextEncoder
     TextDecoder = encoding.TextDecoder as typeof TextDecoder
 }
+*/
 
-let encoder = new TextEncoder("utf-8")
-let decoder = new TextDecoder("utf-8")
+/*
+let encoder: TextEncoding.TextEncoder
+let decoder: TextEncoding.TextDecoder
+if (typeof TextEncoder === "undefined") {
+    encoder = (new encoderShim.TextEncoder("utf-8") as TextEncoding.TextEncoder)
+    decoder = (new encoderShim.TextDecoder("utf-8") as TextEncoding.TextDecoder)
+}
+else {
+    encoder = new TextEncoder("utf-8")
+    decoder = new TextDecoder("utf-8")
+}
+*/
+
+export function getTextEncoder() {
+    let encoder: TextEncoding.TextEncoder
+    let decoder: TextEncoding.TextDecoder
+    if (typeof TextEncoder === "undefined") {
+        encoder = (new encoderShim.TextEncoder("utf-8") as TextEncoding.TextEncoder)
+        decoder = (new encoderShim.TextDecoder("utf-8") as TextEncoding.TextDecoder)
+    }
+    else {
+        encoder = new TextEncoder("utf-8")
+        decoder = new TextDecoder("utf-8")
+    }
+    return {encoder, decoder}
+}
+
+let {encoder, decoder} = getTextEncoder()
+
+
 
 export function encrypt(key, iv, packet) {
     let encodedPacket = encoder.encode(JSON.stringify(packet))

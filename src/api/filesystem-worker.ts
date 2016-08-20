@@ -1,11 +1,13 @@
 import * as _ from "lodash"
 import {getHandler, toHex, base64toArray,arrayToBase64, arrayBufferToBase64, convertFromHex, wrapPostMessage} from "../util"
+import {getTextEncoder} from "../util/crypto"
 let pm = wrapPostMessage(postMessage)
 import CryptoJS = require("crypto-js")
 import asmCrypto = require("asmcrypto.js")
 let handle = getHandler(postMessage, addEventListener)
 let files: {[key: string]: FileSystemInfo.LoadedFile} = {}
 
+/*
 if (!TextEncoder) {
     let encoding = require("text-encoding")
     TextEncoder = encoding.TextEncoder as typeof TextEncoder
@@ -14,6 +16,8 @@ if (!TextEncoder) {
 
 let encoder = new TextEncoder("utf-8")
 let decoder = new TextDecoder("utf-8")
+*/
+let {encoder, decoder} = getTextEncoder()
 
 handle("requestFile", ({password, location, localLocation}) => {
     let req = new XMLHttpRequest()

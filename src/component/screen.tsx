@@ -69,6 +69,7 @@ class ScreenShare extends Component<{}, {
         })
         screenEvents.login.attach(() => {
             console.log("login")
+            this.bindKeys()
             tryUntil(() => !!this.state.screenWidth, () => {
                 console.log("try")
                 screenShareApi.requestFrame()
@@ -81,17 +82,23 @@ class ScreenShare extends Component<{}, {
                 screenHeight: 0,
                 hasFrame: false
             })
+            this.unbindKeys()
         })
+    }
+    bindKeys() {
         document.addEventListener("keydown", this.onKeyDown)
         document.addEventListener("keyup", this.onKeyUp)
+    }
+    unbindKeys() {
+        document.removeEventListener("keydown", this.onKeyDown)
+        document.removeEventListener("keyup", this.onKeyUp)
     }
     componentWillUnmount() {
         helpers.stopScreenShare()
         _.forOwn(screenEvents, (event) => {
             event.detach()
         })
-        document.removeEventListener("keydown", this.onKeyDown)
-        document.removeEventListener("keyup", this.onKeyUp)
+        this.unbindKeys()
     }
     cancelEvents(e: React.SyntheticEvent | Event) {
         e.preventDefault()

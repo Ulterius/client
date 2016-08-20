@@ -18,13 +18,14 @@ import {
     ab2str, 
     decompressData,
     encrypt,
-    decrypt
+    decrypt,
+    getTextEncoder
 } from "./util/crypto"
 
 declare let require: (string) => any
 
 let encoderShim = require("text-encoding")
-
+/*
 if (typeof TextEncoder === "undefined") {
     self["TextEncoder"] = encoderShim.TextEncoder as typeof TextEncoder
     self["TextDecoder"] = encoderShim.TextDecoder as typeof TextDecoder
@@ -32,6 +33,21 @@ if (typeof TextEncoder === "undefined") {
 
 let encoder = new TextEncoder("utf-8")
 let decoder = new TextDecoder("utf-8")
+*/
+
+/*
+let encoder: TextEncoding.TextEncoder
+let decoder: TextEncoding.TextDecoder
+if (typeof TextEncoder === "undefined") {
+    encoder = (new encoderShim.TextEncoder("utf-8") as TextEncoding.TextEncoder)
+    decoder = (new encoderShim.TextDecoder("utf-8") as TextEncoding.TextDecoder)
+}
+else {
+    encoder = new TextEncoder("utf-8")
+    decoder = new TextDecoder("utf-8")
+}
+*/
+let {encoder, decoder} = getTextEncoder()
 
 let pm = postMessage as (any) => void
 
