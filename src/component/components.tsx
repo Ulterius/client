@@ -251,17 +251,6 @@ export class EntryBox extends React.Component<
     }
 }
 
-/*
-export function LoadingScreen(props: {percentage?: number, children?: string}) {
-    return <div style={{width: "100%", height: "100%"}}>
-        <div style={{position: "absolute", top: "calc(50% - 20px)", left:"calc(50% - 60px)", height: 40, width: 120, textAlign: "center"}}>
-            <Bar value={props.percentage} color={false}/> <br />
-            {props.children}
-        </div>
-    </div>
-}
-*/
-
 export function LoadingScreen(props: {percentage?: number, children?: string}) {
     return <div style={{width: "100%", height: "100%"}}>
         <div style={{

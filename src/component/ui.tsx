@@ -171,6 +171,15 @@ export function Center(props: React.HTMLAttributes & {noHeight?: boolean}) {
     </div>
 }
 
+interface TabPanelState {
+    pages: React.ReactChild[],
+    currentPage: number
+}
+
+export class TabPanel extends Component<{}, TabPanelState> {
+    
+}
+
 /*
 export function ToggleSwitch({on, onClick, label, key}: ToggleSwitchProps) {
     function innerSwitch() {

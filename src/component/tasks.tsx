@@ -204,6 +204,7 @@ export class Task extends React.Component<
     }
 }
 
+
 export function TaskPage(props: any) {
     return <div className="task-page" style={{height: "100%"}}>
         <div className="row">
@@ -221,7 +222,6 @@ export function TaskPage(props: any) {
                     </div>
                 </Panel>
             </div>
-            
             <div className="col-md-5 col-collapsed-left">
                 <div>
                     <Stats />

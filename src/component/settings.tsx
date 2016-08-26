@@ -239,7 +239,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                 }
             })
         })
-        return <div className="fixed settings-body">
+        return <div className="flex settings-body">
             {body}
         </div>
     }
