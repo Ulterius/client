@@ -1,4 +1,6 @@
 # Ulterius Client
+
+[![Join the chat at https://gitter.im/Ulterius/client](https://badges.gitter.im/Ulterius/client.svg)](https://gitter.im/Ulterius/client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A web-based frontend for Ulterius Server. Written in Typescript using React, Alt and other assorted bits.
 
 <img alt="screenshot" src="screenshot/screen.png" />
