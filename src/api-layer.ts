@@ -142,7 +142,8 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
-        sendCommandToDefault("requestsysteminformation")
+        //sendCommandToDefault("requestsysteminformation")
+        cameraApi.getCameras()
         sendCommandToDefault("getCameras")
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
@@ -205,6 +206,7 @@ export function getCameras(cams: CameraInfos) {
     cameraActions.updateCameras(cams)
 }
 
+/*
 export function startCamera(status: CameraStatus.Started) {
     if (status.cameraRunning) {
         sendCommandToDefault("startCameraStream", status.cameraId)
@@ -230,6 +232,7 @@ export function stopCamera(status: CameraStatus.Stopped) {
         cameraActions.stopCameraStream(status.cameraId)
     }
 }
+*/
 
 /*
 export function getCameraFrame(frame: CameraFrame) {
@@ -239,7 +242,7 @@ export function getCameraFrame(frame: CameraFrame) {
 
 export function refreshCameras(status: CamerasRefreshed) {
     if (status.cameraFresh) {
-        sendCommandToDefault(getCameras)
+        sendCommandToDefault("getCameras")
     }
     messageActions.message({
         style: status.cameraFresh ? "success" : "danger", 

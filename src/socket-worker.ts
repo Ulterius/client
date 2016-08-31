@@ -24,7 +24,7 @@ import {
 
 declare let require: (string) => any
 
-let encoderShim = require("text-encoding")
+//let encoderShim = require("text-encoding")
 /*
 if (typeof TextEncoder === "undefined") {
     self["TextEncoder"] = encoderShim.TextEncoder as typeof TextEncoder

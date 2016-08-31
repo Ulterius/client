@@ -36,7 +36,7 @@ interface KeyPredicate {
     (key: string, message: any, connection: Connection): boolean
 }
 
-abstract class Connection {
+export abstract class Connection {
     keyCounter = 0
     useQueue: boolean = true
     requestQueue = []
@@ -128,6 +128,8 @@ abstract class Connection {
         if (this.isDefault)
             appActions.setHost({ host: "", port: "" })
     }
+
+    abstract send(action: string, ...rest: any[])
     
     promiseToSendPacket(packet, packetName: string = "unnamed") {
         let {logPackets, useQueue, requestQueue} = this
@@ -489,6 +491,7 @@ function defaultHandleMessage(message: ApiMessage) {
 
 class UlteriusConnection extends Connection {
     socketType = SocketType.Main
+    bindLegacy: boolean = true
     send(action, args?) {
         var packet: any = {
             endpoint: action.toLowerCase(),
@@ -576,7 +579,11 @@ class UlteriusConnection extends Connection {
             _.pull(this.requestQueue, packet)
         }
 
-        if (endpoint && (!synckey || (synckey as string).indexOf("override") == -1)) {
+        if (
+            endpoint && 
+            (!synckey || (synckey as string).indexOf("override") == -1) && 
+            this.bindLegacy
+        ) {
             defaultHandleMessage(message)
         }
         else {
@@ -676,6 +683,11 @@ screenConnection.useQueue = false
 export let mainConnection = new UlteriusConnection(2, true)
 mainConnection.logPackets = false
 mainConnection.useQueue = false
+
+export let alternativeConnection = new UlteriusConnection(2, false)
+alternativeConnection.bindLegacy = false
+alternativeConnection.useQueue = false
+alternativeConnection.logPackets = true
 
 window.onbeforeunload = () => {
     terminalConnection.disconnect()

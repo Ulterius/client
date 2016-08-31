@@ -176,8 +176,14 @@ interface TabPanelState {
     currentPage: number
 }
 
-export class TabPanel extends Component<{}, TabPanelState> {
+export function TabPage(props: React.HTMLAttributes & {title: string}) {
+    let {title} = props
+    let divProps = _.omit(props, "title")
     
+}
+
+export class TabPanel extends Component<{}, TabPanelState> {
+
 }
 
 /*

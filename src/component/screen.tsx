@@ -139,7 +139,7 @@ class ScreenShare extends Component<{}, {
             width={screenWidth || "500"}
             height={screenHeight || "500"}
             style={{width: "100%", height: "auto"}}
-            tabIndex="1"
+            tabIndex={1}
             ref={(ref) => {
                 this.canvas = ref
                 if (ref) {
