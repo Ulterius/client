@@ -78,11 +78,13 @@ export abstract class Connection {
     
     abstract onMessage(message?: any)
     
-    connect(host: string, port: string) {
+    connect(host: string, port: string, keepEncryption: boolean = false) {
         this.host = host
         this.port = port
         this.ofb = false
-        this.unencrypt()
+        if (!keepEncryption) {
+            this.unencrypt()
+        }
         if (this.socket) {
             this.socket.close()
         }
@@ -687,12 +689,13 @@ mainConnection.useQueue = false
 export let alternativeConnection = new UlteriusConnection(2, false)
 alternativeConnection.bindLegacy = false
 alternativeConnection.useQueue = false
-alternativeConnection.logPackets = true
+alternativeConnection.logPackets = false
 
 window.onbeforeunload = () => {
     terminalConnection.disconnect()
     screenConnection.disconnect()
     mainConnection.disconnect()
+    alternativeConnection.disconnect()
 }
 
 //let terminalConnection = new Connection()

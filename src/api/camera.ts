@@ -1,14 +1,11 @@
-import {Connection} from "../socket"
+import {Connection as C} from "../socket"
 import {isCameraFrame, endpointMatch} from "../util"
 import {decompressData} from "../util/crypto"
 import {cameraActions, messageActions} from "../action"
 
-export function register(mC: Connection) {
+export function register(mC: C, fC: C) {
     console.log("registering camera listeners")
-    mC.listenKeys<Connection>(endpointMatch, {
-        getCameras(cams: CameraInfos) {
-            cameraActions.updateCameras(cams)
-        },
+    fC.listenKeys(endpointMatch, {
         cameraFrame(frame: CameraFrame) {
             cameraActions.updateFrame({
                 cameraId: frame.cameraId, 
@@ -17,7 +14,7 @@ export function register(mC: Connection) {
         },
         startCamera(status: CameraStatus.Started) {
             if (status.cameraRunning) {
-                mC.send("startcamerastream", status.cameraId)
+                fC.send("startcamerastream", status.cameraId)
             }
         },
         startCameraStream(status: CameraStatus.StreamStarted) {
@@ -25,12 +22,26 @@ export function register(mC: Connection) {
                 cameraActions.startCameraStream(status.cameraId)
             }
         },
+    })
+    mC.listenKeys(endpointMatch, {
+        getCameras(cams: CameraInfos) {
+            cameraActions.updateCameras(cams)
+        },
+        /*
+        cameraFrame(frame: CameraFrame) {
+            cameraActions.updateFrame({
+                cameraId: frame.cameraId, 
+                URL: decompressData(new Uint8Array(frame.cameraData))
+            })
+        },
+        */
         stopCamera(status: CameraStatus.Stopped) {
             if (!status.cameraRunning) {
                 cameraActions.stopCameraStream(status.cameraId)
             }
         },
         refreshCameras(status: CamerasRefreshed) {
+            status = status as CamerasRefreshed
             if (status.cameraFresh) {
                 mC.send("getCameras")
             }
@@ -49,7 +60,7 @@ export function register(mC: Connection) {
     })
     return {
         startCamera(id: string) {
-            mC.send("startCamera", id)
+            fC.send("startCamera", id)
         },
         stopCamera(id: string) {
             mC.send("stopCamera", id)

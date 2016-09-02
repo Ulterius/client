@@ -14,7 +14,15 @@ import {
 from "./action"
 import {appStore, settingsStore} from "./store"
 import {loginEvents} from "./component"
-import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
+
+import {
+    sendCommandToDefault,
+    sendCommandAsync,
+    terminalConnection,
+    mainConnection,
+    alternativeConnection
+} from "./socket"
+
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
 import {generateKey} from "./util/crypto"
@@ -72,7 +80,7 @@ export let helpers = {
 }
 
 export let settingsApi = settings.register(mC)
-export let cameraApi = camera.register(mC)
+export let cameraApi = camera.register(mC, alternativeConnection)
 
 export let listeners: {[key: string]: Function[]} = {}
 
@@ -143,8 +151,7 @@ export function killProcess(process: KilledProcessInfo) {
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
         //sendCommandToDefault("requestsysteminformation")
-        cameraApi.getCameras()
-        sendCommandToDefault("getCameras")
+        //sendCommandToDefault("getCameras")
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
@@ -276,10 +283,12 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", window.localStorage.getItem(`${host}:password`))
         }
 
+        
 
         window.localStorage.setItem("last-host", host)
         window.localStorage.setItem("last-port", port)
-        
+
+        alternativeConnection.connect(host, "22010", true)
         let password
         if (password = appStore.getState().auth.password) {
             sendCommandToDefault("authenticate", password)
@@ -305,6 +314,7 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     let encIV = encrypt.encrypt(iv)
     */
     let {key, iv, encKey, encIV} = generateKey(results.publicKey)
+    alternativeConnection.encrypt(key, iv)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
     mainConnection.encrypt(key, iv)
     appActions.setKey(key, iv)

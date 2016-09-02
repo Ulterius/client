@@ -26,6 +26,8 @@ export class CameraPage extends React.Component<{}, CameraState> {
     componentDidMount() {
         this.setState(cameraStore.getState())
         cameraStore.listen(this.onChange)
+        setTimeout(() => api.getCameras(), 1000)
+        
     }
     componentWillUnmount() {
         cameraStore.unlisten(this.onChange)
