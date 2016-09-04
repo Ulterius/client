@@ -62,12 +62,15 @@ class ScreenShare extends Component<{}, {
             }
         })
         screenEvents.frameData.attach((data: FrameData) => {
+            console.log("frame data")
+            console.log(data)
+            console.log(data.screenBounds)
             this.setState({
-                screenWidth: data.Bounds.Right,
-                screenHeight: data.Bounds.Bottom
+                screenWidth: data.screenBounds.right,
+                screenHeight: data.screenBounds.bottom
             })
         })
-        screenEvents.login.attach(() => {
+        screenEvents.start.attach(() => {
             console.log("login")
             this.bindKeys()
             tryUntil(() => !!this.state.screenWidth, () => {
@@ -94,7 +97,7 @@ class ScreenShare extends Component<{}, {
         document.removeEventListener("keyup", this.onKeyUp)
     }
     componentWillUnmount() {
-        helpers.stopScreenShare()
+        screenShareApi.disconnect()
         _.forOwn(screenEvents, (event) => {
             event.detach()
         })
@@ -139,7 +142,7 @@ class ScreenShare extends Component<{}, {
             width={screenWidth || "500"}
             height={screenHeight || "500"}
             style={{width: "100%", height: "auto"}}
-            tabIndex="1"
+            tabIndex={1}
             ref={(ref) => {
                 this.canvas = ref
                 if (ref) {
@@ -179,7 +182,9 @@ class ScreenShare extends Component<{}, {
             return <div className="proxima-nova-14">
                 Connected &nbsp; 
                 <span style={{color: "green"}} className="glyphicon glyphicon-record"/>
-                <button className="text-button" onClick={helpers.stopScreenShare}>disconnect</button>
+                <button className="text-button" onClick={screenShareApi.disconnect}>
+                    disconnect
+                </button>
             </div>
         }
          return <div className="proxima-nova-14">
@@ -193,7 +198,7 @@ class ScreenShare extends Component<{}, {
         return <Center noHeight style={{flexGrow: 1}}>
             <p>Not connected to Screen Share.</p>
             <button className="btn btn-primary text-button" onClick={() => {
-                helpers.startScreenShare(screenShareApi.login)
+                screenShareApi.start()
             }}>Connect</button>
         </Center>
     }

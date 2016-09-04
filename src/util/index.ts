@@ -433,3 +433,7 @@ export function ifEnter(callback: (e: React.KeyboardEvent) => any) {
         }
     }
 }
+
+export function split(whole: {[key: string]: any}) {
+    
+}

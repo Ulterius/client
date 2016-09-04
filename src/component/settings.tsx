@@ -86,9 +86,10 @@ export class SettingsPage extends React.Component<{}, {
         }
     }
     finalizeSettings = () => {
+        /*
         _.forIn(this.state.newSettings, (v, k) => {
             settingsApi.changeSetting({k: v})
-        })
+        }) */
     }
     render() {
         if (!this.state.currentSettings) {
@@ -147,8 +148,11 @@ let settingNames = {
     VncProxyPort: "VNC server proxy port",
     VncPass: "VNC password",
     AllowTerminal: "Enable Terminal",
-    ScreenSharePort: "Screen Share Port",
-    ScreenSharePass: "Screen Share Password"
+    TerminalPort: "Terminal Port",
+    UseWebcams: "Enable Webcams",
+    UpnpEnabled: "Enable UPNP",
+    WebcamPort: "Webcam Streaming Port",
+    ScreenSharePort: "Screen Share Port"
 }
 
 interface ModalSettingsProps {
@@ -181,9 +185,20 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
         this.setState({store})
     }
     finalizeSettings = () => {
+        let entireNewSettings = _.assign({}, this.state.store.settings)
+        _.forOwn(entireNewSettings, (category, categoryName) => {
+            _.forOwn(this.state.newSettings, (newValue, newName) => {
+                if (_.some(_.keys(category), (settingName) => settingName == newName)) {
+                    category[newName] = newValue
+                }
+            })
+        })
+        console.log(entireNewSettings)
+        settingsApi.changeSettings(entireNewSettings)
+        /*
         _.forIn(this.state.newSettings, (v, k) => {
             settingsApi.changeSetting({[k]: v})
-        })
+        }) */
         this.setState({newSettings: {}})
     }
     restart = () => {
@@ -207,6 +222,8 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
             _.omit(s.TaskServer, "Encryption"),
             _.omit(s.Network, "BindLocal"),
             s.WebServer,
+            s.Webcams,
+            s.Terminal,
             s.ScreenShareService
         ]
         let body = []

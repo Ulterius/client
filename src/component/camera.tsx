@@ -1,7 +1,7 @@
 import {cameraStore, CameraState, cameraUtil as cu} from "../store/camera-store"
 import {Button, ButtonToolbar, Glyphicon} from "react-bootstrap"
 import {sendCommandToDefault as sendCommand, sendCommandAsync} from "../socket"
-import {helpers as api} from "../api-layer"
+import {cameraApi as api} from "../api-layer"
 import React = require("react")
 import * as _ from "lodash"
 import {SortablePane, Pane} from "react-sortable-pane"
@@ -26,6 +26,8 @@ export class CameraPage extends React.Component<{}, CameraState> {
     componentDidMount() {
         this.setState(cameraStore.getState())
         cameraStore.listen(this.onChange)
+        setTimeout(() => api.getCameras(), 1000)
+        
     }
     componentWillUnmount() {
         cameraStore.unlisten(this.onChange)
@@ -42,7 +44,8 @@ export class CameraPage extends React.Component<{}, CameraState> {
                 //sendCommandAsync("stopCamera", id, () => {})
             })
             */
-            sendCommand("stopCamera", id)
+            api.stopCamera(id)
+            //sendCommand("stopCamera", id)
         }
         else {
             api.startCamera(id)
@@ -53,7 +56,8 @@ export class CameraPage extends React.Component<{}, CameraState> {
     }
     refresh = () => {
         if (this.state.activeCameras.length == 0) {
-            sendCommand("refreshCameras")
+            api.refreshCameras()
+            //sendCommand("refreshCameras")
         }
     }
     getButtonStyle(id: string) {

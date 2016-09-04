@@ -26,10 +26,12 @@ export function register(mC: typeof _mainConnection) {
         getCurrentSettings() {
             mC.send("getCurrentSettings")
         },
-        changeSetting(newSettings) {
+        changeSettings(newSettings) {
+            mC.send("savesettings", btoa(JSON.stringify(newSettings, null, 2)))
+            /*
             _.forOwn(newSettings, (v, k) => {
                 mC.send(getEndpoint(k), v)
-            })
+            }) */
         },
         restartServer() {
             mC.send("restartServer")

@@ -14,7 +14,16 @@ import {
 from "./action"
 import {appStore, settingsStore} from "./store"
 import {loginEvents} from "./component"
-import {sendCommandToDefault, sendCommandAsync, terminalConnection, mainConnection} from "./socket"
+
+import {
+    sendCommandToDefault,
+    sendCommandAsync,
+    terminalConnection,
+    mainConnection,
+    alternativeConnection,
+    screenConnection
+} from "./socket"
+
 import setIntervals from "./interval"
 import {generateHexString} from "./util"
 import {generateKey} from "./util/crypto"
@@ -57,7 +66,8 @@ export let helpers = {
             console.log(msgg)
             let {host, port} = appStore.getState().connection
             let screenPort = settingsStore.getState().settings.ScreenShareService.ScreenSharePort
-            screen.initialize(host, String(screenPort))
+            
+            //screen.initialize(host, String(screenPort))
         })
     },
     stopScreenShare() {
@@ -72,7 +82,7 @@ export let helpers = {
 }
 
 export let settingsApi = settings.register(mC)
-export let cameraApi = camera.register(mC)
+export let cameraApi = camera.register(mC, alternativeConnection)
 
 export let listeners: {[key: string]: Function[]} = {}
 
@@ -142,8 +152,8 @@ export function killProcess(process: KilledProcessInfo) {
 
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
-        sendCommandToDefault("requestsysteminformation")
-        sendCommandToDefault("getCameras")
+        //sendCommandToDefault("requestsysteminformation")
+        //sendCommandToDefault("getCameras")
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
@@ -205,6 +215,7 @@ export function getCameras(cams: CameraInfos) {
     cameraActions.updateCameras(cams)
 }
 
+/*
 export function startCamera(status: CameraStatus.Started) {
     if (status.cameraRunning) {
         sendCommandToDefault("startCameraStream", status.cameraId)
@@ -230,6 +241,7 @@ export function stopCamera(status: CameraStatus.Stopped) {
         cameraActions.stopCameraStream(status.cameraId)
     }
 }
+*/
 
 /*
 export function getCameraFrame(frame: CameraFrame) {
@@ -239,7 +251,7 @@ export function getCameraFrame(frame: CameraFrame) {
 
 export function refreshCameras(status: CamerasRefreshed) {
     if (status.cameraFresh) {
-        sendCommandToDefault(getCameras)
+        sendCommandToDefault("getCameras")
     }
     messageActions.message({
         style: status.cameraFresh ? "success" : "danger", 
@@ -273,9 +285,22 @@ export function aesHandshake(status: {shook: boolean}) {
             sendCommandToDefault("authenticate", window.localStorage.getItem(`${host}:password`))
         }
 
+        
 
         window.localStorage.setItem("last-host", host)
         window.localStorage.setItem("last-port", port)
+        mC.sendAsync("listPorts", (ports: SettingsInfo.Ports) => {
+            alternativeConnection.connect(
+                host, 
+                String(ports.webcamPort), 
+                true
+            )
+            screenConnection.connect(
+                host, 
+                String(ports.screenSharePort), 
+                true
+            )
+        })
         
         let password
         if (password = appStore.getState().auth.password) {
@@ -302,6 +327,8 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     let encIV = encrypt.encrypt(iv)
     */
     let {key, iv, encKey, encIV} = generateKey(results.publicKey)
+    alternativeConnection.encrypt(key, iv)
+    screenConnection.encrypt(key, iv)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
     mainConnection.encrypt(key, iv)
     appActions.setKey(key, iv)

@@ -19,12 +19,15 @@ import {
     decompressData,
     encrypt,
     decrypt,
-    getTextEncoder
+    getTextEncoder,
+    unpackPacket,
+    unpackFrameData,
+    decodeJSON
 } from "./util/crypto"
 
 declare let require: (string) => any
 
-let encoderShim = require("text-encoding")
+//let encoderShim = require("text-encoding")
 /*
 if (typeof TextEncoder === "undefined") {
     self["TextEncoder"] = encoderShim.TextEncoder as typeof TextEncoder
@@ -66,12 +69,22 @@ handle("deserialize", ({key, iv, ofb, data, type}: DeserializeArgs) => {
         return JSON.parse(data)
     }
 
-    let ret
+    let ret = {} as any
     try {
         ret = JSON.parse(data)
     }
     catch (err) {
-        ret = decrypt(key, iv, data, type, ofb)
+        let dataArray = new Uint8Array(data)
+        let {encryptionMode, endpoint, body} = unpackPacket(dataArray)
+        let decryptedBody = decrypt(key, iv, body, type, encryptionMode)
+        
+        if (endpoint == "screensharedata") {
+            ret.results = unpackFrameData(decryptedBody)
+        }
+        else {
+            ret = decodeJSON(decryptedBody)
+        }
+        ret.endpoint = endpoint
     }
     return ret
 })
