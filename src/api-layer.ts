@@ -20,7 +20,8 @@ import {
     sendCommandAsync,
     terminalConnection,
     mainConnection,
-    alternativeConnection
+    alternativeConnection,
+    screenConnection
 } from "./socket"
 
 import setIntervals from "./interval"
@@ -65,7 +66,8 @@ export let helpers = {
             console.log(msgg)
             let {host, port} = appStore.getState().connection
             let screenPort = settingsStore.getState().settings.ScreenShareService.ScreenSharePort
-            screen.initialize(host, String(screenPort))
+            
+            //screen.initialize(host, String(screenPort))
         })
     },
     stopScreenShare() {
@@ -287,8 +289,19 @@ export function aesHandshake(status: {shook: boolean}) {
 
         window.localStorage.setItem("last-host", host)
         window.localStorage.setItem("last-port", port)
-
-        alternativeConnection.connect(host, "22010", true)
+        mC.sendAsync("listPorts", (ports: SettingsInfo.Ports) => {
+            alternativeConnection.connect(
+                host, 
+                String(ports.webcamPort), 
+                true
+            )
+            screenConnection.connect(
+                host, 
+                String(ports.screenSharePort), 
+                true
+            )
+        })
+        
         let password
         if (password = appStore.getState().auth.password) {
             sendCommandToDefault("authenticate", password)
@@ -315,6 +328,7 @@ export function connectedToUlterius(results: {message: string, publicKey: string
     */
     let {key, iv, encKey, encIV} = generateKey(results.publicKey)
     alternativeConnection.encrypt(key, iv)
+    screenConnection.encrypt(key, iv)
     sendCommandToDefault("aesHandshake", [encKey, encIV])
     mainConnection.encrypt(key, iv)
     appActions.setKey(key, iv)

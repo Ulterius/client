@@ -157,17 +157,18 @@ export function encrypt(key, iv, packet) {
     return encryptedPacket
 }
 
-export function decrypt(key, iv, data, type, ofb?) {
+export function decrypt(key, iv, data, type, encryptionMode) {
     let decrypted
     let [encKey, encIv] = [encoder.encode(key), encoder.encode(iv)]
 
-    if (ofb) {
+    if (encryptionMode.toLowerCase() == "ofb") {
         decrypted = asmCrypto.AES_OFB.decrypt(data, encKey, encIv)
     }
     else {
         decrypted = asmCrypto.AES_CBC.decrypt(data, encKey, true, encIv)
     }
-    
+    return decrypted
+    /*
     let decoded = decoder.decode(decrypted)
     let ret
     try {
@@ -195,10 +196,23 @@ export function decrypt(key, iv, data, type, ofb?) {
                 console.log(fuckingError)
                 ret = new Uint8Array([])
             }
-            
         }
     }
     return ret
+    */
+}
+
+export function decodeJSON(data: Uint8Array) {
+    return JSON.parse(decoder.decode(data))
+}
+
+export function unpackPacket(data: Uint8Array) {
+    let v = new jDataView(data, 0, data.length, true)
+    let epLen = v.getInt32()
+    let endpoint = v.getString(epLen)
+    let encryptionMode = v.getString(3)
+    let body = data.subarray(4 + epLen + 3)
+    return {endpoint, encryptionMode, body}
 }
 
 export function unpackFrameData(data: Uint8Array) {

@@ -42,6 +42,7 @@ export abstract class Connection {
     requestQueue = []
     socket: WebSocket
     socketPool: WorkerPool
+    reconnect: boolean = true
     reconnectInterval = undefined
     callbacks: {[key: string]: Function} = {}
     listeners: {
@@ -67,6 +68,7 @@ export abstract class Connection {
     iv: string = undefined
     socketType: SocketType
     disconnecting: boolean = false
+    connectResolve: Function
     
     constructor(public poolSize = 3, public isDefault: boolean = false) {
 
@@ -94,7 +96,13 @@ export abstract class Connection {
             this.socketPool = new WorkerPool(SocketWorker, this.poolSize)
             this.setWorkerEvents()
         }
-        
+
+        let connectReject
+        let connectPromise = new Promise((resolve, reject) => {
+            connectReject = reject
+            this.connectResolve = resolve
+        })
+
         try {
             this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
             this.socket.binaryType = "arraybuffer"
@@ -107,7 +115,9 @@ export abstract class Connection {
         }
         catch (e) {
             console.log("Failed to connect.")
+            connectReject("Failed to connect.")
         }
+        return connectPromise
         
     }
 
@@ -135,6 +145,7 @@ export abstract class Connection {
     
     promiseToSendPacket(packet, packetName: string = "unnamed") {
         let {logPackets, useQueue, requestQueue} = this
+        /*
         if (logPackets) {
             console.groupCollapsed("Queueing packet: " + packetName)
             console.log(packet)
@@ -154,8 +165,8 @@ export abstract class Connection {
                 console.log("Queue disabled, Sending Packet: " + packetName)
             this.sendPacket(packet, packetName)
         }
-        if (logPackets)
-            console.groupEnd()
+        */
+        this.sendPacket(packet, packetName)
     }
     
     sendPacket(packet, packetName: string = "unnamed") {
@@ -167,7 +178,6 @@ export abstract class Connection {
             console.groupEnd()
             console.groupCollapsed("Sending packet: " + packetName)
             console.log(packet)
-            console.log("Waiting messages: " + requestQueue.length)
             console.groupEnd()
         }
         this.serialize(packet)
@@ -316,6 +326,7 @@ export abstract class Connection {
                 if (socket.readyState === 1 && isDefault) {
                     appActions.setHost({host, port})
                 }
+                this.connectResolve()
             }
             socket.onmessage = (e) => {
                 const {key, iv, ofb} = this
@@ -331,6 +342,7 @@ export abstract class Connection {
                 if (
                     !this.disconnecting && 
                     e.code !== 1000 && 
+                    this.reconnect &&
                     this.reconnectInterval === undefined && 
                     appStore.getState().connection.host
                 ) {
@@ -469,10 +481,14 @@ export abstract class Connection {
 function defaultHandleMessage(message: ApiMessage) {
     let caught = false
     for (let endpoint of Object.keys(apiLayer)) {
+        /*
+        let handler = apiLayer[_.find(Object.keys(apiLayer), fn => {
+            return fn == endpoint
+        })]
+        */
         if (message.endpoint &&
             message.endpoint.toLowerCase() == endpoint.toLowerCase() &&
             typeof apiLayer[endpoint] == "function") {
-
             apiLayer[endpoint](message.results)
             caught = true
         }
@@ -490,6 +506,26 @@ function defaultHandleMessage(message: ApiMessage) {
     */
 }
 
+function endpointSendFn(
+    getSyncKey: () => string,
+    sendPacket: (packet: any, endpoint: string) => any
+) {
+    return function (action: string, args?) {
+        let packet: any = {
+            endpoint: action.toLowerCase(),
+            synckey: getSyncKey()
+        }
+        if (typeof args !== "undefined") {
+            if (args instanceof Array) {
+                packet.args = args
+            }
+            else {
+                packet.args = [args]
+            }
+        }
+        sendPacket(packet, packet.endpoint)
+    }
+}
 
 class UlteriusConnection extends Connection {
     socketType = SocketType.Main
@@ -553,10 +589,12 @@ class UlteriusConnection extends Connection {
         } = this
 
         let {synckey, results, endpoint} = message
+        /*
         if (endpoint && endpoint.toLowerCase() == "connectedtoulterius") {
             this.requestQueue = []
             //flush it all
         }
+        */
         let packet = _.find(this.requestQueue, (m: any) => m.synckey == synckey ||
             (endpoint && endpoint.toLowerCase() == "aeshandshake" &&
                 m.endpoint.toLowerCase() == "aeshandshake"))
@@ -632,11 +670,17 @@ class TerminalConnection extends Connection {
 }
 
 class ScreenShareConnection extends Connection {
-    loggedIn: boolean = false
+    loggedIn: boolean = true
     socketType = SocketType.ScreenShare
     send(packet: any) {
         this.promiseToSendPacket(packet, "ScreenShare")
     }
+    callEndpoint = endpointSendFn(
+        () => null,
+        (packet, endpoint) => {
+            this.promiseToSendPacket(packet, endpoint)
+        }
+    )
     sendMessage(action: string, args?) {
         var packet: any = {
             endpoint: action.toLowerCase(),
@@ -663,33 +707,45 @@ class ScreenShareConnection extends Connection {
         this.promiseToSendPacket(packet, packet.Action)
     }
     onConnect() {
-        this.loggedIn = false
+        this.loggedIn = true
     }
     onMessage(message: any) {
         this.requestQueue = []
+        console.log(message)
         if (message.endpoint == "login")
             console.log(message)
         if (message.endpoint == "login" && message.results.loggedIn) {
             this.loggedIn = true
         }
     }
+    messageFilter(message) {
+        return message.results
+    }
 }
 
-export let terminalConnection = new TerminalConnection(0, false)
+export let terminalConnection = new TerminalConnection(1, false)
 terminalConnection.logPackets = false
 
 export let screenConnection = new ScreenShareConnection(3, false)
-screenConnection.logPackets = false
-screenConnection.useQueue = false
+_.assign(screenConnection, {
+    logPackets: true,
+    useQueue: false,
+    reconnect: false
+})
 
 export let mainConnection = new UlteriusConnection(2, true)
-mainConnection.logPackets = false
-mainConnection.useQueue = false
+_.assign(mainConnection, {
+    logPackets: true,
+    useQueue: false
+})
 
 export let alternativeConnection = new UlteriusConnection(2, false)
-alternativeConnection.bindLegacy = false
-alternativeConnection.useQueue = false
-alternativeConnection.logPackets = false
+_.assign(alternativeConnection, {
+    bindLegacy: false,
+    useQueue: false,
+    logPackets: false,
+    reconnect: false
+})
 
 window.onbeforeunload = () => {
     terminalConnection.disconnect()

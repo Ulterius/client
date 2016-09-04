@@ -417,6 +417,7 @@ declare namespace SettingsInfo {
 
     interface Network {
         BindLocal: boolean,
+        UpnpEnabled: boolean,
         SkipHostNameResolve: boolean
     }
 
@@ -425,7 +426,6 @@ declare namespace SettingsInfo {
     }
 
     interface ScreenShare {
-        ScreenSharePass: string,
         ScreenSharePort: number
     }
 
@@ -435,13 +435,27 @@ declare namespace SettingsInfo {
     }
 
     interface Terminal {
-        AllowTerminal: boolean
+        AllowTerminal: boolean,
+        TerminalPort: number
     }
 
     interface WebServer {
         ToggleWebServer: boolean,
         WebFilePath: string,
         WebServerPort: number
+    }
+
+    interface Webcams {
+        UseWebcams: boolean,
+        WebcamPort: number
+    }
+
+    interface Ports {
+        webServerPort: number,
+        apiPort: number,
+        webcamPort: number,
+        terminalPort: number,
+        screenSharePort: number
     }
 
     interface All {
@@ -452,7 +466,8 @@ declare namespace SettingsInfo {
         ScreenShareService: ScreenShare,
         TaskServer: TaskServer,
         Terminal: Terminal,
-        WebServer: WebServer
+        WebServer: WebServer,
+        Webcams: Webcams
     }
 }
 
@@ -661,15 +676,15 @@ declare interface ScreenTile {
 }
 
 declare interface FrameData {
-    Bounds: {
-        Top: number,
-        Bottom: number,
-        Left: number,
-        Right: number,
-        X: number,
-        Y: number,
-        Height: number,
-        IsEmpty: boolean,
+    screenBounds: {
+        top: number,
+        bottom: number,
+        left: number,
+        right: number,
+        x: number,
+        y: number,
+        height: number,
+        isEmpty: boolean,
     },
     frameData: number[]
 }
