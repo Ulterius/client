@@ -297,7 +297,7 @@ export function aesHandshake(status: {shook: boolean}) {
             )
             screenConnection.connect(
                 host, 
-                String(ports.screenSharePort), 
+                String(ports.screenSharePort),
                 true
             )
         })

@@ -169,7 +169,7 @@ export class Task extends React.Component<
                         <img src={"data:image/png;base64," + this.props.info.Icon} />
                     </td>
                     <td className="task-name">
-                        {this.props.info.Name}
+                        {this.props.info.Name.slice(0, 30)}
                     </td>
                     <td className="task-id" style={{width: 20}}>
                         {this.props.info.Id}

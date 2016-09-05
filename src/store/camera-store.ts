@@ -5,6 +5,7 @@ import * as _ from "lodash"
 
 export interface CameraState {
     cameras: CameraInfo[], 
+    noCameras: boolean,
     activeCameras: CameraImage[]
 }
 
@@ -26,6 +27,7 @@ export let cameraUtil = function(state: CameraState) {
 class CameraStore extends AbstractStoreModel<CameraState> {
     cameras: CameraInfo[] = []
     activeCameras: CameraImage[] = []
+    noCameras: boolean = false
     constructor() {
         super()
         this.bindListeners({
@@ -42,6 +44,9 @@ class CameraStore extends AbstractStoreModel<CameraState> {
     
     handleUpdateCameras(cams: CameraInfo[]) {
         this.cameras = cams
+        if (cams.length == 0) {
+            this.noCameras = true
+        }
     }
     
     handleStartCameraStream(id: string) {

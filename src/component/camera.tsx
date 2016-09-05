@@ -5,7 +5,7 @@ import {cameraApi as api} from "../api-layer"
 import React = require("react")
 import * as _ from "lodash"
 import {SortablePane, Pane} from "react-sortable-pane"
-import {DragGroup, DragElement, Center} from "./"
+import {DragGroup, DragElement, Center, Spinner} from "./"
 import classNames = require("classnames")
 
 const style = {
@@ -93,7 +93,7 @@ export class CameraPage extends React.Component<{}, CameraState> {
     }
     emptyPage() {
         return <Center className="camera-page">
-            No cameras found.
+            {this.state.noCameras ? "No cameras found.": <Spinner dark />}
         </Center>
         /*
         return <div className="camera-page center-parent">

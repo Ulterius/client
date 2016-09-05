@@ -69,6 +69,7 @@ export abstract class Connection {
     socketType: SocketType
     disconnecting: boolean = false
     connectResolve: Function
+    path: string = ""
     
     constructor(public poolSize = 3, public isDefault: boolean = false) {
 
@@ -104,7 +105,7 @@ export abstract class Connection {
         })
 
         try {
-            this.socket = new WebSocket(`ws://${this.host}:${this.port}`)
+            this.socket = new WebSocket(`ws://${this.host}:${this.port}/${this.path}`)
             this.socket.binaryType = "arraybuffer"
             console.log(this.socket)
             if (this.socket) {
@@ -724,10 +725,14 @@ class ScreenShareConnection extends Connection {
 }
 
 export let terminalConnection = new TerminalConnection(1, false)
-terminalConnection.logPackets = false
+_.assign(terminalConnection, {
+    path: "terminal",
+    logPackets: false
+})
 
 export let screenConnection = new ScreenShareConnection(3, false)
 _.assign(screenConnection, {
+    path: "screenshare",
     logPackets: true,
     useQueue: false,
     reconnect: false
@@ -735,12 +740,14 @@ _.assign(screenConnection, {
 
 export let mainConnection = new UlteriusConnection(2, true)
 _.assign(mainConnection, {
-    logPackets: true,
+    path: "api",
+    logPackets: false,
     useQueue: false
 })
 
 export let alternativeConnection = new UlteriusConnection(2, false)
 _.assign(alternativeConnection, {
+    path: "webcam",
     bindLegacy: false,
     useQueue: false,
     logPackets: false,
