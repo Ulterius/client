@@ -14,16 +14,32 @@ class InputEntry extends React.Component<{
     invisible?: boolean
 }, {}> {
     inputElement: HTMLSpanElement
+    componentDidMount() {
+        
+    }
     render() {
         const {onChange, onEntry} = this.props
-        let style = {outline: "none"}
+        let style = {
+            outline: "none",
+            "-moz-user-select": "text",
+            "-khtml-user-select": "text",
+            "-webkit-user-select": "text",
+            "-o-user-select": "text",
+            paddingLeft: 3,
+            paddingRight: 3
+        }
         if (this.props.invisible) {
             style["opacity"] = "0"
         }
         return <span
             contentEditable
             style={style}
-            ref={ref => this.inputElement = ref}
+            ref={ref => {
+                if (ref != null) {
+                    //ref.innerText = "&nbsp;"
+                }
+                this.inputElement = ref
+            }}
             onInput={e => {
                 let ea = e as any
                 onChange && onChange(ea.target.innerText)
@@ -43,17 +59,18 @@ const terminalStyle: React.CSSProperties = {
     backgroundColor: "black",
     color: "white",
     padding: 10,
-    fontFamily: "monospace",
+    fontFamily: "menlo, monaco, consolas, monospace",
     height: "100%",
     lineHeight: "10px",
-    overflow: "auto"
+    overflow: "auto",
+    fontSize: "14px"
 }
 
 const inputStyle: React.CSSProperties = {
     border: "none",
     backgroundColor: "black",
     color: "white",
-    fontFamily: "monospace",
+    fontFamily: "menlo, monaco, consolas, monospace",
     outline: "none"
 }
 
