@@ -224,8 +224,12 @@
     font-family: Menlo, Monaco, Consolas, Monospace;
     height: 100%;
     line-height: 10px;
-    overflow: auto;
+    overflow-y: auto;
     font-size: 14px;
+    pre {
+        white-space: pre-wrap;
+        word-break: normal;
+    }
     .input-line {
         border: none;
         background-color: $terminal-bg;
