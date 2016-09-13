@@ -1,8 +1,10 @@
 import React = require("react")
 import * as _ from "lodash"
+import {omit, isEmpty, values, without, keys, concat} from "lodash"
 import {terminalStore, TerminalState, FullTerminal} from "../store"
 import {terminalActions} from "../action"
 import {terminalApi} from "../api-layer"
+import {TabPanel, TabPage, Center, EntryBox, Spinner} from "./"
 
 export function TerminalPage() {
     return <Terminal />
@@ -21,10 +23,10 @@ class InputEntry extends React.Component<{
         const {onChange, onEntry} = this.props
         let style = {
             outline: "none",
-            "-moz-user-select": "text",
-            "-khtml-user-select": "text",
-            "-webkit-user-select": "text",
-            "-o-user-select": "text",
+            MozUserSelect: "text",
+            KhtmlUserSelect: "text",
+            WebkitUserSelect: "text",
+            OUserSelect: "text",
             paddingLeft: 3,
             paddingRight: 3
         }
@@ -55,41 +57,37 @@ class InputEntry extends React.Component<{
     }
 }
 
-const terminalStyle: React.CSSProperties = {
-    backgroundColor: "black",
-    color: "white",
-    padding: 10,
-    fontFamily: "menlo, monaco, consolas, monospace",
-    height: "100%",
-    lineHeight: "10px",
-    overflow: "auto",
-    fontSize: "14px"
-}
-
-const inputStyle: React.CSSProperties = {
-    border: "none",
-    backgroundColor: "black",
-    color: "white",
-    fontFamily: "menlo, monaco, consolas, monospace",
-    outline: "none"
-}
-
 interface TermComponentState {
-    store?: TerminalState
+    store?: TerminalState,
+    activeTerminal?: number,
+    newTerminalPending?: boolean
 }
 
 export class Terminal extends React.Component<{}, TermComponentState> {
     terminalElement: HTMLDivElement
     constructor(props, context) {
         super(props, context)
-        this.state = {}
+        this.state = {
+            activeTerminal: 0,
+            newTerminalPending: true,
+        }
+        this.state.store = terminalStore.getState()
     }
-    componentWillMount() {
+    componentDidMount() {
         this.setStore(terminalStore.getState())
         terminalStore.listen(this.setStore)
     }
     componentWillUnmount() {
         terminalStore.unlisten(this.setStore)
+    }
+    inRealTerminal() {
+        return !!(this.state.store && this.state.store.orderedTerminals[this.state.activeTerminal])
+    }
+    currentTerminal() {
+        return this.state.store.orderedTerminals[this.state.activeTerminal]
+    }
+    terminalIn(terminal: FullTerminal, terminals: FullTerminal[]) {
+        return terminals.some(t => t.descriptor.id === terminal.descriptor.id)
     }
     setStore = (store: TerminalState) => {
         this.setState({store})
@@ -106,42 +104,166 @@ export class Terminal extends React.Component<{}, TermComponentState> {
     isIndexSensitive(terminal: FullTerminal, index: number) {
         return terminal.lines[index] && terminal.lines[index].sensitive
     }
-    render() {
-        const {terminals} = this.state.store
-        return <div style={{height: "100%"}}>
-            {/*JSON.stringify(this.state.store)*/}
-            <div style={terminalStyle} ref={ref => {
+    newTerminal() {
+        let {waitingForNewTerminal} = this.state.store
+        let newTerminalContent
+        if (waitingForNewTerminal) {
+            newTerminalContent = <div className="new-terminal">
+                <Spinner />
+            </div>
+        }
+        else {
+            newTerminalContent = <div className="new-terminal">
+                <h2>Create New Terminal</h2>
+                <datalist id="shells">
+                    <option value="cmd.exe" />
+                    <option value="powershell" />
+                </datalist>
+                <EntryBox 
+                    onConfirmation={text => {
+                        this.setState({newTerminalPending: false})
+                        terminalApi.create(text)
+                    }}
+                    placeholder="Enter shell executable..."
+                    glyph="chevron-right"
+                    list="shells"
+                />
+            </div>
+        }
+        return <div className="pseudo-terminal">
+            <Center>
+                {newTerminalContent}
+            </Center>
+        </div>
+    }
+    getTerminalElement(terminalIndex: number) {
+        const emptyTerminal: FullTerminal = {
+            lines: [{
+                correlationId: 0, 
+                sensitive: false, 
+                output: "Please wait..."
+            }], 
+            endOfCommand: false, 
+            descriptor: {
+                id: "", 
+                terminalType: "", 
+                currentPath: ""
+            }
+        }
+        let {orderedTerminals} = this.state.store
+        //const terminal = this.state.store.orderedTerminals[terminalIndex] || emptyTerminal
+        
+        let displayTerminal
+        if (orderedTerminals[terminalIndex]) {
+            const terminal = orderedTerminals[terminalIndex]
+            displayTerminal = <div className="terminal" ref={ref => {
                 this.terminalElement = ref
                 if (this.terminalElement) {
                     this.terminalElement.scrollTop = this.terminalElement.scrollHeight
                 }
             }}>
-                {_.map(terminals, (terminal, id) => {
-                    return terminal.lines.map((line, lineNo) => {
+                {terminal.lines.map((line, lineNo) => {
                         return <pre 
                             key={lineNo} 
                         >
                             {this.isIndexSensitive(terminal, lineNo-1) ? " " : line.output}
                         </pre>
                     })
-                })}
-                {_.map(terminals, (terminal, id) => {
-                    return <p>
-                        {terminal.endOfCommand ? terminal.descriptor.currentPath +">": null}
-                        <InputEntry
-                            invisible={this.isHidden(terminal)}
-                            onEntry={text => {
-                                terminalActions.output({
-                                    terminalId: terminal.descriptor.id, 
-                                    output: terminal.descriptor.currentPath + ">" + text,
-                                })
-                                terminalApi.send(text, terminal.descriptor.id)
-                            }} 
-                        />
-                    </p>
-                })}
+                }
+                <p>
+                    {terminal.endOfCommand ? terminal.descriptor.currentPath +">": null}
+                    <InputEntry
+                        invisible={this.isHidden(terminal)}
+                        onEntry={text => {
+                            terminalActions.output({
+                                terminalId: terminal.descriptor.id, 
+                                output: terminal.descriptor.currentPath + ">" + text,
+                            })
+                            terminalApi.send(text, terminal.descriptor.id)
+                        }} 
+                    />
+                </p>
             </div>
+        }
+        else {
+            displayTerminal = this.newTerminal()
+        }
+
+        return displayTerminal
+        /*
+        return <div style={terminalStyle} ref={ref => {
+            this.terminalElement = ref
+            if (this.terminalElement) {
+                this.terminalElement.scrollTop = this.terminalElement.scrollHeight
+            }
+        }}>
+            {_.map(terminals, (terminal, id) => {
+                return terminal.lines.map((line, lineNo) => {
+                    return <pre 
+                        key={lineNo} 
+                    >
+                        {this.isIndexSensitive(terminal, lineNo-1) ? " " : line.output}
+                    </pre>
+                })
+            })}
+            {_.map(terminals, (terminal, id) => {
+                return <p>
+                    {terminal.endOfCommand ? terminal.descriptor.currentPath +">": null}
+                    <InputEntry
+                        invisible={this.isHidden(terminal)}
+                        onEntry={text => {
+                            terminalActions.output({
+                                terminalId: terminal.descriptor.id, 
+                                output: terminal.descriptor.currentPath + ">" + text,
+                            })
+                            terminalApi.send(text, terminal.descriptor.id)
+                        }} 
+                    />
+                </p>
+            })}
         </div>
+        */
+    }
+    closeTerminal(index: number) {
+        let {orderedTerminals} = this.state.store
+        let {activeTerminal} = this.state
+        if (orderedTerminals[index]) {
+            if (activeTerminal >= index && activeTerminal !== 0) {
+                this.setState({activeTerminal: activeTerminal - 1})
+            }
+            terminalApi.close(orderedTerminals[index].descriptor.id)
+        }
+        else if (orderedTerminals.length > 0){
+            this.setState({newTerminalPending: false})
+        }
+    }
+    render() {
+        
+        let {terminals, orderedTerminals, waitingForNewTerminal} = this.state.store
+        let {newTerminalPending} = this.state
+        let titles = orderedTerminals.map(terminal => 
+            terminal.descriptor.terminalType + " - " + terminal.descriptor.currentPath)
+        if (newTerminalPending || waitingForNewTerminal) {
+            titles.push("New Terminal")
+        }
+        return <div style={{height: "100%"}}>
+            <TabPanel 
+                style={{height: "100%"}} 
+                virtualTabs={titles} 
+                currentTab={this.state.activeTerminal}
+                onAdd={() => {
+                    this.setState({
+                        newTerminalPending: true,
+                        activeTerminal: orderedTerminals.length
+                    })
+                }}
+                onChangeTab={newTab => this.setState({activeTerminal: newTab})}
+                onClose={i => this.closeTerminal(i)}
+            >
+                {this.getTerminalElement(this.state.activeTerminal)}
+            </TabPanel>
+        </div>
+        
     }
 }
 

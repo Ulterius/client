@@ -217,7 +217,8 @@ export class EntryBox extends React.Component<
         buttonStyle?: string,
         placeholder?: string,
         type?: string,
-        defaultValue?: string
+        defaultValue?: string,
+        list?: string
     }, 
     {text?: string, customized?: boolean}> {
     constructor(props) {
@@ -233,6 +234,7 @@ export class EntryBox extends React.Component<
                 {this.props.buttonText ? this.props.buttonText : false}
             </Button>
         return <Input
+            list={this.props.list}
             type={this.props.type || "text"}
             placeholder={this.props.placeholder || ""}
             buttonAfter={confirmButton}

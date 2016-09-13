@@ -227,6 +227,7 @@ interface TerminalActionFunctions {
     removeTerminal(id: string): string
     output(content: TerminalInfo.Output): TerminalInfo.Output
     addLine(line: string): string
+    expectTerminal(): void
 }
 
 class TerminalActions extends AbstractActions {
@@ -236,7 +237,8 @@ class TerminalActions extends AbstractActions {
             "addTerminal",
             "removeTerminal",
             "output",
-            "addLine"
+            "addLine",
+            "expectTerminal"
         )
     }
 }

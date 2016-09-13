@@ -28,20 +28,20 @@ export let screenEvents = {
 export let screenShareApi = {
     start() {
         console.log(sC.encrypted)
+        sC.callEndpoint("startscreenshare")
+        /*
         sC.send({
             endpoint: "startscreenshare",
             args: []
         })
+        */
     },
     requestFrame() {
+        sC.callEndpoint("fullframe")
+        /*
         sC.send({
             endpoint: "fullframe",
             args: []
-        })
-        /*
-        sC.send({
-            EventType: "Frame",
-            Action: "Full"
         })
         */
     },
@@ -53,64 +53,33 @@ export let screenShareApi = {
     },
     disconnect() {
         sC.callEndpoint("stopscreenshare")
-
-        /*
-        sC.send({
-            endpoint: "stopscreenshare",
-            args: []
-        })
-        */
-        //sC.disconnect()
     },
     mouse: {
         move(PointerX: number, PointerY: number) {
             sC.callEndpoint("mousemove", [PointerY, PointerX])
-            /*
-            sC.sendEvent("Mouse", "Move", {
-                PointerX, PointerY
-            })
-            */
         },
         leftClick(PointerX: number, PointerY: number) {
             sC.callEndpoint("leftclick")
-            /*
-            sC.sendEvent("Mouse", "LeftClick", {
-                PointerX, PointerY
-            }) */
         },
         rightClick() {
             sC.callEndpoint("rightclick")
-            //sC.sendEvent("Mouse", "RightClick")
         },
         down() {
             sC.callEndpoint("mousedown")
-            //sC.sendEvent("Mouse", "Down")
         },
         up() {
             sC.callEndpoint("mouseup")
-            sC.sendEvent("Mouse", "Up")
         },
         wheel(delta: number) {
             sC.callEndpoint("mousescroll", delta)
-            /*
-            sC.sendEvent("Mouse", "Scroll", {
-                delta
-            }) */
         }
     },
     keyDown(code: number) {
         sC.callEndpoint("keydown", [[code]])
-        /*
-        sC.sendEvent("Keyboard", "KeyDown", {
-            KeyCodes: [code]
-        }) */
+
     },
     keyUp(code: number) {
         sC.callEndpoint("keyup", [[code]])
-        /*
-        sC.sendEvent("Keyboard", "KeyUp", {
-            KeyCodes: [code]
-        }) */
     }
 }
 

@@ -1,6 +1,6 @@
 import alt from "../alt"
 import AbstractStoreModel from "./abstract-store"
-import {terminalActions as tA} from "../action"
+import {terminalActions as tA, messageActions} from "../action"
 import Ti = TerminalInfo
 
 
@@ -19,35 +19,65 @@ function createFullTerminal(descriptor: Ti.Terminal): FullTerminal {
 }
 
 export interface TerminalState {
-    terminals: {[key: string]: FullTerminal}
+    waitingForNewTerminal: boolean,
+    terminals: {[key: string]: FullTerminal},
+    orderedTerminals: FullTerminal[]
 }
 
 class TerminalStore extends AbstractStoreModel<TerminalState> {
     terminals: {[key: string]: FullTerminal} = {}
+    orderedTerminals: FullTerminal[] = []
+    waitingForNewTerminal = false
 
     constructor() {
         super()
         this.bindListeners({
             handleAddTerminal: tA.addTerminal,
-            handleOutput: tA.output
+            handleRemoveTerminal: tA.removeTerminal,
+            handleOutput: tA.output,
+            handleExpectTerminal: tA.expectTerminal
         })
     }
 
+    handleRemoveTerminal(id: string) {
+        let terminal = this.terminals[id]
+        if (terminal) {
+            console.log(this.orderedTerminals)
+            console.log(_.without(this.orderedTerminals, terminal))
+            
+            this.orderedTerminals = _.without(this.orderedTerminals, terminal)
+            delete this.terminals[id]
+        }
+    }
+
+    handleExpectTerminal() {
+        this.waitingForNewTerminal = true
+        setTimeout(() => {
+            if (this.waitingForNewTerminal) {
+                this.setState({waitingForNewTerminal: false})
+                messageActions.message({style: "danger", text: "Terminal creation timed out."})
+            }
+        }, 5000)
+    }
+
     handleAddTerminal(descriptor: Ti.Terminal) {
-        this.terminals[descriptor.id] = createFullTerminal(descriptor)
+        this.waitingForNewTerminal = false
+        let terminal = createFullTerminal(descriptor)
+        this.terminals[descriptor.id] = terminal
+        this.orderedTerminals.push(terminal)
     }
     
     handleOutput(out: Ti.Output) {
         let id = out.terminalId
-        let {correlationId, output, sensitive, endOfCommand} = out
-        let lines = this.terminals[id].lines
         if (this.terminals[id]) {
+            let {correlationId, output, sensitive, endOfCommand} = out
+            let lines = this.terminals[id].lines
             this.terminals[id].lines.push({correlationId, output, sensitive})
             this.terminals[id].endOfCommand = endOfCommand
             this.terminals[id].descriptor.currentPath = out.currentPath
-        }
-        if (endOfCommand && lines.length > 100) {
-            this.terminals[id].lines = lines.slice(lines.length-100)
+            if (endOfCommand && lines.length > 100) {
+                this.terminals[id].lines = lines.slice(lines.length-100)
+            }
         }
     }
 }

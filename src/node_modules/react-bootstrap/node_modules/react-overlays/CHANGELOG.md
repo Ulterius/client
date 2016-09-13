@@ -1,0 +1,66 @@
+v0.5.4 - Tue, 17 Nov 2015 20:03:06 GMT
+--------------------------------------
+
+- [4eabbfc](../../commit/4eabbfc) [added] affix state callbacks
+
+
+
+v0.5.3 - Mon, 16 Nov 2015 19:52:03 GMT
+--------------------------------------
+
+- [d064667](../../commit/d064667) [fixed] AutoAffix nnot passing width or updating
+
+
+
+v0.5.2 - Mon, 16 Nov 2015 17:32:27 GMT
+--------------------------------------
+
+- [823d0f8](../../commit/823d0f8) [fixed] fix missing warning dep
+- [1857449](../../commit/1857449) [changed] Friendlier default for AutoAffix
+- [f633476](../../commit/f633476) [fixed] clean up modal styles if unmounted during exit transition
+
+
+
+v0.5.1 - Mon, 02 Nov 2015 16:07:44 GMT
+--------------------------------------
+
+- [e965152](../../commit/e965152) [added] Affix and AutoAffix
+
+
+
+v0.5.0 - Wed, 07 Oct 2015 19:40:23 GMT
+--------------------------------------
+
+- [044100b](../../commit/044100b) [added] React 0.14 support
+- [edd316a](../../commit/edd316a) [added] aria-hidden, by default, to modal container siblings.
+
+
+
+v0.4.4 - Mon, 24 Aug 2015 18:34:19 GMT
+--------------------------------------
+
+
+
+
+
+v0.4.3 - Sun, 23 Aug 2015 22:54:52 GMT
+--------------------------------------
+
+- [4f7823e](../../commit/4f7823e) [changed] focus target of the modal to its content
+
+
+
+v0.4.2 - Mon, 10 Aug 2015 19:04:31 GMT
+--------------------------------------
+
+
+
+
+
+v0.4.1 - Tue, 04 Aug 2015 23:48:08 GMT
+--------------------------------------
+
+
+
+
+

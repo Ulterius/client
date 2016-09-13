@@ -299,7 +299,7 @@ export function aesHandshake(status: {shook: boolean}) {
                 host, 
                 String(ports.screenSharePort),
                 true
-            )
+            ).then(() => console.log("Screenshare is connected."))
         })
         
         let password

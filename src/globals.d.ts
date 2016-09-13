@@ -306,42 +306,6 @@ declare interface CamerasRefreshed {
 }
 
 declare namespace SettingsInfo {
-    interface Updated {
-        changedStatus: boolean
-        [key: string]: any
-    }
-    interface WebServerPort extends Updated {
-        WebServerPort: number
-    }
-    interface WebFilePath extends Updated {
-        WebFilePath: string
-    }
-    interface VncPass extends Updated {
-        VncPass: string
-    }
-    interface VncPort extends Updated {
-        VncPort: number
-    }
-    interface VncProxyPort extends Updated {
-        VncProxyPort: number
-    }
-    interface TaskServerPort extends Updated {
-        TaskServerPort: number
-    }
-    interface NetworkResolve extends Updated {
-        SkipHostNameResolve: boolean
-    }
-    interface Settings {
-        UseWebServer: boolean,
-        WebServerPort: number,
-        WebFilePath: string,
-        TaskServerPort: number,
-        SkipHostNameResolve: boolean,
-        VncPort: number,
-        VncProxyPort: number,
-        VncPass: string,
-        AllowTerminal: boolean
-    }
 
     /*
     { "Debug" : { "TraceDebug" : true },
@@ -383,6 +347,7 @@ declare namespace SettingsInfo {
       "WebFilePath" : "C:\\Users\\Frob2\\AppData\\Roaming\\Ulterius\\Ulterius Server\\client\\",
       "WebServerPort" : 22006
     }
+    
 }
 */
 
@@ -402,9 +367,7 @@ declare namespace SettingsInfo {
         MinorRevision: number
     }
 
-    interface Debug {
-        TraceDebug: boolean
-    }
+    interface Debug { TraceDebug: boolean }
 
     interface General {
         ClientIssues: string,
@@ -421,13 +384,9 @@ declare namespace SettingsInfo {
         SkipHostNameResolve: boolean
     }
 
-    interface Plugins {
-        LoadPlugins: boolean
-    }
+    interface Plugins { LoadPlugins: boolean }
 
-    interface ScreenShare {
-        ScreenSharePort: number
-    }
+    interface ScreenShare { ScreenSharePort: number }
 
     interface TaskServer {
         Encryption: boolean,
@@ -456,6 +415,10 @@ declare namespace SettingsInfo {
         webcamPort: number,
         terminalPort: number,
         screenSharePort: number
+    }
+
+    interface Changed {
+        changedStatus: boolean
     }
 
     interface All {
@@ -643,6 +606,9 @@ declare namespace TerminalInfo {
     interface Created extends Message {
         terminalType: string,
         currentPath: string,
+        terminalId: string
+    }
+    interface Closed extends Message {
         terminalId: string
     }
     interface Output {

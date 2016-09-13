@@ -1,5 +1,6 @@
 import * as _ from "lodash"
 import React = require("react")
+import classNames = require("classnames")
 
 export function createSortOnProperty<T>(prop: string, how: string) {
     return function(a: T, b: T) {
@@ -436,4 +437,12 @@ export function ifEnter(callback: (e: React.KeyboardEvent) => any) {
 
 export function split(whole: {[key: string]: any}) {
     
+}
+
+interface hasClassName {
+    className?: string
+}
+
+export function addClassName<T extends hasClassName>(original: T, newClass: any): T {
+    return _.assign({}, original, {className: classNames(original.className, newClass)}) as T
 }

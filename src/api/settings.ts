@@ -14,12 +14,11 @@ export function register(mC: typeof _mainConnection) {
         getCurrentSettings(settings: SettingsInfo.All) {
             console.log(settings)
             settingsActions.updateAllSettings(settings)
-        }
-    })
-    mC.listen(msg => msg.endpoint && msg.endpoint.indexOf("change") === 0, (msg: SettingsInfo.Updated) => {
-        console.log(msg)
-        if (msg.changedStatus) {
-            messageActions.message({style: "success", text: "Settings updated."})
+        },
+        saveSettings(result: SettingsInfo.Changed) {
+            if (result.changedStatus) {
+                messageActions.message({style: "success", text: "Settings updated."})
+            }
         }
     })
     return {

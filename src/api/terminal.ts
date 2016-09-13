@@ -19,6 +19,12 @@ export function isCreatedEvent(message: Ti.Message): message is Ti.Created {
     return message.type == "CreatedTerminalEvent"
 }
 
+export function isClosedEvent(message: Ti.Message): message is Ti.Closed {
+    return message.type == "ClosedTerminalEvent"
+}
+
+//export function isClosedEvent
+
 function getDescriptor(message: Ti.Created) {
     return {
         terminalType: message.terminalType,
@@ -33,6 +39,18 @@ export let terminalApi = {
             input,
             terminalId,
             correlationId: tC.nextCorrelationId()
+        })
+    },
+    create(terminalType: string) {
+        terminalActions.expectTerminal()
+        tC.send("CreateTerminalRequest", {
+            terminalType, 
+            correlationId: tC.nextCorrelationId()
+        })
+    },
+    close(terminalId: string) {
+        tC.send("CloseTerminalRequest", {
+            terminalId, correlationId: tC.nextCorrelationId()
         })
     }
 }
@@ -63,16 +81,20 @@ tC.listenAll<typeof tC>(
     [msg => isSessionStateEvent(msg) && msg.aesShook, (msg, tc) => {
         console.log(msg)
         console.log("Shake got, sending create terminal shit")
+        /*
         tc.send("CreateTerminalRequest", {
             terminalType: "cmd.exe", 
             correlationId: tc.nextCorrelationId()
-        })
+        }) */
     }],
     [isCreatedEvent, (msg: Ti.Created) => {
         terminalActions.addTerminal(getDescriptor(msg))
     }],
     [isOutputEvent, (msg: Ti.Output) => {
         terminalActions.output(msg)
+    }],
+    [isClosedEvent, (msg: Ti.Closed) => {
+        terminalActions.removeTerminal(msg.terminalId)
     }]
 )
 

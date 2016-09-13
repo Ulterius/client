@@ -68,7 +68,7 @@ export abstract class Connection {
     iv: string = undefined
     socketType: SocketType
     disconnecting: boolean = false
-    connectResolve: Function
+    connectResolve: (value?: WebSocket | Thenable<WebSocket>) => void
     path: string = ""
     
     constructor(public poolSize = 3, public isDefault: boolean = false) {
@@ -99,7 +99,7 @@ export abstract class Connection {
         }
 
         let connectReject
-        let connectPromise = new Promise((resolve, reject) => {
+        let connectPromise = new Promise<WebSocket>((resolve, reject) => {
             connectReject = reject
             this.connectResolve = resolve
         })
@@ -327,7 +327,7 @@ export abstract class Connection {
                 if (socket.readyState === 1 && isDefault) {
                     appActions.setHost({host, port})
                 }
-                this.connectResolve()
+                this.connectResolve(socket)
             }
             socket.onmessage = (e) => {
                 const {key, iv, ofb} = this

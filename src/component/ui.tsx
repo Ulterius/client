@@ -1,10 +1,11 @@
 import React = require("react")
 import Component = React.Component
+import ReactElement = React.ReactElement
 import classNames = require("classnames")
 import _ = require("lodash")
-import {stringIf} from "../util"
+import {omit, assign} from "lodash"
+import {stringIf, addClassName} from "../util"
 import {Glyphicon} from "react-bootstrap"
-
 /*
 export function createDivComponent(className: string) {
     return (props: React.HTMLProps<HTMLDivElement>) => {
@@ -23,7 +24,7 @@ export function createSimpleComponent<T>(elementType: string, className: string)
     return (props: React.HTMLProps<T>) => {
         return React.createElement(
             elementType, 
-            _.assign(
+            assign(
                 {},
                 props, 
                 {className: className + stringIf(!!props.className, " " + props.className)}
@@ -145,8 +146,9 @@ export class Gauge extends Component<GaugeProps, {}> {
         this.id = getGaugeId()
     }
     inner() {
-        if (this.props.width && this.props.height) {
-            return <div id={this.id} className={this.props.width+"x"+this.props.height+"px gauge"} />
+        let {height, width} = this.props
+        if (width && height) {
+            return <div id={this.id} className={width+"x"+height+"px gauge"} />
         }
         return <div id={this.id} className="gauge"/>
     }
@@ -171,19 +173,134 @@ export function Center(props: React.HTMLAttributes & {noHeight?: boolean}) {
     </div>
 }
 
+
+//why why why why WHY
+type TabPageProps = React.HTMLAttributes & {title?: string}
+export function TabPage(props: TabPageProps) {
+    let {title} = props
+    let divProps = omit(props, "title")
+    return <div {...divProps}>
+        {props.children}
+    </div>
+}
+
+interface TabPanelProps extends React.HTMLAttributes {
+    virtualTabs?: string[],
+    onAdd?: (index: number) => any,
+    onClose?: (index: number) => any,
+    onChangeTab?: (index: number) => any,
+    currentTab?: number
+    //children: ReactElement<TabPageProps> | ReactElement<TabPageProps>[]
+}
+
 interface TabPanelState {
-    pages: React.ReactChild[],
     currentPage: number
 }
 
-export function TabPage(props: React.HTMLAttributes & {title: string}) {
-    let {title} = props
-    let divProps = _.omit(props, "title")
-    
+export function glyphicon(glyph: string) {
+    return <span className={"glyphicon glyphicon-" + glyph} />
 }
 
-export class TabPanel extends Component<{}, TabPanelState> {
-
+export class TabPanel extends Component<TabPanelProps, TabPanelState> {
+    constructor(props, context) {
+        super(props, context)
+        this.state = {
+            currentPage: 0
+        }
+    }
+    closeButton(index: number) {
+        if (this.props.onClose) {
+            return <span 
+                style={{cursor: "pointer"}} 
+                className={"close-icon glyphicon glyphicon-remove"} 
+                onClick={(e) => {
+                    e.stopPropagation()
+                    this.props.onClose(index)
+                }}
+            />
+        }
+        else {
+            return null
+        }
+    }
+    getTab(index: number, title: string) {
+        let active = this.equalsCurrentTab(index)
+        return <div
+            key={index}
+            className={classNames("tab-bar-tab", { "tab-bar-tab-active": active })}
+            onClick={() => this.changeTab(index)}
+        >
+            {title} &nbsp; {this.closeButton(index)}
+        </div>
+    }
+    isVirtual() {
+        return this.props.virtualTabs && this.props.virtualTabs.length > 0
+    }
+    equalsCurrentTab(i: number) {
+        if (this.isControlled()) {
+            return i === this.props.currentTab
+        }
+        return i === this.state.currentPage
+    }
+    tabBar() {
+        let {children, onAdd, virtualTabs} = this.props
+        let tabCount: number, tabs: React.ReactNode[] 
+        if (this.isVirtual()) {
+            tabCount = virtualTabs.length
+            tabs = virtualTabs.map((title, i) => {
+                return this.getTab(i, title)
+            })
+        }
+        else {
+            tabCount = React.Children.count(children)
+            tabs = React.Children.map(children, (child: ReactElement<TabPageProps>, i) => {
+                return this.getTab(i, child.props.title)
+            })
+        }
+        //regarding the onAdd callback: give it the index of the next potential tab
+        //since it ought to be assumed that onAdd will give the shit another page
+        return <div className="tab-bar">
+            {tabs}
+            <div 
+                className="tab-bar-tab" 
+                onClick={() => onAdd && onAdd(tabCount)}
+            >
+                {glyphicon("plus")}
+            </div>
+        </div>
+    }
+    changeTab(index: number) {
+        this.props.onChangeTab && this.props.onChangeTab(index)
+        if (!this.isControlled()) {
+            this.setState({currentPage: index})
+        }
+    }
+    isControlled() {
+        return this.props.currentTab !== undefined
+    }
+    render() {
+        let {children, virtualTabs, currentTab} = this.props
+        let {currentPage} = this.state
+        let activeTab
+        if (this.isVirtual()) {
+            activeTab = React.Children.only(children)
+        }
+        else {
+            activeTab = React.Children.toArray(children).filter((child, i) => {
+                if (this.isControlled()) {
+                    return i === currentTab
+                }
+                return i === currentPage
+            })[0]
+        }
+        let panelProps = omit(addClassName(this.props, "tab-panel"), 
+            "onAdd", "virtualTabs", "onChangeTab", "onClose"
+        )
+        return <div {...panelProps}>
+            {this.tabBar()}
+            {activeTab}
+        </div>
+    }
 }
 
 /*

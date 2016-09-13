@@ -159,3 +159,82 @@
 .highlighted {
     color: $highlight;
 }
+
+.tab-panel {
+    height: 100%;
+    min-height: min-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-bar {
+    display: flex;
+    align-items: bottom;
+    flex: none;
+}
+
+.tab-bar-tab {
+    padding: 5px 13px;
+    background-color: $stat-bg;
+    border: solid 1px $line-color;
+    border-bottom: none;
+    cursor: pointer;
+    @include h-margin-collapse(2px);
+    &-active, &:hover {
+        background-color: $terminal-bg;
+        color: white;
+        border: solid 1px $terminal-bg;
+        border-bottom: none;
+    }
+    .close-icon {
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: -2px
+    }
+}
+
+.new-terminal {
+    @extend .bare-input-button;
+    width: 300px;
+    button, button:hover {
+        color: white;
+    }
+    .input-group {
+        border-bottom: $dashed-line;
+    }
+    input[type="text"], input[type="password"] {
+        color: white;
+    }
+}
+
+.terminal-basic {
+    background-color: $terminal-bg;
+    padding: 10px;
+    height: 100%;
+    color: white;
+    flex: 1;
+}
+
+.pseudo-terminal {
+    @extend .terminal-basic;
+}
+
+.terminal {
+    @extend .terminal-basic;
+    font-family: Menlo, Monaco, Consolas, Monospace;
+    height: 100%;
+    line-height: 10px;
+    overflow: auto;
+    font-size: 14px;
+    .input-line {
+        border: none;
+        background-color: $terminal-bg;
+        color: white;
+        font-family: Menlo, Monaco, Consolas, Monospace;
+        outline: none;
+    }
+}
+
+input::-webkit-calendar-picker-indicator {
+    background-color: none !important;
+}
