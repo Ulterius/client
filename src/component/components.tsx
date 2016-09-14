@@ -7,6 +7,7 @@ import {systemStore, auxillarySystemStore, userStore} from "../store/system-stor
 import {listen} from "../api-layer"
 import * as _ from "lodash"
 import classNames = require("classnames")
+import {TransitionMotion, spring, presets} from "react-motion"
 
 
 export function Bar(props: {value?: number, color?: boolean, style?: any}) {
@@ -170,6 +171,13 @@ export function SlideTransition(props: {children?: any}) {
 }
 
 export class Messages extends React.Component<{}, MessageState> {
+    messageHeight: number = 0
+    constructor(props, context) {
+        super(props, context)
+        this.state = {
+            messages: []
+        }
+    }
     componentDidMount() {
         this.updateMessages(messageStore.getState())
         messageStore.listen(this.updateMessages)
@@ -180,7 +188,15 @@ export class Messages extends React.Component<{}, MessageState> {
     updateMessages = (state) => {
         this.setState(state)
     }
-    
+    willLeave() {
+        return {x: spring(250, presets.noWobble)}
+    }
+    willEnter(initial) {
+        return {
+            x: 250,
+            negativeMargin: 1
+        }
+    }
     render() {
         if (!this.state) {
             return <div className="messages"></div>
@@ -188,21 +204,51 @@ export class Messages extends React.Component<{}, MessageState> {
         let style = {
             zIndex: 9001,
             position: "fixed",
-            
         }
-        return <div style={{
-            zIndex: 9001,
-            position: "fixed",
-            bottom: 10,
-            right: 10
-        }}>
-            <FadeTransition>
+        return <TransitionMotion
+            willLeave={this.willLeave}
+            willEnter={this.willEnter}
+            styles={this.state.messages.map(msg => ({
+                key: String(msg.key),
+                style: {
+                    x: spring(0, presets.noWobble),
+                    negativeMargin: spring(0, presets.noWobble)
+                },
+                data: _.assign({}, msg)
+            }))}
+            
+        >
+            {interpolatedStyles => {
+                return <div style={{
+                    zIndex: 9001,
+                    position: "fixed",
+                    bottom: 10,
+                    right: 10,
+                    width: 220
+                }}>
+                    {interpolatedStyles.map(s => 
+                        <div 
+                            key={s.key} 
+                            ref={ref => {ref && (this.messageHeight = ref.clientHeight)}}
+                            className={"alert alert-" + s.data.style}
+                            style={{
+                                transform: `translateX(${s.style.x}px)`,
+                                marginTop: -(s.style.negativeMargin * (this.messageHeight + 21))
+                            }}
+                        >
+                            {s.data.text}
+                        </div>
+                    )}
+                </div>
+            }}
+        </TransitionMotion>
+            {/*<FadeTransition>
                 {this.state.messages.map((msg, i) => {
-                    return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
-                
+                    return <div className={"alert alert-" + msg.style}>{msg.text}</div>
+                    //return <Alert key={i} bsStyle={msg.style}>{msg.text}</Alert>
                 })}
-            </FadeTransition>
-        </div>
+            </FadeTransition> */}
+        
     }
 }
 

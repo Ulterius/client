@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/566e3c0f7cec844ce3ad52f582dc922d306fe501/react-motion/react-motion.d.ts",
+    "raw": "registry:dt/react-motion#0.0.0+20160705193226",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/566e3c0f7cec844ce3ad52f582dc922d306fe501/react-motion/react-motion.d.ts"
+  }
+}

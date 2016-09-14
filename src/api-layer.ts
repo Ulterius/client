@@ -355,5 +355,4 @@ export function disconnectedFromUlterius() {
 }
 
 function onAuthenticate() {
-    
 }

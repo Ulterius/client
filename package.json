@@ -33,6 +33,7 @@
     "react-chartist": "^0.10.2",
     "react-dom": "^15.2.1",
     "react-grid-layout": "^0.12.3",
+    "react-motion": "^0.4.4",
     "react-overlays": "^0.6.5",
     "react-responsive": "^1.1.2",
     "react-router": "^2.6.0",
@@ -44,6 +45,7 @@
     "ts-events": "^3.1.1"
   },
   "devDependencies": {
+    "@types/react-motion": "0.0.19",
     "awesome-typescript-loader": "^0.17.0",
     "eslint-plugin-react": "^4.2.3",
     "extract-loader": "0.0.2",

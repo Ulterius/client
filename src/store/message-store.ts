@@ -3,17 +3,27 @@ import AbstractStoreModel from "./abstract-store"
 import {messageActions, dialogActions} from "../action"
 import * as _ from "lodash"
 
+let currentKey = 0
+function nextKey() {
+    currentKey++
+    return currentKey
+}
+
 export interface Message {
     style: string, //bootstrap styles: primary, default, success, warning, danger
     text: string
 }
 
+export interface KeyedMessage extends Message {
+    key: number
+}
+
 export interface MessageState {
-    messages: Message[]
+    messages: KeyedMessage[]
 }
 
 class MessageStore extends AbstractStoreModel<MessageState> {
-    messages: Message[] = []
+    messages: KeyedMessage[] = []
     constructor() {
         super()
         this.bindListeners({
@@ -25,9 +35,10 @@ class MessageStore extends AbstractStoreModel<MessageState> {
         })
     }
     handleMessage(message: Message) {
-        this.messages.push(message)
+        let fullMessage = _.assign({}, message, {key: nextKey()})
+        this.messages.push(fullMessage)
         setTimeout(() => {
-            this.setState({messages: this.messages.filter(msg => msg != message)})
+            this.setState({messages: this.messages.filter(msg => msg != fullMessage)})
         }, 3000)
     }
 }
