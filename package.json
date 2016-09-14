@@ -45,7 +45,6 @@
     "ts-events": "^3.1.1"
   },
   "devDependencies": {
-    "@types/react-motion": "0.0.19",
     "awesome-typescript-loader": "^0.17.0",
     "eslint-plugin-react": "^4.2.3",
     "extract-loader": "0.0.2",
