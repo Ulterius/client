@@ -18,10 +18,12 @@ export interface AppState {
         shook: boolean,
         key: string,
         iv: string
-    }
+    },
+    debugMenu: boolean
 }
 
 class AppStore extends AbstractStoreModel<AppState> {
+    debugMenu: boolean
     connection: {
         host: string,
         port: string,
@@ -44,12 +46,14 @@ class AppStore extends AbstractStoreModel<AppState> {
     } = {}
     constructor() {
         super()
+        this.debugMenu = localStorage.getItem("debug-menu") !== null
         this.bindListeners({
             handleLogin: appActions.login,
             handleSetPassword: appActions.setPassword,
             handleSetKey: appActions.setKey,
             handleSetShake: appActions.setShake,
-            handleSetHost: appActions.setHost
+            handleSetHost: appActions.setHost,
+            handleSetDebugMenu: appActions.setDebugMenu
         })
     }
     handleLogin(loggedIn: boolean) {
@@ -66,6 +70,16 @@ class AppStore extends AbstractStoreModel<AppState> {
     }
     handleSetHost(host: HostInfo) {
         _.assign(this.connection, host)
+    }
+    handleSetDebugMenu(enabled: boolean) {
+        if (enabled) {
+            this.debugMenu = true
+            localStorage.setItem("debug-menu", "ass")
+        }
+        else {
+            this.debugMenu = false
+            localStorage.removeItem("debug-menu")
+        }
     }
 }
 

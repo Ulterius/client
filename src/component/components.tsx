@@ -232,8 +232,8 @@ export class Messages extends React.Component<{}, MessageState> {
                             ref={ref => {ref && (this.messageHeight = ref.clientHeight)}}
                             className={"alert alert-" + s.data.style}
                             style={{
-                                transform: `translateX(${s.style.x}px)`,
-                                marginTop: -(s.style.negativeMargin * (this.messageHeight + 21))
+                                transform: `translateX(${s.style.x || 0}px)`,
+                                marginTop: -((s.style.negativeMargin || 0) * (this.messageHeight + 21))
                             }}
                         >
                             {s.data.text}

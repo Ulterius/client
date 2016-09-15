@@ -54,6 +54,7 @@ interface AppActionFunctions {
     setKey(key: string, iv: string): KeyInfo
     setShake(shook: boolean): boolean
     setHost(host: HostInfo): HostInfo
+    setDebugMenu(enabled: boolean): boolean
 }
 
 class AppActions extends AbstractActions implements AppActionFunctions{
@@ -71,6 +72,9 @@ class AppActions extends AbstractActions implements AppActionFunctions{
     }
     setHost(host: HostInfo) {
         return host
+    }
+    setDebugMenu(enabled: boolean) {
+        return enabled
     }
 }
 

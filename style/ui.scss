@@ -239,6 +239,27 @@
     }
 }
 
+.debug-page {
+    display: flex;
+    flex-direction: column;
+}
+
+.debug-objects {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.debug-entry {
+    @extend .bare-input-button;
+    box-shadow: $panel-shadow;
+    background-color: white;
+    border: $solid-line;
+    input[type="text"] {
+        font-family: Menlo, Monaco, Consolas, Monospace;
+    }
+    flex: none
+}
+
 input::-webkit-calendar-picker-indicator {
     background-color: none !important;
 }

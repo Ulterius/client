@@ -630,7 +630,7 @@ class UlteriusConnection extends Connection {
         else {
             if (callbacks[synckey] &&
                 typeof callbacks[synckey] == "function") {
-                callbacks[synckey](results)
+                callbacks[synckey](results, message)
                 delete callbacks[synckey]
             }
         }

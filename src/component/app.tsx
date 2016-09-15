@@ -26,6 +26,7 @@ import {
     LoadingScreen,
     ConnectScreen
 } from "./"
+import {DebugPage} from "./debug"
 import {TerminalPage} from "./terminal"
 import {ScreenPage} from "./screen"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
@@ -81,7 +82,8 @@ export default class App extends React.Component<{
         "/settings": "Settings",
         "/vnc": "VNC",
         "/screen": "Screen Share",
-        "/terminal": "Terminal"
+        "/terminal": "Terminal",
+        "/debug": "API Debug"
     }
     constructor(props) {
         super(props)
@@ -147,7 +149,7 @@ export default class App extends React.Component<{
                 }} />
         }
         return <div style={fullHeight}>
-            <Sidebar activePath={this.props.location.pathname} />
+            <Sidebar activePath={this.props.location.pathname} debugMenu={this.state.app.debugMenu}/>
             <ModalSettings show={showSettings} />
             <TopBar currentPage={this.pathMap[this.props.location.pathname]}>
                 <div onClick={() => {
@@ -179,7 +181,10 @@ export default class App extends React.Component<{
 }
 
 
-class Sidebar extends React.Component<{activePath: string}, {
+class Sidebar extends React.Component<{
+    activePath: string,
+    debugMenu: boolean
+}, {
     open: boolean
 }> {
     constructor(props) {
@@ -194,6 +199,17 @@ class Sidebar extends React.Component<{activePath: string}, {
     }
     getActive(path: string) {
         return this.props.activePath == path
+    }
+    debugItem() {
+        if (this.props.debugMenu) {
+            return <NavItem
+                className={this.getActiveClassName("/debug")}
+                path="/debug"
+                icon="terminal"
+                label="API Debug"
+            />
+        }
+        return null
     }
     sidebarContent() {
         return <div className="sidebar col-md-4" data-spy="affix">
@@ -244,6 +260,7 @@ class Sidebar extends React.Component<{activePath: string}, {
                     path="/terminal"
                     icon="terminal"
                     label="Terminal" />
+                {this.debugItem()}
             </ul>
         </div>
     }
@@ -298,6 +315,7 @@ const routes = <Route path="/" component={App}>
             <Route path="filesystem" component={FilePage} />
             <Route path="screen" component={ScreenPage} />
             <Route path="terminal" component={TerminalPage} />
+            <Route path="debug" component={DebugPage} />
             {/* <Route path="plugin" component={PluginPage} /> 
             <Route path="settings" component={SettingsPage} />*/}
         </Route>

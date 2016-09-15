@@ -208,3 +208,12 @@ declare module "react-svg-gauge" {
     let Gauge: GaugeI
     export default Gauge
 }
+
+declare module "react-json-tree" {
+    interface JSONTreeI extends __React.ComponentClass<{
+        data: any,
+        theme?: any
+    }> {}
+    let JSONTree: JSONTreeI
+    export default JSONTree
+}

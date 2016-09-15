@@ -1,11 +1,12 @@
 import React = require("react")
 import Component = React.Component
-import {settingsStore, SettingsState} from "../store"
+import {settingsStore, SettingsState, appStore} from "../store"
 import {Input, Button, ButtonGroup, ButtonToolbar} from "react-bootstrap"
 import {MoveLeftTransition} from "./components"
 //import {api} from "../api"
 import {settingsApi} from "../api-layer"
 import {ToggleSwitch} from "./ui"
+import {appActions} from "../action"
 import * as _ from "lodash"
 
 class RadioGroup extends React.Component<{
@@ -258,6 +259,14 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
         })
         return <div className="flex settings-body">
             {body}
+            <ToggleSwitch 
+                key="debug" 
+                label="Enable debug page" 
+                defaultState={appStore.getState().debugMenu}
+                onChange={newValue => {
+                    appActions.setDebugMenu(newValue)
+                }} 
+            />
         </div>
     }
     render() {
