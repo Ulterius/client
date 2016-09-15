@@ -7,7 +7,9 @@ import {terminalApi} from "../api-layer"
 import {TabPanel, TabPage, Center, EntryBox, Spinner} from "./"
 
 export function TerminalPage() {
-    return <Terminal />
+    return <div className="terminal-page">
+        <Terminal />
+    </div>
 }
 
 class InputEntry extends React.Component<{

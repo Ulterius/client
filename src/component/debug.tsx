@@ -4,7 +4,7 @@ import * as _ from "lodash"
 import Component = React.Component
 import {EntryBox, glyphicon} from "./"
 import {mainConnection} from "../socket"
-import {concat} from "lodash"
+import {concat, without} from "lodash"
 
 
 interface DebugPageState {
@@ -26,6 +26,16 @@ export class DebugPage extends Component<{}, DebugPageState> {
     componentWillUnmount() {
         
     }
+    remove(obj: ApiMessage) {
+        this.setState({debugObjects: without(this.state.debugObjects, obj)})
+    }
+    closeButton(obj: ApiMessage) {
+        return <span 
+            style={{cursor: "pointer"}}
+            className="glyphicon glyphicon-remove" 
+            onClick={() => this.remove(obj)}
+        />
+    }
     render() {
         const {debugObjects} = this.state
         return <div className="full-height debug-page">
@@ -38,8 +48,12 @@ export class DebugPage extends Component<{}, DebugPageState> {
                 {this.state.debugObjects.map(obj => {
                     return <div className="ulterius-panel debug-panel" style={{marginBottom: 10}}>
                         <div className="double-header">
-                            <div>{glyphicon("map-marker")} {obj.endpoint}</div> 
-                            <div>{glyphicon("link")} {obj.synckey}</div>
+                            <div>
+                                {glyphicon("map-marker")} {obj.endpoint} 
+                                &nbsp; &nbsp;
+                                {glyphicon("link")} {obj.synckey}
+                            </div> 
+                            <div> {this.closeButton(obj)}</div>
                         </div>
                         <div className="flex">
                             <JSONTree data={obj.results} theme={{

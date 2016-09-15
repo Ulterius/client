@@ -130,11 +130,22 @@ td {
 
 .page {
 	padding: {
-		top: 70px;
-		bottom: 20px;
+		top: 50px;
+		bottom: 0px;
 	}
 	box-sizing: border-box;
 	float: right;
+}
+
+.container-fluid {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.terminal-page, .file-page, .system-page, .screen-page, .camera-page, .task-page {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	height: 100%
 }
 
 @media (max-width: $screen-xs-max) {

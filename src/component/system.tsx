@@ -243,7 +243,7 @@ export class SystemPage extends React.Component<{}, {
         }
 
         return (
-            <div>
+            <div className="system-page">
                 <FlexCol>
                     <FlexRow>
                         <FlexCol style={{width: "66%"}}>

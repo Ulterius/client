@@ -247,6 +247,7 @@
 .debug-objects {
     flex: 1;
     overflow-y: auto;
+    padding-top: 10px;
 }
 
 .debug-entry {
@@ -257,7 +258,8 @@
     input[type="text"] {
         font-family: Menlo, Monaco, Consolas, Monospace;
     }
-    flex: none
+    flex: none;
+    margin-bottom: 20px;
 }
 
 input::-webkit-calendar-picker-indicator {
