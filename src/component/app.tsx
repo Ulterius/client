@@ -31,7 +31,7 @@ import {TerminalPage} from "./terminal"
 import {ScreenPage} from "./screen"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
-import {Router, IndexRoute, Route, Link, browserHistory} from 'react-router'
+import {Router, IndexRoute, Route, Link, hashHistory} from 'react-router'
 import {Glyphicon, Button} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
@@ -322,7 +322,7 @@ const routes = <Route path="/" component={App}>
 
 export class RootRouter extends React.Component<{}, {}> {
     render() {
-        return <Router history={browserHistory}>
+        return <Router history={hashHistory}>
             {routes}
         </Router>
     }
