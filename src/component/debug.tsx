@@ -30,11 +30,10 @@ export class DebugPage extends Component<{}, DebugPageState> {
         this.setState({debugObjects: without(this.state.debugObjects, obj)})
     }
     closeButton(obj: ApiMessage) {
-        return <span 
-            style={{cursor: "pointer"}}
-            className="glyphicon glyphicon-remove" 
-            onClick={() => this.remove(obj)}
-        />
+        return glyphicon("remove", {
+            style: {cursor: "pointer"},
+            onClick: () => this.remove(obj)
+        })
     }
     render() {
         const {debugObjects} = this.state
@@ -60,7 +59,7 @@ export class DebugPage extends Component<{}, DebugPageState> {
                                 tree: {
                                     backgroundColor: "none"
                                 }
-                            }}/>
+                            }} />
                         </div>
                     </div>
                 })}
@@ -72,13 +71,11 @@ export class DebugPage extends Component<{}, DebugPageState> {
                     }
                     glyph="chevron-right" onConfirmation={text => {
                     let [endpoint, args] = text.split("(")
-                    console.log([endpoint, args])
                     let argArray
                     if (args) {
                         args = "[" + args.slice(0, args.length-1) + "]"
                         console.log(args)
                         argArray = JSON.parse(args)
-                        console.log(argArray)
                     }
                     else {
                         argArray = []

@@ -197,8 +197,11 @@ interface TabPanelState {
     currentPage: number
 }
 
-export function glyphicon(glyph: string) {
-    return <span className={"glyphicon glyphicon-" + glyph} />
+export function glyphicon(glyph: string, passthroughProps: React.HTMLAttributes = {}) {
+    return <span 
+        {...passthroughProps} 
+        className={classNames("glyphicon glyphicon-" + glyph, passthroughProps.className)} 
+    />
 }
 
 export class TabPanel extends Component<TabPanelProps, TabPanelState> {

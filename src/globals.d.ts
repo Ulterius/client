@@ -67,6 +67,7 @@ declare interface NetInterfaceInfo {
     SupportsMulticast: boolean
 }
 
+
 declare interface SystemInfo {
     cpuUsage: number[],
     cpuTemps: number[],
@@ -178,9 +179,9 @@ declare interface OSInfo {
 }
 */
 declare interface NetworkDeviceInfo {
-    name: string,
-    ip: string,
-    macAddress: string
+    Name: string,
+    Ip: string,
+    MacAddress: string
 }
 
 declare interface NetworkInfo {

@@ -200,6 +200,154 @@ function Faded(props: {children?: any}) {
 
 let updateInterval
 
+const panels = {
+    OS(os: OSInfo) {
+        return <SystemPanel emptyBody 
+            flexGrow={1} 
+            style={{width: "50%"}} 
+            title="operating system" 
+            image={
+                <img src={require("icon/pc.svg")} width="62" height="49" />
+            }>
+                {os.name} {os.architecture} <br />
+                <Faded>
+                    Version {os.version} <br />
+                    Build {os.build}
+                </Faded>
+            </SystemPanel>
+
+    },
+    motherboard(stats: SystemInfo) {
+        return <SystemPanel emptyBody 
+            flexGrow={1} 
+            style={{width: "50%"}} 
+            title="motherboard" 
+            image={
+            <img src={require("icon/motherboard.svg")} width="45" height="40" />
+        }>
+            {stats.motherBoard} <br />
+            <Faded>
+                BIOS from {stats.biosInfo.biosManufacturer} <br />
+                {stats.biosInfo.biosCaption}
+            </Faded>
+        </SystemPanel>
+    },
+    network(network: NetworkInfo, stats: SystemInfo) {
+        return <SystemPanel flexGrow={1} title="network" image={
+            <img src={require("icon/network.svg")} width="52" height="40" />
+        }>
+            <Flex />
+            <SystemFooter>
+                <StatItem isFooter head="public ip">
+                    <span className="hover-container">
+                        <span className="hover">{network.publicIp}</span>
+                        <span className="unhovered highlighted">Hidden</span>
+                    </span>
+                </StatItem>
+                <StatItem isFooter head="internal ip">
+                    {network.internalIp}
+                </StatItem>
+                <StatItem isFooter head="mac address">
+                    {network.macAddress}
+                </StatItem>
+                <StatItem isFooter head="data sent">
+                    {bytesToSize(stats.networkInfo.totalBytesSent)}
+                </StatItem>
+                <StatItem isFooter head="data received">
+                    {bytesToSize(stats.networkInfo.totalBytesReceived)}
+                </StatItem>
+            </SystemFooter>
+        </SystemPanel>
+    },
+    cpu(cpu: CpuInfo, stats: SystemInfo) {
+        return <SystemPanel flexGrow={1} title="CPU" image={
+            <img src={require("icon/cpu.svg")} width="40" height="40" />
+        }>
+            <FixedCenter>
+                {cpu.cpuName}
+            </FixedCenter>
+            <Flex>
+                <div className="gauge-box">
+                    <Gauge 
+                        title="Temperature" 
+                        label="° C" 
+                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)} 
+                        min={0} max={100}
+                    />
+                </div>
+            </Flex>
+            <SystemFooter>
+                <StatItem isFooter head="cores">
+                    {cpu.cores}
+                </StatItem>
+                <StatItem isFooter head="threads">
+                    {cpu.threads}
+                </StatItem>
+                <StatItem isFooter head="clock speed">
+                    {(cpu.speedMhz/1000).toFixed(1)} GHz
+                </StatItem>
+            </SystemFooter>
+        </SystemPanel>
+    },
+    gpu(gpu: GpusInfo) {
+        return <SystemPanel style={{width: "66%"}} title="video cards" image={
+            <img src={require("icon/gpu.svg")} width="54" height="40" />
+        }>
+            <FlexFixed>
+                {gpu.gpus.map(info => {
+                    return <FixedCenter style={{flexGrow: 1, flexBasis: 0}} key={info.Name}>
+                        {info.Name} <br />
+                        <Faded>Driver Version: {info.DriverVersion}</Faded> <br />
+                        <span
+                        className={"label label-" + (info.Status == "OK" ? "success" : "danger")}>
+                            {info.Status}
+                        </span>
+                        &nbsp;
+                        <span className="label label-success">
+                            {GpuAvailability[info.Availability]}
+                        </span>
+                        <div className="gauge-box">
+                            <Gauge 
+                                title="Temperature" 
+                                label="° C" 
+                                value={info.Temperature.toFixed(0)} 
+                                min={0} max={100} 
+                            />
+                        </div>
+                    </FixedCenter>
+                })}
+            </FlexFixed>
+            <Flex />
+        </SystemPanel>
+    },
+    drive(stats: SystemInfo) {
+        return <SystemPanel flexGrow={1} title="drives" image={
+            <img src={require("icon/drive.svg")} width="30" height="40" />
+        }>
+            <Fixed>
+                {stats.drives.map(drive => {
+                    return <div key={drive.RootDirectory} className="graph-item">
+                        <div className="graph-label">
+                            {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
+                            {drive.RootDirectory} <br /> 
+                            <Faded>{bytesToSize(drive.TotalSize)}</Faded>
+                        </div>
+                        <div className="graph-bar">
+                            <Bar
+                                value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
+                                style={{width: "100%"}} 
+                                color={true}
+                            />
+                            <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
+                        </div>
+                    </div>
+                })}
+            </Fixed>
+            <Flex />
+        </SystemPanel>
+    }
+}
+
 export class SystemPage extends React.Component<{}, {
     cpu?: CpuInfo,
     os?: OSInfo,
@@ -233,7 +381,9 @@ export class SystemPage extends React.Component<{}, {
     render() {
         let {os, cpu, network, gpu, stats} = this.state
         if (!(os && cpu && network && gpu && stats)) {
-            let percent = [os, cpu, network, gpu, stats].map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20
+            let percent = [os, cpu, network, gpu, stats]
+                .map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20
+                
             return <LoadingScreen percentage={percent}>
                 Loading system information <br />
                 {_.map(_.omit(this.state, "statStack") as any, (v, k) => {
@@ -248,136 +398,18 @@ export class SystemPage extends React.Component<{}, {
                     <FlexRow>
                         <FlexCol style={{width: "66%"}}>
                             <FlexRow>
-                                <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="operating system" image={
-                                    <img src={require("icon/pc.svg")} width="62" height="49" />
-                                }>
-                                    {os.name} {os.architecture} <br />
-                                    <Faded>
-                                        Version {os.version} <br />
-                                        Build {os.build}
-                                    </Faded>
-                                </SystemPanel>
-                                <SystemPanel emptyBody flexGrow={1} style={{width: "50%"}} title="motherboard" image={
-                                    <img src={require("icon/motherboard.svg")} width="45" height="40" />
-                                }>
-                                    {stats.motherBoard} <br />
-                                    <Faded>
-                                        BIOS from {stats.biosInfo.biosManufacturer} <br />
-                                        {stats.biosInfo.biosCaption}
-                                    </Faded>
-                                </SystemPanel>
+                                {panels.OS(os)}
+                                {panels.motherboard(stats)}
                             </FlexRow>
                             <FlexRow>
-                                <SystemPanel flexGrow={1} title="network" image={
-                                    <img src={require("icon/network.svg")} width="52" height="40" />
-                                }>
-                                    <Flex />
-                                    <SystemFooter>
-                                        <StatItem isFooter head="public ip">
-                                            <span className="hover-container">
-                                                <span className="hover">{network.publicIp}</span>
-                                                <span className="unhovered highlighted">Hidden</span>
-                                            </span>
-                                        </StatItem>
-                                        <StatItem isFooter head="internal ip">
-                                            {network.internalIp}
-                                        </StatItem>
-                                        <StatItem isFooter head="mac address">
-                                            {network.macAddress}
-                                        </StatItem>
-                                        <StatItem isFooter head="data sent">
-                                            {bytesToSize(stats.networkInfo.totalBytesSent)}
-                                        </StatItem>
-                                        <StatItem isFooter head="data received">
-                                            {bytesToSize(stats.networkInfo.totalBytesReceived)}
-                                        </StatItem>
-                                    </SystemFooter>
-                                </SystemPanel>
+                                {panels.network(network, stats)}
                             </FlexRow>
                         </FlexCol>
-                        <SystemPanel flexGrow={1} title="CPU" image={
-                            <img src={require("icon/cpu.svg")} width="40" height="40" />
-                        }>
-                            <FixedCenter>
-                                {cpu.cpuName}
-                            </FixedCenter>
-                            <Flex>
-                                <div className="gauge-box">
-                                    <Gauge 
-                                        title="Temperature" 
-                                        label="° C" 
-                                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)} 
-                                        min={0} max={100}
-                                    />
-                                </div>
-                            </Flex>
-                            <SystemFooter>
-                                <StatItem isFooter head="cores">
-                                    {cpu.cores}
-                                </StatItem>
-                                <StatItem isFooter head="threads">
-                                    {cpu.threads}
-                                </StatItem>
-                                <StatItem isFooter head="clock speed">
-                                    {(cpu.speedMhz/1000).toFixed(1)} GHz
-                                </StatItem>
-                            </SystemFooter>
-                        </SystemPanel>
+                        {panels.cpu(cpu, stats)}
                     </FlexRow>
                     <FlexRow>
-                        <SystemPanel style={{width: "66%"}} title="video cards" image={
-                            <img src={require("icon/gpu.svg")} width="54" height="40" />
-                        }>
-                            <FlexFixed>
-                                {gpu.gpus.map(info => {
-                                    return <FixedCenter style={{flexGrow: 1, flexBasis: 0}} key={info.Name}>
-                                        {info.Name} <br />
-                                        <Faded>Driver Version: {info.DriverVersion}</Faded> <br />
-                                        <span
-                                        className={"label label-" + (info.Status == "OK" ? "success" : "danger")}>
-                                            {info.Status}
-                                        </span>
-                                        &nbsp;
-                                        <span className="label label-success">
-                                            {GpuAvailability[info.Availability]}
-                                        </span>
-                                        <div className="gauge-box">
-                                            <Gauge 
-                                                title="Temperature" 
-                                                label="° C" 
-                                                value={info.Temperature.toFixed(0)} 
-                                                min={0} max={100} 
-                                            />
-                                        </div>
-                                    </FixedCenter>
-                                })}
-                            </FlexFixed>
-                            <Flex />
-                        </SystemPanel>
-                        <SystemPanel flexGrow={1} title="drives" image={
-                            <img src={require("icon/drive.svg")} width="30" height="40" />
-                        }>
-                            <Fixed>
-                                {stats.drives.map(drive => {
-                                    return <div key={drive.RootDirectory} className="graph-item">
-                                        <div className="graph-label">
-                                            {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
-                                            {drive.RootDirectory} <br /> 
-                                            <Faded>{bytesToSize(drive.TotalSize)}</Faded>
-                                        </div>
-                                        <div className="graph-bar">
-                                            <Bar
-                                                value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
-                                                style={{width: "100%"}} 
-                                                color={true}
-                                            />
-                                            <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
-                                        </div>
-                                    </div>
-                                })}
-                            </Fixed>
-                            <Flex />
-                        </SystemPanel>
+                        {panels.gpu(gpu)}
+                        {panels.drive(stats)}
                     </FlexRow>
                 </FlexCol>
             </div>

@@ -177,7 +177,8 @@ export class ConnectScreen extends React.Component<{}, {
         if (config.autoConnect) {
             let {host, port} = config.autoConnect as any
             this.setState({host, port})
-            connect(host, port)
+            setTimeout(() => connect(host, port), 1000) //because the server succs
+            
         }
         loginEvents.fail = (text: string) => {
             this.setState({message: text, connecting: false})
