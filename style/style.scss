@@ -148,6 +148,25 @@ td {
 	height: 100%
 }
 
+.screen-page.fullscreen {
+	min-width: 100%;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+    position: absolute;
+    padding: 0px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 12;
+	& .double-header {
+		padding-top:2px;
+		padding-bottom:0px;
+		height:initial;
+		margin-bottom: 16px;
+	}
+}
+
 @media (max-width: $screen-xs-max) {
 	.task-memory, .task-memory-head, .task-id, .task-id-head {
 		display: none;
