@@ -225,19 +225,19 @@ export class FileList extends React.Component<{}, FileSystemState & {
             </div>
         }
         let {tree, uploads} = this.state
-        return <div className="fs-panel">
+        return <div className="ulterius-panel">
             <input ref={ref => this.upload = ref} className="upload" type="file" onChange={this.handleUpload}/>
-            <div className="fs-controls" ref={ref => this.headerBar = ref}>
-                <div className="control-button" onClick={fileSystemActions.goBack}>
+            <div className="fixed-toolbar" ref={ref => this.headerBar = ref}>
+                <div className="toolbar-button merge-right" onClick={fileSystemActions.goBack}>
                     <Glyphicon glyph="arrow-left" />
                 </div>
-                <div className="control-button" onClick={fileSystemActions.goForward}>
+                <div className="toolbar-button" onClick={fileSystemActions.goForward}>
                     <Glyphicon glyph="arrow-right" />
                 </div>
-                <div className="control-button" onClick={() => this.upload.click()}>
+                <div className="toolbar-button-bare" onClick={() => this.upload.click()}>
                     <Glyphicon glyph="export" />
                 </div>
-                <div className="control-button" onClick={() => 
+                <div className="toolbar-button-bare" onClick={() => 
                     this.refresh(this.state.tree.RootFolder.Name)
                 }>
                     <Glyphicon glyph="refresh" />
@@ -268,7 +268,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
                 </div>
             </div>
             <div className="row">
-                <div className="col-xs-12" style={{marginTop: 50}} ref={ref => this.fileList = ref}>
+                <div className="col-xs-12" style={{marginTop: 70}} ref={ref => this.fileList = ref}>
                     {this.state.searching ? <Spinner dark/> : this.outerTable()}
                     <div style={{textAlign: "center", marginBottom: 30}}>
                         {this.state.searchResult ? <Button bsStyle="link" onClick={() => {

@@ -29,6 +29,7 @@ class MessageStore extends AbstractStoreModel<MessageState> {
         this.bindListeners({
             handleMessage: [
                 messageActions.message,
+                messageActions.msg,
                 messageActions.plainMessage,
                 messageActions.processHasBeenKilled
             ]

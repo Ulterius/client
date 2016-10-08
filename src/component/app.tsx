@@ -29,6 +29,7 @@ import {
 import {DebugPage} from "./debug"
 import {TerminalPage} from "./terminal"
 import {ScreenPage} from "./screen"
+import {ScriptPage} from "./script"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link, hashHistory} from 'react-router'
@@ -37,6 +38,29 @@ import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
 import MediaQuery = require("react-responsive")
 
+interface Page {
+    route: string,
+    label: string,
+    title: string,
+    icon: string,
+    component: React.ReactType
+}
+
+function newPage(route: string, label: string, icon: string, component: React.ReactType) {
+    return {route, label, title: label, icon, component}
+}
+
+const pages: Page[] = [
+    ["/tasks", "Task Manager", "task", TaskPage],
+    ["/info", "System Information", "stats", SystemPage],
+    ["/cameras", "Cameras", "camera", CameraPage],
+    ["/filesystem", "Filesystem", "filesystem", FilePage],
+    ["/screen", "Screen Share", "screenshare", ScreenPage],
+    ["/terminal", "Terminal", "terminal", TerminalPage],
+    ["/script", "Cron jobs", "terminal", ScriptPage]
+].map(pg => newPage.apply(null, pg))
+
+const debugPage = newPage("/debug", "API Debug", "terminal", DebugPage)
 
 function NavItem(props: {className: string, path: string, label: string, icon: string}) {
     let {className, path, label, icon} = props
@@ -52,7 +76,10 @@ const fullHeight: React.CSSProperties = {
     height: "100%"
 }
 
-function TopBar({currentPage, children}: {currentPage: string, children?: React.ReactElement<any> | React.ReactElement<any>[]}) {
+function TopBar({currentPage, children}: {
+    currentPage: string, 
+    children?: React.ReactElement<any> | React.ReactElement<any>[]
+}) {
     let items = React.Children.map(children, (child: React.ReactElement<any>) => {
         return React.cloneElement(child, {className: "bar-item"})
     })
@@ -83,7 +110,8 @@ export default class App extends React.Component<{
         "/vnc": "VNC",
         "/screen": "Screen Share",
         "/terminal": "Terminal",
-        "/debug": "API Debug"
+        "/debug": "API Debug",
+        "/script": "Cron jobs"
     }
     constructor(props) {
         super(props)
@@ -195,10 +223,10 @@ class Sidebar extends React.Component<{
         this.setState({open: false})
     }
     getActiveClassName(path: string) {
-          return this.props.activePath == path ? "active" : ""
+          return this.getActive(path) ? "active" : ""
     }
     getActive(path: string) {
-        return this.props.activePath == path
+        return this.props.activePath == path || (this.props.activePath == "/" && path == "/tasks")
     }
     debugItem() {
         if (this.props.debugMenu) {
@@ -218,6 +246,16 @@ class Sidebar extends React.Component<{
             </div>
             <UserWidget />
             <ul className="nav nav-pills nav-stacked">
+                {pages.map(({route, icon, label}) => {
+                    return <NavItem 
+                        className={this.getActiveClassName(route)}
+                        path={route}
+                        icon={icon}
+                        label={label}
+                        key={route}
+                    />
+                })}
+                {/*
                 <NavItem 
                     className={
                         (this.getActive("/tasks") ||
@@ -240,16 +278,6 @@ class Sidebar extends React.Component<{
                     path="/filesystem"
                     icon="filesystem"
                     label="Filesystem" />
-                {/*<NavItem 
-                    className={this.getActiveClassName("/plugin")} 
-                    path="/plugin"
-                    icon="plus-sign"
-                    label="Plugins"/>
-                <NavItem 
-                    className={this.getActiveClassName("/settings")} 
-                    path="/settings"
-                    icon="cog"
-                    label="Settings" />*/}
                 <NavItem
                     className={this.getActiveClassName("/screen")}
                     path="/screen"
@@ -260,6 +288,11 @@ class Sidebar extends React.Component<{
                     path="/terminal"
                     icon="terminal"
                     label="Terminal" />
+                <NavItem 
+                    className={this.getActiveClassName("/script")}
+                    path="/script"
+                    icon="terminal"
+                    label="Cron jobs" /> */}
                 {this.debugItem()}
             </ul>
         </div>
@@ -311,10 +344,10 @@ const routes = <Route path="/" component={App}>
             <Route path="tasks" component={TaskPage} />
             <Route path="info" component={SystemPage} />
             <Route path="cameras" component={CameraPage} />
-            
             <Route path="filesystem" component={FilePage} />
             <Route path="screen" component={ScreenPage} />
             <Route path="terminal" component={TerminalPage} />
+            <Route path="script" component={ScriptPage} />
             <Route path="debug" component={DebugPage} />
             {/* <Route path="plugin" component={PluginPage} /> 
             <Route path="settings" component={SettingsPage} />*/}

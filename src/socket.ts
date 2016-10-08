@@ -528,9 +528,12 @@ function endpointSendFn(
     }
 }
 
-class UlteriusConnection extends Connection {
+export class UlteriusConnection extends Connection {
     socketType = SocketType.Main
     bindLegacy: boolean = true
+    asyncResolves: {
+        [syncKey: string]: (value?: any | Thenable<any>) => void
+    } = {}
     send(action, args?) {
         var packet: any = {
             endpoint: action.toLowerCase(),
@@ -569,9 +572,16 @@ class UlteriusConnection extends Connection {
             callbacks[key] = rest[rest.length - 1]
         }
         else {
-            callbacks[key] = console.log.bind(console)
+            //callbacks[key] = console.log.bind(console)
         }
-        return this.promiseToSendPacket(packet, packet.endpoint)
+        this.promiseToSendPacket(packet, packet.endpoint)
+        return new Promise<any>((resolve, reject) => {
+            _.assign(this.asyncResolves, {[key]: resolve})
+            setTimeout(() => {
+                reject("Timed out.")
+                delete this.asyncResolves[key]
+            }, 4000)
+        })
     }
 
     doesMessageMatch(message, queueMessage) {
@@ -632,6 +642,10 @@ class UlteriusConnection extends Connection {
                 typeof callbacks[synckey] == "function") {
                 callbacks[synckey](results, message)
                 delete callbacks[synckey]
+            }
+            if (this.asyncResolves[synckey]) {
+                this.asyncResolves[synckey](results)
+                delete this.asyncResolves[synckey]
             }
         }
     }
@@ -773,3 +787,14 @@ export function sendCommand(sock: WebSocket, action: string, args?: any) {
 
 export let sendCommandAsync = mainConnection.sendAsync.bind(mainConnection)
 export let disconnect = mainConnection.disconnect.bind(mainConnection)
+
+export function getSenderFactory(connection: Connection) {
+    return (endpoint: string) => (...args: any[]) => {
+        if (args.length) {
+            connection.send(endpoint, args)
+        }
+        else {
+            connection.send(endpoint)
+        }
+    }
+}

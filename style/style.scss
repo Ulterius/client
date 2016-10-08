@@ -6,6 +6,8 @@
 @import "sidebar";
 @import "grid";
 @import "ui";
+@import "script";
+@import "codemirror";
 
 @font-face {
 	font-family: ProximaNova;
@@ -142,7 +144,7 @@ td {
 	padding-right: 20px;
 }
 
-.terminal-page, .file-page, .system-page, .screen-page, .camera-page, .task-page {
+.terminal-page, .system-page, .screen-page, .camera-page, .task-page {
 	padding-top: 20px;
 	padding-bottom: 20px;
 	height: 100%
@@ -191,6 +193,10 @@ td {
 
 		//margin-left: calc((0.5 * (100% - #{$sidebar-width})) - 450px + #{$sidebar-width})
 		float: none !important;
+	}
+	.script-page {
+		max-width: 1200px;
+		margin: auto;
 	}
 }
 

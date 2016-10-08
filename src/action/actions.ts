@@ -6,6 +6,7 @@ interface MessageActionFunctions {
     plainMessage(message: string): Message
     processHasBeenKilled(process: KilledProcessInfo): Message
     message(message: Message): Message
+    msg(style: string, text: string): Message
 }
 
 class MessageActions extends AbstractActions implements MessageActionFunctions {
@@ -23,6 +24,9 @@ class MessageActions extends AbstractActions implements MessageActionFunctions {
     }
     message(message: Message) {
         return message
+    }
+    msg(style: string, text: string) {
+        return {style, text}
     }
 }
 
@@ -248,3 +252,29 @@ class TerminalActions extends AbstractActions {
 }
 
 export let terminalActions = alt.createActions<TerminalActionFunctions>(TerminalActions)
+
+
+interface ScriptActionFunctions {
+    getAllJobs(jobs: ScriptInfo.Scripts): ScriptInfo.Scripts
+    mergeFromServer(newScript: ScriptInfo.FullScript): ScriptInfo.FullScript
+    mergeLocally(script: ScriptInfo.FullScript): ScriptInfo.FullScript
+    getDaemonStatus(running: boolean): boolean
+    setActive(activeScript: string): string
+    remove(guid: string): string
+}
+
+class ScriptActions extends AbstractActions {
+    constructor(alt: AltJS.Alt) {
+        super(alt)
+        this.generateActions(
+            "getAllJobs",
+            "mergeFromServer",
+            "mergeLocally",
+            "getDaemonStatus",
+            "setActive",
+            "remove"
+        )
+    }
+}
+
+export let scriptActions = alt.createActions<ScriptActionFunctions>(ScriptActions)

@@ -6,7 +6,7 @@ import {helpers} from "../api-layer"
 //import {api} from "../api"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
-import {LoadingScreen, Gauge} from "./"
+import {LoadingScreen, Gauge, Either, Left, Right} from "./"
 import {panel, FlexRow, FlexCol, Meter, createDivComponent} from "./ui"
 import * as _ from  "lodash"
 import classNames = require("classnames")
@@ -381,8 +381,8 @@ export class SystemPage extends React.Component<{}, {
     render() {
         let {os, cpu, network, gpu, stats} = this.state
         if (!(os && cpu && network && gpu && stats)) {
-            let percent = [os, cpu, network, gpu, stats]
-                .map(e => (e ? 1 : 0)).reduce((a, b) => a+b) * 20
+            let percent = ([os, cpu, network, gpu, stats]
+                .map(e => (e ? 1 : 0)) as number[]).reduce((a, b) => a+b) * 20
                 
             return <LoadingScreen percentage={percent}>
                 Loading system information <br />

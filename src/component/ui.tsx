@@ -3,8 +3,8 @@ import Component = React.Component
 import ReactElement = React.ReactElement
 import classNames = require("classnames")
 import _ = require("lodash")
-import {omit, assign} from "lodash"
-import {stringIf, addClassName} from "../util"
+import {omit, assign, merge} from "lodash"
+import {stringIf, addClassName, buildClassName} from "../util"
 import {Glyphicon} from "react-bootstrap"
 /*
 export function createDivComponent(className: string) {
@@ -33,6 +33,84 @@ export function createSimpleComponent<T>(elementType: string, className: string)
     }
 }
 
+interface TextInputProps extends React.HTMLAttributes {
+    leftAddon?: string
+}
+
+export function TextInput(props: TextInputProps) {
+    const className = classNames("form-control", props.className)
+    let inner
+    let inputProps = omit(props, "leftAddon")
+    if (props.leftAddon) {
+        inner = <div className="input-group">
+            <span className="input-group-addon">{props.leftAddon}</span>
+            <input type="text" {...inputProps} className={className} />
+        </div>
+    }
+    else {
+        inner = <input type="text" {...inputProps} className={className} />
+    }
+    return <div className="form-group">
+        {inner}
+    </div>
+    /*
+    return <div className="form-group">
+        <input type="text" {...inputProps} className={className} />
+    </div> */
+}
+
+/*
+export function ToolbarTextInput(props: React.HTMLAttributes) {
+    return <div className="toolbar-text-input">
+        <TextInput {...props} />
+    </div>
+}
+*/
+
+export const ToolbarLabel = createDivComponent("toolbar-label")
+export const ToolbarRightAlign = createDivComponent("toolbar-right-align")
+
+export const ToolbarTextBox = createDivComponent("toolbar-text-box")
+//export const Toolbar = createDivComponent("toolbar")
+
+interface ToolbarProps extends React.HTMLAttributes {
+    fixed?: boolean
+}
+export function Toolbar(props: ToolbarProps) {
+    const className = classNames(
+        props.fixed ? "toolbar-fixed" : "toolbar",
+        props.className
+    )
+    return <div {...omit(props, "fixed")} className={className}>
+        {props.children}
+    </div>
+}
+
+interface ToolbarButtonProps extends React.HTMLAttributes {
+    btnStyle?: "primary" | "bare",
+    mergeRight?: boolean,
+    icon?: string
+}
+export function ToolbarButton(props: ToolbarButtonProps) {
+    const {btnStyle, mergeRight} = props
+    const className = classNames(
+        buildClassName(
+            btnStyle, 
+            `toolbar-button-${btnStyle}`, 
+            "toolbar-button"
+        ),
+        {"merge-right": mergeRight},
+        props.className
+    )
+    const icon = !!props.icon ? glyphicon(props.icon) : null
+    const space = !!props.icon ? " " : null
+    return <div {...omit(props, "btnStyle", "mergeRight")} className={className}>
+        {icon}{space}{props.children}
+    </div>
+}
+
+
+
 export const panel = {
     Panel: createDivComponent("ulterius-panel"),
     Header: createDivComponent("header"),
@@ -49,7 +127,12 @@ export const FlexCol = createDivComponent("flex-col")
 
 export function Meter() {
     return <svg viewBox="0 0 100 75">
-        <path d="M25 40 C 35 20 65 20 75 40" style={{strokeWidth: 20}} stroke="black" fill="transparent"/>
+        <path 
+            d="M25 40 C 35 20 65 20 75 40" 
+            style={{strokeWidth: 20}} 
+            stroke="black" 
+            fill="transparent"
+        />
     </svg>
 }
 

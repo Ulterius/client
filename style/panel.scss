@@ -283,47 +283,142 @@
 	}
 }
 
-.fs-panel {
-	@extend .ulterius-panel;
-	.fs-controls {
-		padding: 10px;
-		margin-top: -20px;
-		border: {
-			bottom: $solid-line;
-			top: $solid-line;
-		}
-		background-color: white;
-		display: flex;
-		position: fixed;
-		z-index: 3;
-		.control-button {
-			padding: 10px 15px 6px 15px;
-			margin: 0 10px 0 0;
-			background-color: $bg;
-			cursor: pointer;
-			&:hover {
-				background-color: darken($bg, 10%)
-			}
-		}
-		.file-bar {
-			@extend .bare-input-button;
-			width: 50%;
-			flex: none;
-			input[type="text"] {
-				font-family: ProximaNova;
-			}
-		}
-		.search-bar {
-			@extend .bare-input-button;
-			.input-group {
-				border: $solid-line !important;
-				box-shadow: $hole-shadow !important;
-			}
-			input[type="text"] {
-				font-family: ProximaNova;
-			}
+.toolbar {
+	padding: 10px;
+	border: {
+		bottom: $solid-line;
+		top: $solid-line;
+	}
+	background-color: white;
+	flex: none;
+	display: flex;
+	align-items: center;
+	z-index: 3;
+	.file-bar {
+		@extend .bare-input-button;
+		width: 50%;
+		flex: none;
+		input[type="text"] {
+			font-family: ProximaNova;
 		}
 	}
+	.search-bar {
+		@extend .bare-input-button;
+		.input-group {
+			border: $solid-line !important;
+			box-shadow: $hole-shadow !important;
+		}
+		input[type="text"] {
+			font-family: ProximaNova;
+		}
+	}
+}
+
+.toolbar-right-align {
+	display: flex;
+	flex-grow: 1;
+	justify-content: flex-end;
+}
+
+.toolbar-text-box {
+	@extend .bare-input-button;
+	.input-group {
+		border: $solid-line !important;
+		box-shadow: $hole-shadow !important;
+		//height: 100%;
+	}
+	input[type="text"] {
+		font-family: ProximaNova;
+		//font-size: 12px;
+		//height: 100%;
+	}
+	span.input-group-addon {
+		@extend .label-text;
+		@extend .reset-bs;
+		color: $ulterius-light-grey;
+		padding-right: 5px;
+		padding-top: 13px;
+	}
+	margin-right: 10px;
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
+.dark-label-text {
+	@extend .label-text;
+	color: $ulterius-light-grey;
+}
+
+.toolbar-button {
+	padding: 10px 15px 10px 15px;
+	margin-right: 10px;
+	background-color: white;
+	cursor: pointer;
+	border: $solid-line;
+	border-bottom: solid $line-color 2px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	span {
+		line-height: inherit;
+	}
+	&:hover {
+		background-color: darken(white, 2%);
+	}
+	&:active {
+		border-bottom-width: 1px;
+		margin-top: 1px;
+	}
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
+.merge-right {
+	margin-right: 0;
+	border-right: none;
+	padding-right: 14;
+}
+
+.toolbar-label {
+	padding: 11px 15px 10px 17px;
+	margin-right: 10px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
+.toolbar-button-bare {
+	@extend .toolbar-button;
+	background: none;
+	margin-right: 0;
+	padding-right: 10px;
+	border-color: rgba(0, 0, 0, 0);
+	&:hover {
+		background: none;
+		color: $ulterius-light-grey;
+	}
+}
+
+.toolbar-button-primary {
+	@extend .toolbar-button;
+	background-color: $ulterius-light-grey;
+	border-color: $ulterius-grey;
+	color: white;
+	&:hover {
+		background-color: darken($ulterius-light-grey, 2%)
+	}
+}
+
+.fixed-toolbar {
+	@extend .toolbar;
+	position: fixed;
 }
 
 .gauge-box {

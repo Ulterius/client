@@ -10,6 +10,29 @@ import classNames = require("classnames")
 import {TransitionMotion, spring, presets} from "react-motion"
 
 
+export function Left({children}: {children?: React.ReactNode}) {
+    return React.Children.only(children)
+}
+
+export function Right({children}: {children?: React.ReactNode}) {
+    return React.Children.only(children)
+}
+//export const Left = ({children}: {children: React.ReactNode}) => children
+//export const Right = ({children}: {children: React.ReactNode}) => children
+
+const findChildren = (children: any[], type) => (
+  children.reduce((memo, child) => (
+    child.type === type ? child : memo
+  ), null)
+)
+
+export const Either = ({children}: {children: React.ReactNode}) => {
+    const childArray = React.Children.toArray(children)
+    return _.find(children as any, (child) => child !== " ")
+        ? findChildren(React.Children.toArray(children), Right)
+        : findChildren(React.Children.toArray(children), Left)
+}
+
 export function Bar(props: {value?: number, color?: boolean, style?: any}) {
     let color = function(colored: boolean) {
         if (colored) {
@@ -656,3 +679,4 @@ export class DisconnectOverlay extends Component<{}, {
         return null;
     }
 }
+

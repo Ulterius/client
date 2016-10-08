@@ -38,6 +38,7 @@ import * as terminal from "./api/terminal"
 import * as screen from "./api/screen"
 import * as settings from "./api/settings"
 import * as camera from "./api/camera"
+import * as script from "./api/script"
 export let terminalApi = terminal.terminalApi
 
 const mC = mainConnection
@@ -83,6 +84,7 @@ export let helpers = {
 
 export let settingsApi = settings.register(mC)
 export let cameraApi = camera.register(mC, alternativeConnection)
+export let scriptApi = script.register(mC)
 
 export let listeners: {[key: string]: Function[]} = {}
 
@@ -355,4 +357,9 @@ export function disconnectedFromUlterius() {
 }
 
 function onAuthenticate() {
+    /*
+    mainConnection.sendAsync("requestsysteminformation").then(msg => {
+        console.log("Testicle promise resolved!")
+        console.log(msg)
+    }) */
 }

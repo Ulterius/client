@@ -11,6 +11,17 @@ interface DebugPageState {
     debugObjects: ApiMessage[]
 }
 
+export function LovelyStyledTree({data}: {data: any}) {
+    return <JSONTree 
+        theme={{
+            tree: {
+                backgroundColor: "none"
+            }
+        }}
+        data={data}
+    />
+}
+
 export class DebugPage extends Component<{}, DebugPageState> {
     objectsElement: HTMLDivElement
     constructor(props, context) {

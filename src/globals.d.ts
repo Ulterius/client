@@ -583,6 +583,52 @@ declare interface VncInfo {
     message: string
 }
 
+declare namespace ScriptInfo {
+    interface Script {
+        Name?: string,
+        Type?: string,
+        Schedule?: string
+    }
+    interface Scripts {
+        [guid: string]: Script
+    }
+    interface ProcessedScript extends Script {
+        Guid: string,
+        Base64ScriptContents: string
+    }
+    interface FullScript extends Script {
+        Guid: string,
+        ScriptContents?: string,
+        dirty?: boolean
+    }
+    interface Contents {
+        Id: string,
+        Base64ScriptContents: string,
+        ScriptExist: boolean
+    }
+    interface Updated {
+        AddedOrUpdated: boolean,
+        Message: string,
+        SavedTo: string
+    }
+    interface Removed {
+        Id: string,
+        JobRemoved: boolean,
+        JobExisted: boolean
+    }
+    namespace Daemon {
+        interface Started {
+            Started: boolean
+        }
+        interface Stopped {
+            ShutDown: boolean
+        }
+        interface Status {
+            Online: boolean
+        }
+    }
+}
+
 declare interface WorkerMessage<T> {
     type: string,
     content: T

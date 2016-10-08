@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/0eb97d80348f04535ebc4c88fa2b60d8f61507f0/react-codemirror/react-codemirror.d.ts",
+    "raw": "registry:dt/react-codemirror#0.2.6+20160619021621",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/0eb97d80348f04535ebc4c88fa2b60d8f61507f0/react-codemirror/react-codemirror.d.ts"
+  }
+}
