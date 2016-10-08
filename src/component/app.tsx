@@ -38,6 +38,7 @@ import {bootstrapSizeMatches} from "../util"
 import {appActions} from "../action"
 import MediaQuery = require("react-responsive")
 
+
 interface Page {
     route: string,
     label: string,
@@ -51,22 +52,22 @@ function newPage(route: string, label: string, icon: string, component: React.Re
 }
 
 const pages: Page[] = [
-    ["/tasks", "Task Manager", "task", TaskPage],
-    ["/info", "System Information", "stats", SystemPage],
-    ["/cameras", "Cameras", "camera", CameraPage],
-    ["/filesystem", "Filesystem", "filesystem", FilePage],
-    ["/screen", "Screen Share", "screenshare", ScreenPage],
-    ["/terminal", "Terminal", "terminal", TerminalPage],
-    ["/script", "Cron jobs", "terminal", ScriptPage]
+    ["/tasks", "Task Manager", "task.svg", TaskPage],
+    ["/info", "System Information", "stats.svg", SystemPage],
+    ["/cameras", "Cameras", "camera.svg", CameraPage],
+    ["/filesystem", "Filesystem", "filesystem.svg", FilePage],
+    ["/screen", "Screen Share", "screenshare.svg", ScreenPage],
+    ["/terminal", "Terminal", "terminal.svg", TerminalPage],
+    ["/script", "Cron jobs", "cron.png", ScriptPage]
 ].map(pg => newPage.apply(null, pg))
 
-const debugPage = newPage("/debug", "API Debug", "terminal", DebugPage)
+const debugPage = newPage("/debug", "API Debug", "terminal.svg", DebugPage)
 
 function NavItem(props: {className: string, path: string, label: string, icon: string}) {
     let {className, path, label, icon} = props
     return <li className={className}>
         <Link to={path}>
-            <img src={require("icon/"+icon+".svg")} />
+            <img src={require("icon/"+icon)} />
             <span className="tab-label">&nbsp; &nbsp; {label}</span>
         </Link>
     </li>
@@ -233,7 +234,7 @@ class Sidebar extends React.Component<{
             return <NavItem
                 className={this.getActiveClassName("/debug")}
                 path="/debug"
-                icon="terminal"
+                icon="terminal.svg"
                 label="API Debug"
             />
         }

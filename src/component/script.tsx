@@ -23,6 +23,7 @@ import CodeMirror = require("react-codemirror")
 import JSONTree from "react-json-tree"
 import {pick, assign, merge} from "lodash"
 import cronstrue = require("cronstrue")
+require("codemirror/mode/powershell/powershell")
 
 interface ScriptPageState extends ScriptState {
     editorText?: string
@@ -240,7 +241,6 @@ export class ScriptPage extends Component<{}, ScriptPageState> {
                         </TButton>
                         <TTextBox style={{width: 200}}>
                             <TextInput 
-                                placeholder="Name..." 
                                 value={nameText}
                                 onChange={this.onNameChange}
                                 leftAddon={"Name"}
@@ -248,7 +248,6 @@ export class ScriptPage extends Component<{}, ScriptPageState> {
                         </TTextBox>
                         <TTextBox style={{width: 200}}>
                                 <TextInput 
-                                    placeholder="Schedule..." 
                                     value={this.state.scheduleText}
                                     onChange={this.onScheduleChange}
                                     leftAddon={"Schedule"}
@@ -278,7 +277,8 @@ export class ScriptPage extends Component<{}, ScriptPageState> {
                                     }}
                                     options={{
                                         lineWrapping: true,
-                                        lineNumbers: true
+                                        lineNumbers: true,
+                                        mode: "powershell"
                                     }} 
                                 />
                             </Right>
