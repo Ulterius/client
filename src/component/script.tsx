@@ -163,17 +163,6 @@ export class ScriptPage extends Component<{}, ScriptPageState> {
         this.saveLocally()
         scriptActions.setActive(id)
     }
-    /*
-    removeActiveScript() {
-        const activeScript = this.activeScript()
-        if (activeScript.dirty) {
-            scriptActions.remove(activeScript.Guid)
-        }
-        else {
-            api.remove(activeScript.Guid)
-        }
-    }
-    */
     scheduleBox() {
         const {scheduleText, activeScriptId, daemonRunning} = this.state
         let scheduleDescription = "No schedule."
@@ -253,7 +242,6 @@ export class ScriptPage extends Component<{}, ScriptPageState> {
                                     leftAddon={"Schedule"}
                                 />
                         </TTextBox>
-                        
                         <TRightAlign>
                             <TLabel className="dark-label-text">type</TLabel>
                             <select 
