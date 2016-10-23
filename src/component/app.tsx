@@ -180,7 +180,7 @@ export default class App extends React.Component<{
         return <div style={fullHeight}>
             <Sidebar activePath={this.props.location.pathname} debugMenu={this.state.app.debugMenu}/>
             <ModalSettings show={showSettings} />
-            <TopBar currentPage={this.pathMap[this.props.location.pathname]}>
+            <TopBar currentPage={this.pathMap[this.props.location.pathname] || "Task Manager"}>
                 <div onClick={() => {
                     this.setState({showSettings: true})
                 }}>

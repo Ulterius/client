@@ -7,7 +7,7 @@ import {helpers} from "../api-layer"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
 import {LoadingScreen, Gauge, Either, Left, Right} from "./"
-import {panel, FlexRow, FlexCol, Meter, createDivComponent} from "./ui"
+import {panel, FlexRow, FlexCol, Meter, createDivComponent, glyphicon} from "./ui"
 import * as _ from  "lodash"
 import classNames = require("classnames")
 //import {Gauge} from "./ui"
@@ -200,6 +200,31 @@ function Faded(props: {children?: any}) {
 
 let updateInterval
 
+function getNetworkDevices(count: number): NetworkDeviceInfo[] {
+    let devices: NetworkDeviceInfo[] = []
+    for (let i = 0; i < count; i++) {
+        devices.push({
+            Ip: "0.0.0.0",
+            Name: "Unknown",
+            MacAddress: "5404A6419018"
+        })
+    }
+    return devices
+}
+
+let testDevices = getNetworkDevices(20)
+
+function getDeviceGlyph(name: string) {
+    let uName = name.toUpperCase()
+    if (uName.indexOf("IPHONE") !== -1 || uName.indexOf("ANDROID") !== -1) {
+        return "phone"
+    }
+    if (uName.indexOf("DESKTOP") !== -1 || uName.indexOf("MAC") !== -1) {
+        return "user"
+    }
+    return "map-marker"
+}
+
 const panels = {
     OS(os: OSInfo) {
         return <SystemPanel emptyBody 
@@ -236,7 +261,18 @@ const panels = {
         return <SystemPanel flexGrow={1} title="network" image={
             <img src={require("icon/network.svg")} width="52" height="40" />
         }>
-            <Flex />
+            <FixedCenter>Devices</FixedCenter>
+            <FlexFixed>
+                {network.networkDevices
+                    .filter(d => d.MacAddress !== network.macAddress)
+                    .map(device => {
+                    return <FixedCenter>
+                        {glyphicon(getDeviceGlyph(device.Name))} <br />
+                        {device.Name} <br />
+                        <Faded>{device.Ip}</Faded>
+                    </FixedCenter>
+                })}
+            </FlexFixed>
             <SystemFooter>
                 <StatItem isFooter head="public ip">
                     <span className="hover-container">

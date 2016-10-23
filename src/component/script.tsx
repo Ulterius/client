@@ -44,10 +44,16 @@ function ListToolbar({onNew, daemonRunning}: ListToolbarProps) {
         <TRightAlign>
             <TLabel>{daemonRunning ? "Daemon running" : " Daemon stopped"}</TLabel>
             {(() => {
-                if (daemonRunning)
-                    return <TButton icon="stop" onClick={() => api.daemon.stop()}>Stop</TButton>
-                else
-                    return <TButton icon="play" onClick={() => api.daemon.start()}>Start</TButton>
+                if (daemonRunning) {
+                    return <TButton icon="stop" onClick={() => api.daemon.stop()}>
+                        Stop
+                    </TButton>
+                }
+                else {
+                    return <TButton icon="play" onClick={() => api.daemon.start()}>
+                        Start
+                    </TButton>
+                }
             })()}
         </TRightAlign>
     </Toolbar>
