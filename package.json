@@ -48,7 +48,7 @@
     "ts-events": "^3.1.1"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^0.17.0",
+    "awesome-typescript-loader": "^2.2.4",
     "eslint-plugin-react": "^4.2.3",
     "extract-loader": "0.0.2",
     "file-loader": "^0.9.0",
@@ -65,7 +65,7 @@
     "style-loader": "^0.13.0",
     "ts-loader": "^0.7.2",
     "typescript": "^2.1.0-dev.20160830",
-    "webpack": "^1.13.0",
+    "webpack": "^1.13.3",
     "webpack-dev-server": "^1.14.1",
     "webpack-merge": "^0.14.1",
     "webpack-validator": "^2.2.7",
