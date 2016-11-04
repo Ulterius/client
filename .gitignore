@@ -13,5 +13,5 @@ public/socket.worker.js*
 public/spec.js*
 .vscode
 .jshintrc
-public.zip
+public*.zip
 cyka.txt
