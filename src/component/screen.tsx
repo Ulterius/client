@@ -26,15 +26,32 @@ interface ScreenCoordinates {
 
 //let img = new Image()
 
+function sendKeyCombo(...codes: number[]) {
+    //screenShareApi.keysDown(codes)
+    codes.forEach((code, i) => {
+        setTimeout(() => {
+            screenShareApi.keyDown(code)
+        }, 100*i)
+        setTimeout(() => {
+            screenShareApi.keyUp(code)
+        }, 500 + (100*i))
+    })
+    //codes.forEach(screenShareApi.keyDown)
+    //setTimeout(() => {codes.forEach(screenShareApi.keyUp)}, 500)
+    //setTimeout(() => {screenShareApi.keysUp(codes)}, 500)
+}
+
 class ScreenShare extends Component<{}, {
     hasFrame?: boolean,
     maximized?: boolean,
     frame?: string,
     screenWidth?: number,
     screenHeight?: number
+    showKeyCombos?: boolean
 }> {
     canvas: HTMLCanvasElement
     canvasCtx: CanvasRenderingContext2D
+    keyCombos: HTMLDivElement
     constructor() {
         super()
         this.state = {}
@@ -86,6 +103,7 @@ class ScreenShare extends Component<{}, {
             })
             this.unbindKeys()
         })
+        window.addEventListener("resize", this.onResize)
     }
     bindKeys() {
         document.addEventListener("keydown", this.onKeyDown)
@@ -101,6 +119,7 @@ class ScreenShare extends Component<{}, {
             event.detach()
         })
         this.unbindKeys()
+        window.removeEventListener("resize", this.onResize)
     }
     cancelEvents(e: React.SyntheticEvent | Event) {
         e.preventDefault()
@@ -134,6 +153,37 @@ class ScreenShare extends Component<{}, {
     processMouse(e: React.MouseEvent) {
         this.cancelEvents(e)
         return this.transformMouse(e)
+    }
+    onResize = () => {
+        console.log(this.canvas, this.keyCombos)
+        if (this.canvas && this.keyCombos) {
+            const rect = this.canvas.getBoundingClientRect()
+            this.keyCombos.style.top = rect.top + "px"
+            this.keyCombos.style.left = rect.left + "px"
+        }
+    }
+    componentDidUpdate() {
+        this.onResize()
+    }
+    keys() {
+        const display = this.state.showKeyCombos ? "block" : "none"
+        const s: React.CSSProperties = {
+            display, 
+            position: "fixed", 
+            marginLeft: 10, 
+            marginTop: 10
+        }
+        const ps: React.CSSProperties = {
+            cursor: "pointer"
+        }
+        return <div style={s} ref={ref => {if (ref) this.keyCombos = ref}}>
+            <div><kbd style={ps} onClick={() => {
+                console.log("event")
+                //sendKeyCombo(17, 18, 46)
+                screenShareApi.ctrlAltDel()
+            }}>ctrl + alt + delete</kbd></div>
+            <div onClick={() => {sendKeyCombo(17, 67)}}><kbd style={ps}>alt + f4</kbd></div>
+        </div>
     }
     frameImg() {
         let {screenWidth, screenHeight} = this.state
@@ -235,7 +285,11 @@ class ScreenShare extends Component<{}, {
     }
     frame() {
         if (this.state.screenWidth) {
-            return <div id='remoteDesktop' className="fixed">{this.frameImg()}</div>
+            console.log(this.canvasCtx)
+            return <div id='remoteDesktop' className="fixed">
+                {this.frameImg()}
+                {this.keys()}
+            </div>
         }
         return <Center noHeight style={{flexGrow: 1}}>
             <p>Not connected to Screen Share.</p>
@@ -250,7 +304,7 @@ class ScreenShare extends Component<{}, {
         return <div  className={screenClass} style={{height: "100%"}}>
         <div className="ulterius-panel" style={{height: "100%"}}>
             <div className="double-header">
-                <div>screen share</div>
+                <div onClick={() => this.setState({showKeyCombos: !this.state.showKeyCombos})}>screen share</div>
                 {this.connected()}
             </div>
             {this.frame()}

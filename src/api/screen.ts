@@ -25,6 +25,12 @@ export let screenEvents = {
     start: new SyncEvent
 }
 
+function toWindows(code) {
+    //for our good friend, the alt key.
+    if (code === 18) return 12
+    return code
+}
+
 export let screenShareApi = {
     start() {
         console.log(sC.encrypted)
@@ -74,12 +80,20 @@ export let screenShareApi = {
             sC.callEndpoint("mousescroll", delta)
         }
     },
+    keysDown(codes: number[]) {
+        sC.callEndpoint("keydown", [codes])
+    },
+    keysUp(codes: number[]) {
+        sC.callEndpoint("keyup", [codes])
+    },
     keyDown(code: number) {
         sC.callEndpoint("keydown", [[code]])
-
     },
     keyUp(code: number) {
         sC.callEndpoint("keyup", [[code]])
+    },
+    ctrlAltDel() {
+        sC.callEndpoint("ctrlaltdel")
     }
 }
 
@@ -162,21 +176,22 @@ export function register() {
             }
         },
         fullFrame(msg, sc) {
-            let result: FrameData = msg
-            let includedFrame = decompressData(new Uint8Array(result.frameData)) 
-            screenEvents.frameData.post(result)
-            screenEvents.frame.post({
-                x: 0,
-                y: 0,
-                top: 0,
-                left: 0,
-                bottom: result.screenBounds.bottom,
-                right: result.screenBounds.right,
-                image: includedFrame
-            })
+            if (!msg.frameFailed) {
+                let result: FrameData = msg
+                let includedFrame = decompressData(new Uint8Array(result.frameData)) 
+                screenEvents.frameData.post(result)
+                screenEvents.frame.post({
+                    x: 0,
+                    y: 0,
+                    top: 0,
+                    left: 0,
+                    bottom: result.screenBounds.bottom,
+                    right: result.screenBounds.right,
+                    image: includedFrame
+                })
+            }
         },
         screenShareData(msg: ScreenTile) {
-            console.log("fraem got")
             screenEvents.frame.post(msg)
         }
     })

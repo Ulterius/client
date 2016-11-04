@@ -687,6 +687,7 @@ class TerminalConnection extends Connection {
 class ScreenShareConnection extends Connection {
     loggedIn: boolean = true
     socketType = SocketType.ScreenShare
+    failures: number = 0
     send(packet: any) {
         this.promiseToSendPacket(packet, "ScreenShare")
     }
@@ -726,7 +727,7 @@ class ScreenShareConnection extends Connection {
     }
     onMessage(message: any) {
         this.requestQueue = []
-        console.log(message)
+        //console.log(message)
         if (message.endpoint == "login")
             console.log(message)
         if (message.endpoint == "login" && message.results.loggedIn) {

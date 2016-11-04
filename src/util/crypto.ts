@@ -94,7 +94,13 @@ export function ab2str(buf) {
 }
 
 export function decompressData(data: Uint8Array) {
-	let inflated = pako.inflate(data)
+    let inflated
+    try {
+        inflated = pako.inflate(data)
+    }
+    catch (e) {
+        inflated = data
+    }
 	let blob = new Blob([inflated], {type: "image/jpeg"})
 	return URL.createObjectURL(blob)
     //return arrayBufferToBase64(pako.inflate(data))
