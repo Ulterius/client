@@ -190,6 +190,9 @@ export function register() {
                     image: includedFrame
                 })
             }
+            else {
+                screenEvents.frame.post(msg)
+            }
         },
         screenShareData(msg: ScreenTile) {
             screenEvents.frame.post(msg)

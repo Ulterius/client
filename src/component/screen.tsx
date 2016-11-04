@@ -46,12 +46,13 @@ class ScreenShare extends Component<{}, {
     maximized?: boolean,
     frame?: string,
     screenWidth?: number,
-    screenHeight?: number
+    screenHeight?: number,
     showKeyCombos?: boolean
 }> {
     canvas: HTMLCanvasElement
     canvasCtx: CanvasRenderingContext2D
     keyCombos: HTMLDivElement
+    failures: number = 0
     constructor() {
         super()
         this.state = {}
@@ -77,7 +78,14 @@ class ScreenShare extends Component<{}, {
                 }
             }
         })
-        screenEvents.frameData.attach((data: FrameData) => {
+        screenEvents.frameData.attach((data: FrameData & {frameFailed: boolean}) => {
+            if (data.frameFailed) {
+                if (this.failures < 4) {
+                    screenShareApi.requestFrame()
+                    this.failures++
+                }
+                return;
+            }
             console.log("frame data")
             console.log(data)
             console.log(data.screenBounds)

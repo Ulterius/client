@@ -1,9 +1,9 @@
-
 import React = require("react")
 import Component = React.Component
 import ReactDOM = require("react-dom")
 import {GpuAvailability, bytesToSize, clearFunctions} from "../util"
 import {systemStore, auxillarySystemStore, userStore} from "../store/system-stores"
+import {MessageState, messageStore} from "../store/message-store"
 import {listen} from "../api-layer"
 import * as _ from "lodash"
 import classNames = require("classnames")
@@ -165,7 +165,7 @@ export function Base64Img(props: Base64ImgProps) {
     return <img src={`data:${type};base64,${data}`} {...other} />
 }
 
-import {MessageState, messageStore} from "../store"
+
 import {Alert} from "react-bootstrap"
 import ReactCSSTransitionGroup = require("react-addons-css-transition-group")
 
