@@ -13,7 +13,7 @@ import {
 } 
 from "./action"
 import {appStore, settingsStore} from "./store"
-import {loginEvents} from "./component"
+import {loginEvents, dialogEvents} from "./component"
 
 import {
     sendCommandToDefault,
@@ -152,6 +152,14 @@ export function killProcess(process: KilledProcessInfo) {
     messageActions.processHasBeenKilled(process)
 }
 
+function getAnnouncement(url: string) {
+    return new Promise<Announcement>(resolve => {
+        $.get(url, (announcement: Announcement) => {
+            resolve(announcement)
+        })
+    })
+}
+
 export function authenticate(info: AuthInfo) {
     if (info.authenticated) {
         //sendCommandToDefault("requestsysteminformation")
@@ -159,7 +167,20 @@ export function authenticate(info: AuthInfo) {
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
-        
+        getAnnouncement("https://api.ulterius.io/message/").then(announcement => {
+            console.log(announcement)
+            if (localStorage.getItem("last-announcement") !== announcement.messageId) {
+                let date = new Date(announcement.date * 1000)
+                let datestamp = date.toLocaleDateString()
+                dialogEvents.dialog({
+                    title: datestamp + ": " +announcement.messageTitle,
+                    body: announcement.message,
+                    onClose() {
+                        localStorage.setItem("last-announcement", announcement.messageId)
+                    }
+                })
+            }
+        })
         
         /*
         mainConnection.sendAsync("stopScreenShare", msg => {

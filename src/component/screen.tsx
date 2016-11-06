@@ -5,6 +5,7 @@ import {Base64Img, Center} from "./"
 import {screenShareApi, screenEvents} from "../api/screen"
 import {helpers} from "../api-layer"
 import {tryUntil, clearFunctions} from "../util"
+import {messageActions} from "../action"
 
 /*
 export let screenEvents = {
@@ -97,9 +98,11 @@ class ScreenShare extends Component<{}, {
         screenEvents.start.attach(() => {
             console.log("login")
             this.bindKeys()
-            tryUntil(() => !!this.state.screenWidth, () => {
+            tryUntil(() => !!this.state.screenWidth, (tryNumber, last) => {
                 console.log("try")
                 screenShareApi.requestFrame()
+            }, 5, 2000, () => {
+                messageActions.msg("danger", "Connection timed out.")
             })
         })
         screenEvents.disconnect.attach(() => {
@@ -186,7 +189,6 @@ class ScreenShare extends Component<{}, {
         }
         return <div style={s} ref={ref => {if (ref) this.keyCombos = ref}}>
             <div><kbd style={ps} onClick={() => {
-                console.log("event")
                 //sendKeyCombo(17, 18, 46)
                 screenShareApi.ctrlAltDel()
             }}>ctrl + alt + delete</kbd></div>

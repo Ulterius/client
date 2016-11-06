@@ -4,6 +4,7 @@ import Component = React.Component
 import {dialogStore, DialogState} from "../store"
 import {dialogActions} from "../action"
 import events = require("events")
+import ReactMarkdown = require("react-markdown")
 import * as _ from "lodash"
 
 export class Dialog extends React.Component<{}, DialogState> {
@@ -43,8 +44,9 @@ export class Dialog extends React.Component<{}, DialogState> {
 
 export interface dialogContent {
     title: string, 
-    body: React.ReactNode,
-    buttons: any[]
+    body: React.ReactNode | string,
+    buttons?: any[],
+    onClose?: () => any
 }
 
 //use this pattern instead of an event emitter because I want to keep type safety
@@ -73,6 +75,9 @@ export class Dialogs extends React.Component<{}, {
     }
     closeFirstDialog() {
         let {dialogs} = this.state
+        if (dialogs[0] && dialogs[0].onClose) {
+            dialogs[0].onClose()
+        }
         if (dialogs.length == 1) {
             this.lastDialog = dialogs[0]
         }
@@ -91,14 +96,19 @@ export class Dialogs extends React.Component<{}, {
         let dialog = dialogs[0] || this.lastDialog //the things I do for proper animations...
         let buttons
         if (dialog) {
-            buttons = dialog.buttons.map(btn => {
-                return React.cloneElement(btn, {onClick: () => {
-                    if (btn.props.onClick) {
-                        btn.props.onClick()
-                    }
-                    this.closeFirstDialog()
-                }})
-            })
+            if (dialog.buttons) {
+                buttons = dialog.buttons.map(btn => {
+                    return React.cloneElement(btn, {onClick: () => {
+                        if (btn.props.onClick) {
+                            btn.props.onClick()
+                        }
+                        this.closeFirstDialog()
+                    }})
+                })
+            }
+            else {
+                buttons = <Button onClick={() => this.closeFirstDialog()}>Close</Button>
+            }
         }
         
         return <div>
@@ -107,7 +117,10 @@ export class Dialogs extends React.Component<{}, {
                     <Modal.Title>{dialog ? dialog.title : ""}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {dialog? dialog.body : ""}
+                    {dialog ? (
+                        typeof dialog.body !== "string" ? 
+                            dialog.body : <ReactMarkdown source={dialog.body as string} />
+                    ) : ""}
                 </Modal.Body>
                 <Modal.Footer>
                     {buttons || null}

@@ -221,7 +221,7 @@
 
 .terminal {
     @extend .terminal-basic;
-    font-family: Menlo, Monaco, Consolas, Monospace;
+    font-family: Menlo, Monaco, Consolas, monospace, sans-serif !important;
     height: 100%;
     line-height: 10px;
     overflow-y: auto;
@@ -264,4 +264,8 @@
 
 input::-webkit-calendar-picker-indicator {
     background-color: none !important;
+}
+
+.modal-body img {
+    max-width: 100%;
 }

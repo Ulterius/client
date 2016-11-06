@@ -217,3 +217,9 @@ declare module "react-json-tree" {
     let JSONTree: JSONTreeI
     export default JSONTree
 }
+
+declare module "react-markdown" {
+    interface ReactMarkdownI extends __React.ComponentClass<{source: string}> {}
+    let ReactMarkdown: ReactMarkdownI
+    export = ReactMarkdown
+}

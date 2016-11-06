@@ -378,17 +378,24 @@ export function elementAfter<T>(arr: T[], element: T) {
 
 export function tryUntil(
     predicate: () => boolean, 
-    action: () => any, 
-    delay: number = 1000
+    action: (tryNumber: number, last: boolean) => any, 
+    timeout: number = 3,
+    delay: number = 1000,
+    onFail: () => any = () => {}
 ) {
-    action()
-    if (!predicate) {
+    action(0, false)
+    let tries = 0
+    if (!predicate()) {
         let interval = setInterval(() => {
-            if (!predicate) {
-                action()
+            if (!predicate() && tries < timeout) {
+                action(tries, tries == timeout-1)
+                tries++
             }
-            if (predicate) {
+            if (predicate() || tries >= timeout) {
                 clearInterval(interval)
+            }
+            if (tries >= timeout) {
+                onFail()
             }
         }, delay)
     }

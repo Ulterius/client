@@ -709,3 +709,10 @@ declare interface SearchResult {
     totalResults: number,
     message?: string
 }
+
+declare interface Announcement {
+    messageTitle: string,
+    messageId: string,
+    message: string,
+    date: number
+}
