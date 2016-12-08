@@ -210,12 +210,12 @@ export class ConnectScreen extends React.Component<{}, {
             {/*this.message(this.state.message)*/}
             <div className="login-body">
                 <div className="hostname">
-                    <Input type="text" value={this.state.host} placeholder="host" onChange={e => 
+                    <Input type="text" value={this.state.host} placeholder="host" onChange={(e) => 
                         this.setState({host: (e.target as HTMLInputElement).value})
                     } onKeyDown={ifEnter(this.connect)}/>
                 </div>
                 <div className="port">
-                    <Input type="text" value={this.state.port} placeholder="port" onChange={e => 
+                    <Input type="text" value={this.state.port} placeholder="port" onChange={(e) => 
                         this.setState({port: (e.target as HTMLInputElement).value})
                     } onKeyDown={ifEnter(this.connect)}/>
                 </div>
