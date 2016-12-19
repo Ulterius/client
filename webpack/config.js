@@ -6,6 +6,7 @@ const assetPath = path.resolve(__dirname, "../assets")
 const htmlPath = path.resolve(__dirname, "../html")
 const indexPage = path.resolve(htmlPath, "index.html")
 const validate = require("webpack-validator")
+const CopyWebpackPlugin = require("copy-webpack-plugin")
 
 let loaders = [
     {
@@ -44,6 +45,8 @@ let nodeops = {
     events: true
 }
 
+const staticDir = path.resolve(__dirname, "../static")
+const buildDir = path.resolve(__dirname, "../public")
 
 module.exports = function(opts) {
     return validate({
@@ -77,7 +80,12 @@ module.exports = function(opts) {
         plugins: [
             new webpack.HotModuleReplacementPlugin({
                 multiStep: true
-            })
+            }),
+            new CopyWebpackPlugin([
+                {from: `static/${opts.index}`, to: "index.html"},
+                {from: "static/b", to: "b"},
+                {from: "static/vendor", to: "vendor"}
+            ])
         ]
     })
     

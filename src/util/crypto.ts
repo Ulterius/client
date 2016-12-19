@@ -101,8 +101,10 @@ export function decompressData(data: Uint8Array) {
     catch (e) {
         inflated = data
     }
-	let blob = new Blob([inflated], {type: "image/jpeg"})
-	return URL.createObjectURL(blob)
+    let dataString = `data:image/jpeg;base64,${arrayBufferToBase64(inflated)}`
+	//let blob = new Blob([inflated], {type: "image/jpeg"})
+	//return URL.createObjectURL(blob)
+    return dataString
     //return arrayBufferToBase64(pako.inflate(data))
 }
 

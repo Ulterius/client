@@ -12,7 +12,6 @@
     "jdataview": "registry:dt/jdataview#0.0.0+20160317120654",
     "jquery": "registry:dt/jquery#1.10.0+20160417213236",
     "lodash": "registry:dt/lodash#4.14.0+20160830145422",
-    "node": "registry:dt/node#6.0.0+20160602155235",
     "pako": "registry:dt/pako#0.0.0+20160317120654",
     "react": "registry:dt/react#0.14.0+20160602151522",
     "react-addons-css-transition-group": "registry:dt/react-addons-css-transition-group#0.14.0+20160316155526",

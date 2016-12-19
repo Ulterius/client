@@ -386,3 +386,12 @@ td {
 .cursor-pointer {
 	cursor: pointer;
 }
+
+.modal-content {
+	margin-top: 0;
+}
+
+.modal-body {
+	overflow-y: auto;
+	max-height: 600px;
+}

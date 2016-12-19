@@ -1,6 +1,6 @@
 "use strict"
 let webpack = require("webpack")
-let config = require("./config")()
+let config = require("./config")({index: "prod.html"})
 let merge = require("webpack-merge")
 let copyStatic = require("./copy-static")
 
@@ -30,7 +30,7 @@ let buildConfig = merge(config, setFreeVariable('process.env.NODE_ENV', 'product
 
 let compiler = webpack(buildConfig)
 
-copyStatic("prod.html")
+//copyStatic("prod.html")
 
 compiler.run((err, stats) => {
     if (err) {

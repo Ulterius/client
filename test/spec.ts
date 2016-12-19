@@ -1,5 +1,7 @@
 //since we only want jasmine here, in this file.
-/// <reference path="../typings/jasmine/jasmine.d.ts" />
+// /// <reference path="../typings/jasmine/jasmine.d.ts" />
+
+/*
 
 import "../src/alt.ts"
 import {appActions} from "../src/action"
@@ -23,3 +25,7 @@ describe("App store", () => {
     })
     
 })
+
+test? what is this "test" you speak of?
+
+*/

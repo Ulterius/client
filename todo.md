@@ -1,14 +1,28 @@
-Todo
-=====
-* ~~Logging in please wait message~~
-* ~~the fucking shit with the settings panel~~
-* ~~end process~~
-* ~~fix color on bars~~
-* ~~update every 10 seconds for system info~~
-* ~~load in search results as you scroll~~
-* ~~loading icon when searching -- copy strike~~
-* cancel download
-* ~~click to connect, frosted window~~
-* do whole terminal
-* ~~fix sidebar~~
-* ~~center and pretify camera not detected~~
+## Fucking asshole
+- Make UI mobile friendly
+
+## Ass
+- OS information like
+    - All installed .net frameworks
+    - UAC status
+    - Firewall status
+    - Current antivirus
+    - Services
+    - Environment variables for user and machine
+- Display information: http://i.andrew.im/cqe5xs.png
+- Display settings
+    - Set resolution
+    - Set primary display
+- Add CPU breakdown like speccy: http://i.andrew.im/yn5axe.png
+- Hard drive information http://i.andrew.im/la509u.png
+    - SMART data
+    - Partition tables
+    - Other information: Drive health, media type, serial number
+
+## Not so bad
+- ~~Add missing settings to the UI (possibly make it so we can automatically generate them?)~~
+- ~~Fix modal for messages~~
+- ~~make connections wss if the page is https~~
+
+
+

@@ -11,10 +11,12 @@
   "author": "Frob the Builder",
   "license": "ISC",
   "dependencies": {
+    "@types/chai": "^3.4.34",
     "alt": "^0.18.1",
     "asmcrypto.js": "0.0.11",
     "babel-runtime": "^6.18.0",
     "bluebird": "^3.3.5",
+    "change-case": "^3.0.0",
     "chartist": "^0.9.5",
     "classnames": "^2.2.5",
     "cronstrue": "^0.8.0",
@@ -50,7 +52,9 @@
     "ts-events": "^3.1.1"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^2.2.4",
+    "@types/node": "^6.0.52",
+    "awesome-typescript-loader": "^3.0.0-beta.17",
+    "copy-webpack-plugin": "^4.0.1",
     "eslint-plugin-react": "^4.2.3",
     "extract-loader": "0.0.2",
     "file-loader": "^0.9.0",

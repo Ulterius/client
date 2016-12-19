@@ -105,7 +105,14 @@ export abstract class Connection {
         })
 
         try {
-            this.socket = new WebSocket(`ws://${this.host}:${this.port}/${this.path}`)
+            let protocol
+            if (window.location.protocol == "https:") {
+                protocol = "wss:"
+            }
+            else {
+                protocol = "ws:"
+            }
+            this.socket = new WebSocket(`${protocol}//${this.host}:${this.port}/${this.path}`)
             this.socket.binaryType = "arraybuffer"
             console.log(this.socket)
             if (this.socket) {
@@ -748,7 +755,7 @@ _.assign(terminalConnection, {
 export let screenConnection = new ScreenShareConnection(3, false)
 _.assign(screenConnection, {
     path: "screenshare",
-    logPackets: true,
+    logPackets: false,
     useQueue: false,
     reconnect: false
 })

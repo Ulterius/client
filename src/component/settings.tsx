@@ -7,6 +7,7 @@ import {MoveLeftTransition} from "./components"
 import {settingsApi} from "../api-layer"
 import {ToggleSwitch} from "./ui"
 import {appActions} from "../action"
+import changeCase = require("change-case")
 import * as _ from "lodash"
 
 class RadioGroup extends React.Component<{
@@ -139,21 +140,30 @@ export class SettingsPage extends React.Component<{}, {
     }
 }
 
-let settingNames = {
+const settingNames = {
     ToggleWebServer: "Use web server",
     WebServerPort: "Web server port",
     WebFilePath: "Web file path",
     TaskServerPort: "Task server port",
     SkipHostNameResolve: "Skip network hostname resolve",
-    VncPort: "VNC server port",
+    VncPort: "VNC server Port",
     VncProxyPort: "VNC server proxy port",
     VncPass: "VNC password",
-    AllowTerminal: "Enable Terminal",
-    TerminalPort: "Terminal Port",
-    UseWebcams: "Enable Webcams",
+    AllowTerminal: "Enable terminal",
+    TerminalPort: "Terminal port",
+    UseWebcams: "Enable webcams",
     UpnpEnabled: "Enable UPNP",
-    WebcamPort: "Webcam Streaming Port",
-    ScreenSharePort: "Screen Share Port"
+    WebcamPort: "Webcam streaming port",
+    ScreenSharePort: "Screen share port"
+}
+
+function getSettingLabel(setting: string) {
+    if (settingNames[setting]) {
+        return settingNames[setting]
+    }
+    else {
+        return changeCase.sentenceCase(setting)
+    }
 }
 
 interface ModalSettingsProps {
@@ -167,6 +177,7 @@ interface ModalSettingsState {
 }
 
 export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsState> {
+
     constructor() {
         super()
         this.state = {
@@ -232,11 +243,16 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
             _.forOwn(category, (value, name) => {
                 if (_.isBoolean(value)) {
                     body.push(
-                        <ToggleSwitch key={name} label={settingNames[name]} defaultState={value} onChange={newValue => {
-                            this.setState({
-                                newSettings: _.assign(this.state.newSettings, {[name]: newValue})
-                            })
-                        }} />
+                        <ToggleSwitch 
+                            key={name} 
+                            label={getSettingLabel(name)} 
+                            defaultState={value} 
+                            onChange={newValue => {
+                                this.setState({
+                                    newSettings: _.assign(this.state.newSettings, {[name]: newValue})
+                                })
+                            }} 
+                        />
                     )
                 }
                 else {
@@ -244,7 +260,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                         <Input 
                             key={name}
                             type={name == "ScreenSharePass" ? "password" : "text"}
-                            label={settingNames[name]}
+                            label={getSettingLabel(name)}
                             defaultValue={value}
                             onChange={(e) => {
                                 let text = (e.target as HTMLInputElement).value

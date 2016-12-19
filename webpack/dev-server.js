@@ -1,7 +1,7 @@
 "use strict"
 let webpack = require("webpack")
 let WebpackDevServer = require("webpack-dev-server")
-let config = require("./config")()
+let config = require("./config")({index: "dev.html"})
 let merge = require("webpack-merge")
 let copyStatic = require("./copy-static")
 
@@ -9,7 +9,7 @@ let devConfig = merge(config, {
     devtool: "eval-source-maps"
 })
 
-copyStatic("dev.html")
+//copyStatic("dev.html")
 
 new WebpackDevServer(webpack(devConfig), {
     watch: true,

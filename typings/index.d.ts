@@ -7,7 +7,6 @@
 /// <reference path="globals/jdataview/index.d.ts" />
 /// <reference path="globals/jquery/index.d.ts" />
 /// <reference path="globals/lodash/index.d.ts" />
-/// <reference path="globals/node/index.d.ts" />
 /// <reference path="globals/pako/index.d.ts" />
 /// <reference path="globals/react-addons-css-transition-group/index.d.ts" />
 /// <reference path="globals/react-addons-transition-group/index.d.ts" />
