@@ -1,4 +1,5 @@
 import React = require("react")
+import Component = React.Component
 import {systemStore, auxillarySystemStore} from "../store/system-stores"
 import {Bars, Bar, IconMedia, Temperature} from "./components"
 import {GpuAvailability, bytesToSize} from "../util"
@@ -6,10 +7,11 @@ import {helpers} from "../api-layer"
 //import {api} from "../api"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
-import {LoadingScreen, Gauge, Either, Left, Right} from "./"
+import {LoadingScreen, Gauge, Either, Left, Right, LovelyStyledTree} from "./"
 import {panel, FlexRow, FlexCol, Meter, createDivComponent, glyphicon} from "./ui"
 import * as _ from  "lodash"
 import classNames = require("classnames")
+import changeCase = require("change-case")
 //import {Gauge} from "./ui"
 
 const {Panel, Fixed, FixedCenter, Flex, FlexFixed, Header, HeaderCenter} = panel
@@ -225,6 +227,148 @@ function getDeviceGlyph(name: string) {
     return "map-marker"
 }
 
+interface CollectionTableProps extends React.HTMLAttributes {
+    collection: {[key: string]: any}[]
+}
+
+function CollectionTable(props: CollectionTableProps) {
+    const {collection, ...other} = props
+    return <table {...other}>
+        <thead>
+            <tr>
+                {_.map(collection[0], (v, k) => {
+                    return <th>{k}</th>
+                })}
+            </tr>
+        </thead>
+        <tbody>
+            {collection.map(obj => {
+                return <tr>
+                    {_.map(obj, (v, k) => {
+                        return <td>{v}</td>
+                    })}
+                </tr>
+            })}
+        </tbody>
+    </table>
+}
+
+interface PopoutRowProps extends React.HTMLAttributes {
+}
+class PopoutRow extends Component<PopoutRowProps, {}> {
+    barElement: HTMLDivElement
+    render() {
+        return <div className="popout-row" ref={ref => this.barElement = ref}>
+            {React.Children.map(this.props.children, (child: React.ReactElement<any>) => {
+                return React.cloneElement(child, {externalParent: this.barElement})
+            })}
+            {/*this.props.popouts.map(popout => {
+                return <Popout label={popout.label} externalParent={this.barElement}>
+                    {React.cloneElement(popout.content)}
+                </Popout>
+            })*/}
+        </div>
+    }
+}
+
+interface PopoutProps extends React.HTMLAttributes {
+    label?: string,
+    externalParent?: HTMLDivElement,
+    anchor?: string
+}
+interface PopoutState {
+    open?: boolean
+}
+class Popout extends Component<PopoutProps, PopoutState> {
+    arrowElement: HTMLDivElement
+    popoutElement: HTMLDivElement
+    constructor(props, context) {
+        super(props, context)
+        this.state = {
+            open: false
+        }
+    }
+    toggle = () => {
+        if (this.state.open) {
+            document.removeEventListener("click", this.clickHandler)
+        }
+        else {
+            document.addEventListener("click", this.clickHandler)
+        }
+        this.setState({open: !this.state.open})
+    }
+    componentWillUnmount() {
+        document.removeEventListener("click", this.clickHandler)
+    }
+    table() {
+        const {subject, externalParent, anchor} = this.props
+        const a = externalParent || this.arrowElement
+        const {open} = this.state
+        let top = 0
+        let left = 0
+        let width = 0
+        let right = 0
+        if (a) {
+            top = a.offsetTop + a.clientHeight + 10
+            left = a.offsetLeft
+            width = a.offsetWidth
+            right = window.innerWidth - (a.offsetLeft + a.offsetWidth)
+            if (open && this.popoutElement && this.popoutElement.clientWidth == 0) {
+                setTimeout(() => this.setState({}), 0) //force a repaint so we get the right width
+            }
+            if (this.popoutElement && this.popoutElement.clientWidth < a.offsetWidth) {
+                right += (a.offsetWidth - this.popoutElement.clientWidth)/2
+            }
+        }
+        //const top = arrowElement.offsetTop
+        let style: React.CSSProperties
+        if (!anchor) {
+            style = {
+                position: "absolute",
+                top,
+                left,
+                width,
+                display: open ? "block" : "none"
+            }
+        }
+        else if (anchor == "right") {
+            style = {
+                position: "absolute",
+                top,
+                right,
+                display: open ? "block" : "none",
+                opacity: this.popoutElement && this.popoutElement.clientWidth == 0 ? 0 : 1
+            }
+        }
+        return <div className="popout-content-container" style={style} ref={ref => this.popoutElement = ref}>
+            {this.props.children}
+        </div>
+    }
+    clickHandler = (e: MouseEvent) => {
+        if (this.popoutElement && this.state.open && !this.popoutElement.contains(e.target as any)) {
+            this.toggle()
+        }
+    }
+    arrow() {
+        const {open} = this.state
+        const {label} = this.props
+        return <div 
+            onClick={this.toggle} 
+            className="popout-arrow" 
+            ref={ref => this.arrowElement = ref}
+        >
+            {(!!label && label + " ")}{glyphicon(open ? "chevron-up" : "chevron-down")}
+        </div>
+    }
+    render() {
+        const {label, externalParent, ...others} = this.props
+        return <div className="popout-container" {...others}>
+            {this.arrow()}
+            {this.table()}
+        </div>
+    }
+}
+
 const panels = {
     OS(os: OSInfo) {
         return <SystemPanel emptyBody 
@@ -240,7 +384,6 @@ const panels = {
                     Build {os.build}
                 </Faded>
             </SystemPanel>
-
     },
     motherboard(stats: SystemInfo) {
         return <SystemPanel emptyBody 
@@ -296,6 +439,7 @@ const panels = {
         </SystemPanel>
     },
     cpu(cpu: CpuInfo, stats: SystemInfo) {
+        const {cpuName, cores, threads, speedMhz, ...cpuOther} = cpu
         return <SystemPanel flexGrow={1} title="CPU" image={
             <img src={require("icon/cpu.svg")} width="40" height="40" />
         }>
@@ -312,15 +456,26 @@ const panels = {
                     />
                 </div>
             </Flex>
+            <Flex>
+                <Popout style={{textAlign: "center"}} label="details" anchor="right">
+                    <table className="cpu-table">
+                        <tbody>
+                            {_(cpuOther).map((v, k) => {
+                                return <tr><td>{changeCase.sentenceCase(k)}</td><td>{v}</td></tr>
+                            }).value()}
+                        </tbody>
+                    </table>
+                </Popout>
+            </Flex>
             <SystemFooter>
                 <StatItem isFooter head="cores">
-                    {cpu.cores}
+                    {cores}
                 </StatItem>
                 <StatItem isFooter head="threads">
-                    {cpu.threads}
+                    {threads}
                 </StatItem>
                 <StatItem isFooter head="clock speed">
-                    {(cpu.speedMhz/1000).toFixed(1)} GHz
+                    {(speedMhz/1000).toFixed(1)} GHz
                 </StatItem>
             </SystemFooter>
         </SystemPanel>
@@ -331,6 +486,7 @@ const panels = {
         }>
             <FlexFixed>
                 {gpu.gpus.map(info => {
+                    let temp = info.Temperature
                     return <FixedCenter style={{flexGrow: 1, flexBasis: 0}} key={info.Name}>
                         {info.Name} <br />
                         <Faded>Driver Version: {info.DriverVersion}</Faded> <br />
@@ -344,9 +500,9 @@ const panels = {
                         </span>
                         <div className="gauge-box">
                             <Gauge 
-                                title="Temperature" 
-                                label="° C" 
-                                value={info.Temperature.toFixed(0)} 
+                                title="Temperature"
+                                label={temp != -1 ? "° C" : ""} 
+                                value={temp != -1 ? temp.toFixed(0) : "N/A"} 
                                 min={0} max={100} 
                             />
                         </div>
@@ -362,20 +518,55 @@ const panels = {
         }>
             <Fixed>
                 {stats.drives.map(drive => {
-                    return <div key={drive.RootDirectory} className="graph-item">
-                        <div className="graph-label">
-                            {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
-                            {drive.RootDirectory} <br /> 
-                            <Faded>{bytesToSize(drive.TotalSize)}</Faded>
+                    return <div className="drive-item">
+                        <div key={drive.RootDirectory} className="graph-item">
+                            <div className="graph-label">
+                                {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
+                                {drive.RootDirectory} <br /> 
+                                <Faded>{bytesToSize(drive.TotalSize)}</Faded>
+                            </div>
+                            <div className="graph-bar">
+                                <Bar
+                                    value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
+                                    style={{width: "100%"}} 
+                                    color={true}
+                                />
+                                <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
+                            </div>
+                            
                         </div>
-                        <div className="graph-bar">
-                            <Bar
-                                value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
-                                style={{width: "100%"}} 
-                                color={true}
-                            />
-                            <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
+                        <div className="drive-popout-row">
+                            <PopoutRow>
+                                <Popout label="smart" anchor="right">
+                                    <CollectionTable className="smart-table" collection={
+                                        drive.SmartData.map(d => _.omit(d, "RawData"))
+                                    } />
+                                </Popout>
+                                <Popout label="partitions" anchor="right">
+                                    {drive.Partitions.map(p => {
+                                        let {Name, ...therest} = p
+                                        return <div className="partition-information">
+                                            <p><strong>{Name}</strong></p>
+                                            <table>
+                                                <tbody>
+                                                    {_.map(therest as any, (v, k: string) => {
+                                                        return <tr><td>{changeCase.sentenceCase(k)}</td><td>{v}</td></tr>
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    })}
+                                </Popout>
+                            </PopoutRow>
+
+                            {/*<PopoutRow popouts={[
+                                {label: "smart", content: <CollectionTable collection={drive.SmartData} />},
+                                {label: "partitions", content: <div>other info</div>}
+                            ]}/> */}
                         </div>
+                        {/*<Popout label="SMART">
+                            <CollectionTable collection={drive.SmartData} />
+                        </Popout> */}
                     </div>
                 })}
             </Fixed>
@@ -400,6 +591,7 @@ export class SystemPage extends React.Component<{}, {
             systemApi.getStats()
             systemApi.getAuxillaryStats()
         }, 10000)
+        systemApi.getStats()
         systemApi.getAuxillaryStats()
         systemStore.listen(this.onChange)
         auxillarySystemStore.listen(this.onChange)

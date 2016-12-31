@@ -44,6 +44,27 @@ declare interface TaskInfo {
     ]
 }
 */
+
+declare interface SmartData {
+    Attribute: string,
+    Current: string,
+    Threshold: string,
+    RawData: string,
+    RealData: string
+}
+
+declare interface PartitionInfo {
+    Name: string
+    Size: string
+    BlockSize: string
+    StartingOffset: string
+    Index: string
+    DiskIndex: string
+    BootPartition: string
+    PrimaryPartition: string
+    Bootable: string
+}
+
 declare interface DriveInfo {
     Name: string,
     TotalSize: number,
@@ -53,7 +74,9 @@ declare interface DriveInfo {
     DriveFormat: string,
     DriveType: string,
     RootDirectory: string,
-    Model: string
+    Model: string,
+    SmartData: SmartData[],
+    Partitions: PartitionInfo[]
 }
 
 declare interface NetInterfaceInfo {

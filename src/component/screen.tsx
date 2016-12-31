@@ -214,7 +214,7 @@ class ScreenShare extends Component<{}, {
             }}
             onContextMenu={(e) => {
                 this.processMouse(e)
-                screenShareApi.mouse.rightClick()
+                //screenShareApi.mouse.rightClick()
             }}
             onClick={(e) => {
                 let {screenX, screenY} = this.processMouse(e)
@@ -224,11 +224,29 @@ class ScreenShare extends Component<{}, {
             }} 
             onMouseDown={(e) => {
                 this.processMouse(e)
-                screenShareApi.mouse.down()
+                console.log(e.button)
+                if (e.button === 0) {
+                    screenShareApi.mouse.down()
+                    
+                }
+                else if (e.button === 2) {
+                    screenShareApi.mouse.rightDown()
+                }
+                /*
+                this.processMouse(e)
+                screenShareApi.mouse.down() */
             }}
             onMouseUp={(e) => {
                 this.processMouse(e)
-                screenShareApi.mouse.up()
+                if (e.button === 0) {
+                    screenShareApi.mouse.up()
+                }
+                else if (e.button === 2) {
+                    screenShareApi.mouse.rightUp()
+                }
+                /*
+                this.processMouse(e)
+                screenShareApi.mouse.up() */
             }}
             onWheel={(e)=> {
                 this.processMouse(e)

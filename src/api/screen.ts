@@ -70,6 +70,13 @@ export let screenShareApi = {
         rightClick() {
             sC.callEndpoint("rightclick")
         },
+        rightUp() {
+            console.log("rightup")
+            sC.callEndpoint("rightup")
+        },
+        rightDown() {
+            sC.callEndpoint("rightdown")
+        },
         down() {
             sC.callEndpoint("mousedown")
         },
@@ -210,5 +217,3 @@ export function register() {
     })
     */
 }
-
-

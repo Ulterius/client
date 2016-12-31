@@ -1,10 +1,12 @@
 let productionSettings = {
     cachePassword: false,
-    autoConnect: false
+    autoConnect: false,
+    reportErrors: true
 }
 
 let devSettings = {
     cachePassword: true,
+    reportErrors: false,
     autoConnect: {
         port: "22007",
         host: "localhost"

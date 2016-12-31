@@ -35,7 +35,8 @@ import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link, hashHistory} from 'react-router'
 import {Glyphicon, Button} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
-import {appActions} from "../action"
+import {appActions, dialogActions} from "../action"
+import config from "../config"
 import MediaQuery = require("react-responsive")
 
 
@@ -123,10 +124,33 @@ export default class App extends React.Component<{
         this.onUserChange(userStore.getState())
         appStore.listen(this.onAppChange)
         userStore.listen(this.onUserChange)
+        if (config.reportErrors) {
+            window.addEventListener("error", this.onError)
+        }
     }
     componentWillUnmount() {
         appStore.unlisten(this.onAppChange)
         userStore.unlisten(this.onUserChange)
+        if (config.reportErrors) {
+            window.removeEventListener("error", this.onError)
+        }
+    }
+    onError = (e: ErrorEvent) => {
+        let message
+        let title = encodeURIComponent("I got an error.")
+        let body
+        if (!e.message || e.message.toLowerCase().indexOf("script error") > -1) {
+            body = encodeURIComponent("(Please tell us what you were doing when this happened. Include the exception message in your web console.)")
+            message = "Script error: See console for details."
+        }
+        else {
+            message = e.message + " - Line " + e.lineno
+            body = encodeURIComponent("(Please tell us what you were doing when this happened.)\nException information: " + message)
+        }
+        let addendum = "\n\n Please report it to us [here](https://github.com/ulterius/client/issues/new?title="+title+"&body="+body+"&labels=bug&assignee=frobthebuilder)."
+        dialogEvents.dialog({
+            title: "Uncaught Exception", body: message + addendum
+        }) 
     }
     onAppChange = (appState: AppState) => {
         this.setState({app: appState})

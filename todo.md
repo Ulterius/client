@@ -15,9 +15,9 @@
     - Set primary display
 - Add CPU breakdown like speccy: http://i.andrew.im/yn5axe.png
 - Hard drive information http://i.andrew.im/la509u.png
-    - SMART data
-    - Partition tables
-    - Other information: Drive health, media type, serial number
+    - ~~SMART data~~
+    - ~~Partition tables~~
+    - Other information: Drive health, media type, serial number (?)
 
 ## Not so bad
 - ~~Add missing settings to the UI (possibly make it so we can automatically generate them?)~~
