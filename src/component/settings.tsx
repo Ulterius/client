@@ -7,6 +7,7 @@ import {MoveLeftTransition} from "./components"
 import {settingsApi} from "../api-layer"
 import {ToggleSwitch} from "./ui"
 import {appActions} from "../action"
+import {Link} from "react-router"
 import changeCase = require("change-case")
 import * as _ from "lodash"
 
@@ -283,6 +284,7 @@ export class ModalSettings extends Component<ModalSettingsProps, ModalSettingsSt
                     appActions.setDebugMenu(newValue)
                 }} 
             />
+            <Link to="/serverlog" className="label-text">Server log</Link>
         </div>
     }
     render() {

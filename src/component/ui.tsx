@@ -389,6 +389,17 @@ export class TabPanel extends Component<TabPanelProps, TabPanelState> {
     }
 }
 
+interface FontAwesomeProps {
+    fa: string,
+    hidden?: boolean,
+    size?: string
+}
+
+export function FontAwesome({fa, hidden, size}: FontAwesomeProps) {
+    const className = classNames(`fa fa-${fa}`, {[`fa-${size}`]: !!size})
+    return <i className={className} aria-hidden={hidden ? "true" : "false"}></i>
+}
+
 /*
 export function ToggleSwitch({on, onClick, label, key}: ToggleSwitchProps) {
     function innerSwitch() {

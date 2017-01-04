@@ -1,6 +1,7 @@
 @import "_vars";
 @import "_mixins";
 @import "spinkit/spinkit";
+@import "font-awesome/font-awesome";
 
 @import "panel";
 @import "sidebar";
@@ -8,6 +9,15 @@
 @import "ui";
 @import "script";
 @import "codemirror";
+@import "serverlog";
+
+/*@font-face {
+	font-family: Awesome;
+	src: url("font/fontawesome-webfont.eot") 
+		 url("font/fontawesome-webfont.ttf")
+		 url("font/fontawesome-webfont.woff2")
+		 url("font/fontawesome-webfont.woff");
+}*/
 
 @font-face {
 	font-family: ProximaNova;
@@ -206,7 +216,7 @@ td {
 }
 
 @media (min-width: $screen-lg-min) {
-	.task-page, .file-page, .settings-page, .plugin-page, .debug-page {
+	.task-page, .file-page, .settings-page, .plugin-page, .debug-page, .server-log-page {
 		max-width: 1000px;
 		margin: auto;
 

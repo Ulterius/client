@@ -28,7 +28,7 @@ let loaders = [
         include: [
             assetPath
         ],
-        test: /(\.png|\.svg|\.otf|\.woff2?|\.css|\.js)$/,
+        test: /(\.png|\.ttf|\.svg|\.eot|\.otf|\.woff2?|\.css|\.js)$/,
         loader: "file-loader?name=[path][name].[ext]"
     }
     /*

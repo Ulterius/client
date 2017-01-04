@@ -80,7 +80,7 @@ tC.listenAll<typeof tC>(
     }],
     [msg => isSessionStateEvent(msg) && msg.aesShook, (msg, tc) => {
         console.log(msg)
-        console.log("Shake got, sending create terminal shit")
+        console.log("Shake got")
         /*
         tc.send("CreateTerminalRequest", {
             terminalType: "cmd.exe", 

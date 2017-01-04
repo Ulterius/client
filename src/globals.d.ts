@@ -90,6 +90,31 @@ declare interface NetInterfaceInfo {
     SupportsMulticast: boolean
 }
 
+declare interface DisplayResolution {
+    Width: number,
+    Height: number,
+    BitsPerPixel: number,
+    Frequency: number | number[],
+    Orientation: string
+}
+
+declare interface DisplayInfo {
+    FriendlyName: string,
+    Primary: boolean,
+    MultiDriver: boolean,
+    Attached: boolean,
+    Removable: boolean,
+    VgaCompatible: boolean,
+    MirroringDriver: boolean,
+    ModesPruned: boolean,
+    Remote: boolean,
+    Disconnect: boolean,
+    DeviceName: string,
+    SupportedResolutions: {
+        [key: string]: DisplayResolution[]
+    },
+    CurrentResolution: DisplayResolution
+}
 
 declare interface SystemInfo {
     cpuUsage: number[],
@@ -113,7 +138,8 @@ declare interface SystemInfo {
         networkInterfaces: NetInterfaceInfo[],
         totalBytesReceived: number,
         totalBytesSent: number
-    }
+    },
+    displays: DisplayInfo[]
 }
 
 /*
@@ -699,6 +725,17 @@ declare namespace TerminalInfo {
         input: string,
         terminalId: string
     }
+}
+
+declare interface ServerException {
+    Type: string,
+    Json: string,
+    Date: string
+}
+
+declare interface ServerLogInfo {
+    serverLog: string,
+    exceptions: ServerException[]
 }
 
 declare interface ScreenTile {

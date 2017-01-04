@@ -30,6 +30,7 @@ import {DebugPage} from "./debug"
 import {TerminalPage} from "./terminal"
 import {ScreenPage} from "./screen"
 import {ScriptPage} from "./script"
+import {ServerLogPage} from "./server-log"
 import {taskStore, appStore, AppState, userStore, UserState} from "../store"
 import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link, hashHistory} from 'react-router'
@@ -113,7 +114,8 @@ export default class App extends React.Component<{
         "/screen": "Screen Share",
         "/terminal": "Terminal",
         "/debug": "API Debug",
-        "/script": "Cron jobs"
+        "/script": "Cron jobs",
+        "/serverlog": "Server log"
     }
     constructor(props) {
         super(props)
@@ -374,6 +376,7 @@ const routes = <Route path="/" component={App}>
             <Route path="terminal" component={TerminalPage} />
             <Route path="script" component={ScriptPage} />
             <Route path="debug" component={DebugPage} />
+            <Route path="serverlog" component={ServerLogPage} />
             {/* <Route path="plugin" component={PluginPage} /> 
             <Route path="settings" component={SettingsPage} />*/}
         </Route>

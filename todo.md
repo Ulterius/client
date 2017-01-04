@@ -2,13 +2,6 @@
 - Make UI mobile friendly
 
 ## Ass
-- OS information like
-    - All installed .net frameworks
-    - UAC status
-    - Firewall status
-    - Current antivirus
-    - Services
-    - Environment variables for user and machine
 - Display information: http://i.andrew.im/cqe5xs.png
 - Display settings
     - Set resolution
@@ -26,3 +19,6 @@
 
 
 
+Server logs
+Username edit
+Set display stuff ^

@@ -26,7 +26,7 @@
 
 .text-button {
 	@extend .reset-bs;
-	color: $highlight;
+	color: $highlight !important;
 	text-transform: uppercase;
 	font: {
 		family: ProximaNovaBold;
@@ -500,6 +500,7 @@
 .popout-arrow {
 	@extend .label-text;
 	cursor: pointer;
+	display: inline-block;
 }
 
 .popout-content-container {

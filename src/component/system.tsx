@@ -8,7 +8,7 @@ import {helpers} from "../api-layer"
 import {systemApi} from "../api-layer"
 import Graph = require("react-chartist")
 import {LoadingScreen, Gauge, Either, Left, Right, LovelyStyledTree} from "./"
-import {panel, FlexRow, FlexCol, Meter, createDivComponent, glyphicon} from "./ui"
+import {panel, FlexRow, FlexCol, Meter, createDivComponent, glyphicon, FontAwesome} from "./ui"
 import * as _ from  "lodash"
 import classNames = require("classnames")
 import changeCase = require("change-case")
@@ -300,45 +300,76 @@ class Popout extends Component<PopoutProps, PopoutState> {
     componentWillUnmount() {
         document.removeEventListener("click", this.clickHandler)
     }
-    table() {
+    showPopout() {
         const {subject, externalParent, anchor} = this.props
-        const a = externalParent || this.arrowElement
-        const {open} = this.state
-        let top = 0
-        let left = 0
-        let width = 0
-        let right = 0
-        if (a) {
-            top = a.offsetTop + a.clientHeight + 10
-            left = a.offsetLeft
-            width = a.offsetWidth
-            right = window.innerWidth - (a.offsetLeft + a.offsetWidth)
-            if (open && this.popoutElement && this.popoutElement.clientWidth == 0) {
-                setTimeout(() => this.setState({}), 0) //force a repaint so we get the right width
+        const parent = externalParent || this.arrowElement
+        const popout = this.popoutElement
+        if (parent && popout) {
+            const $popout = $(popout)
+            let top = 0
+            let left = 0
+            const documentHeight = $(document).height()
+            const documentWidth = $(document).width()
+            $popout.css({
+                top: 10,
+                left: 10,
+                display: "block",
+                visibility: "hidden"
+            })
+            //popout.style.top = $(document).height()/2 + "px"
+            //popout.style.left = $(document).width()/2 + "px"
+            //popout.style.display = "block"
+            //popout.style.visibility = "hidden"
+            const [popoutWidth, popoutHeight] = [
+                popout.clientWidth, popout.clientHeight
+            ]
+            const [parentTop, parentLeft, parentWidth, parentHeight] = [
+                parent.offsetTop, 
+                parent.offsetLeft, 
+                parent.offsetWidth, 
+                parent.offsetHeight
+            ]
+            if (parentTop + popoutHeight > documentHeight) {
+                $popout.css({
+                    top: parentTop - popoutHeight,
+                })
             }
-            if (this.popoutElement && this.popoutElement.clientWidth < a.offsetWidth) {
-                right += (a.offsetWidth - this.popoutElement.clientWidth)/2
+            else {
+                $popout.css({
+                    top: parentTop + parentHeight,
+                })
             }
+            if (parentLeft - popoutWidth < 0) {
+                $popout.css({left: 0})
+            }
+            else if (parentLeft + popoutWidth > documentWidth) {
+                $popout.css({left: documentWidth - popoutWidth})
+            }
+            else {
+                $popout.css({left: (parentLeft + parentWidth/2) - popoutWidth/2})
+            }
+            $popout.css({visibility: "visible"})
         }
-        //const top = arrowElement.offsetTop
-        let style: React.CSSProperties
-        if (!anchor) {
-            style = {
-                position: "absolute",
-                top,
-                left,
-                width,
-                display: open ? "block" : "none"
-            }
+    }
+    hidePopout() {
+        const popout = this.popoutElement
+        if (popout) {
+            const $popout = $(popout)
+            $popout.css({display: "none"})
         }
-        else if (anchor == "right") {
-            style = {
-                position: "absolute",
-                top,
-                right,
-                display: open ? "block" : "none",
-                opacity: this.popoutElement && this.popoutElement.clientWidth == 0 ? 0 : 1
-            }
+    }
+    componentDidUpdate(prevProps, prevState: PopoutState) {
+        if (this.state.open) {
+            this.showPopout()
+        }
+        else if (!this.state.open && prevState.open) {
+            this.hidePopout()
+        }
+    }
+    table() {
+        const style = {
+            position: "absolute",
+            display: "none"
         }
         return <div className="popout-content-container" style={style} ref={ref => this.popoutElement = ref}>
             {this.props.children}
@@ -367,6 +398,10 @@ class Popout extends Component<PopoutProps, PopoutState> {
             {this.table()}
         </div>
     }
+}
+
+function isTrue(condition: boolean, label: string) {
+    return condition ? label : `Not ${label}`
 }
 
 const panels = {
@@ -512,6 +547,74 @@ const panels = {
             <Flex />
         </SystemPanel>
     },
+    display(stats: SystemInfo) {
+        const {displays} = stats
+        return <SystemPanel flexGrow={1} title="displays" style={{width: "66%"}} image={
+            <img src="" />
+        }>
+            <FlexFixed>
+                {displays.map(display => {
+                    const {
+                        FriendlyName, 
+                        CurrentResolution, 
+                        DeviceName, 
+                        Primary,
+                        Attached,
+                        Removable,
+                        SupportedResolutions,
+                        Remote,
+                        ...otherInfo
+                    } = display
+                    const processedResolutions = _.mapValues(SupportedResolutions, v => {
+                        if (v.length == 1) {
+                            return v[0]
+                        }
+                        let reduced = v.reduce((prev, curr) => {
+                            let {Frequency, ...others} = prev
+                            return {
+                                Frequency: _.flatten([Frequency]).concat(curr.Frequency),
+                                ...others
+                            }
+                        })
+                        return {...reduced, Frequency: _.uniq(reduced.Frequency as number[]).join(", ")}
+                    })
+                    return <FixedCenter style={{flexGrow: 1, flexBasis: 0}} key={display.DeviceName}>
+                        <p><FontAwesome fa="television" size="2x"/></p>
+                        <p>
+                            {FriendlyName} <br />
+                            {CurrentResolution.Width}x{CurrentResolution.Height}
+                        </p>
+                        <Popout anchor="right">
+                            as {DeviceName} <br />
+                            {isTrue(Attached, "Attached")}, &nbsp;
+                            {isTrue(Removable, "Removable")}, &nbsp;
+                            {Primary ? "Primary" : "Secondary"}, &nbsp; 
+                            {Remote ? "Remote" : "Local"}
+                            <br />
+                            <strong>Supported Resolutions:</strong> <br />
+                            <table className="cpu-table">
+                                <thead>
+                                    <tr>
+                                        <th>Resolution</th><th>BPP</th><th>Frequencies (Hz)</th><th>Orientation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {_.values(processedResolutions).map(res => {
+                                        return <tr>
+                                            <td>{res.Width}x{res.Height}</td>
+                                            <td>{res.BitsPerPixel}</td>
+                                            <td>{res.Frequency}</td>
+                                            <td>{res.Orientation}</td>
+                                        </tr>
+                                    })}
+                                </tbody>
+                            </table>
+                        </Popout>
+                    </FixedCenter>
+                })}
+            </FlexFixed>
+        </SystemPanel>
+    },
     drive(stats: SystemInfo) {
         return <SystemPanel flexGrow={1} title="drives" image={
             <img src={require("icon/drive.svg")} width="30" height="40" />
@@ -638,6 +741,9 @@ export class SystemPage extends React.Component<{}, {
                     <FlexRow>
                         {panels.gpu(gpu)}
                         {panels.drive(stats)}
+                    </FlexRow>
+                    <FlexRow>
+                        {panels.display(stats)}
                     </FlexRow>
                 </FlexCol>
             </div>
