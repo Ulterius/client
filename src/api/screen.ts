@@ -22,6 +22,7 @@ export let screenEvents = {
     disconnect: new SyncEvent,
     frame: new SyncEvent<ScreenTile>(),
     frameData: new SyncEvent<FrameData>(),
+    changedDisplay: new SyncEvent<ChangedDisplay>(),
     start: new SyncEvent
 }
 
@@ -101,6 +102,9 @@ export let screenShareApi = {
     },
     ctrlAltDel() {
         sC.callEndpoint("ctrlaltdel")
+    },
+    setMonitor(index: number) {
+        sC.callEndpoint("setactivemonitor", index)
     }
 }
 
@@ -182,6 +186,9 @@ export function register() {
                 screenEvents.disconnect.post({})
             }
         },
+        setActiveMonitor(monitor: ChangedDisplay) {
+            screenEvents.changedDisplay.post(monitor)
+        },
         fullFrame(msg, sc) {
             if (!msg.frameFailed) {
                 let result: FrameData = msg
@@ -192,8 +199,8 @@ export function register() {
                     y: 0,
                     top: 0,
                     left: 0,
-                    bottom: result.screenBounds.bottom,
-                    right: result.screenBounds.right,
+                    bottom: result.screenBounds.height,
+                    right: result.screenBounds.width,
                     image: includedFrame
                 })
             }

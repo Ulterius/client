@@ -35,9 +35,10 @@ function UlteriusBanner({label, loading, loadingLabel}: UlteriusBannerProps) {
 export class LoginScreen extends React.Component<{
     username?: string,
     avatar?: string,
-    onLogin?: (pwd: string) => void
+    onLogin?: (pwd: string, username: string) => void
 }, {
     password?: string,
+    username?: string
     message?: string,
     loggingIn?: boolean
 }> {
@@ -45,9 +46,11 @@ export class LoginScreen extends React.Component<{
         super(props, context)
         this.state = {
             password: "",
+            username: this.props.username
         }
     }
     componentDidMount() {
+        this.setState({username: this.props.username})
         loginEvents.fail = (text: string) => {
             this.setState({message: text, loggingIn: false})
         }
@@ -70,14 +73,23 @@ export class LoginScreen extends React.Component<{
         return null;
         */
     }
+    usernameChanged() {
+        return this.props.username != this.state.username
+    }
     inner() {
+        const {username, password} = this.state
         const loginButton = 
             <Button 
             bsStyle="primary" 
-            onClick={() => this.props.onLogin(this.state.password)}>
+            onClick={this.logIn}>
                 {/*<Glyphicon glyph="arrow-right" />*/}
                 Login
             </Button>
+        const portraitStyle: React.CSSProperties = {
+            width: 50, height: 50,
+            filter: `brightness(${this.usernameChanged() ? "50%" : "100%"})`
+        }
+        console.log(this.usernameChanged())
         return <div className="login-panel">
             <UlteriusBanner 
                 label="login to ulterius" 
@@ -93,15 +105,22 @@ export class LoginScreen extends React.Component<{
             <div className="login-portrait">
                 <Base64Img 
                     type="image/png" 
-                    style={{width: 50, height: 50}} 
+                    style={portraitStyle} 
                     className="img-circle" 
                     data={this.props.avatar} 
                 /> 
                 <br />
-                {this.props.username}
+                {/*this.props.username*/}
             </div>
             <div className="login-body">
                 <div style={{width: "100%"}}>
+                    <Input 
+                        type="text"
+                        defaultValue={this.props.username}
+                        onChange={e => this.setState({username: (e.target as HTMLInputElement).value})}
+                        placeholder="Username"
+                    />
+                    <br />
                     <Input 
                         type="password" 
                         placeholder="Password" 
@@ -120,9 +139,9 @@ export class LoginScreen extends React.Component<{
             </div>
         </div>
     }
-    logIn() {
+    logIn = () => {
         this.setState({message: "", loggingIn: true})
-        this.props.onLogin(this.state.password)
+        this.props.onLogin(this.state.password, this.state.username)
     }
     render() {
         const loginButton = 

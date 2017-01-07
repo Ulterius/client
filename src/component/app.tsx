@@ -36,7 +36,7 @@ import setIntervals from "../interval"
 import {Router, IndexRoute, Route, Link, hashHistory} from 'react-router'
 import {Glyphicon, Button} from "react-bootstrap"
 import {bootstrapSizeMatches} from "../util"
-import {appActions, dialogActions} from "../action"
+import {appActions, dialogActions, systemActions} from "../action"
 import config from "../config"
 import MediaQuery = require("react-responsive")
 
@@ -178,7 +178,9 @@ export default class App extends React.Component<{
             title: "Disconnect?",
             body: <p>Are you sure you want to disconnect?</p>,
             buttons: [
-                <Button bsStyle="primary" onClick={socket.disconnect}>Yes</Button>,
+                <Button bsStyle="primary" onClick={() => {
+                    window.location.reload() //wew lad
+                }}>Yes</Button>,
                 <Button bsStyle="default">No</Button>
             ]
         })
@@ -198,8 +200,8 @@ export default class App extends React.Component<{
             return <LoginScreen
                 username={this.state.user.username} 
                 avatar = {this.state.user.avatar}
-                onLogin = {pwd => {
-                    socket.sendCommandToDefault("authenticate", pwd)
+                onLogin = {(pwd, username) => {
+                    socket.sendCommandToDefault("authenticate", [username, pwd])
                     appActions.setPassword(pwd)
                 }} />
         }

@@ -12,7 +12,7 @@ import {
     dialogActions
 } 
 from "./action"
-import {appStore, settingsStore} from "./store"
+import {appStore, settingsStore, userStore} from "./store"
 import {loginEvents, dialogEvents} from "./component"
 
 import {
@@ -167,6 +167,7 @@ export function authenticate(info: AuthInfo) {
         //sendCommandToDefault("createFileTree", "C:\\")
         sendCommandToDefault("checkForUpdate")
         sendCommandToDefault("getcurrentsettings")
+        sendCommandToDefault("getwindowsdata")
         getAnnouncement("https://api.ulterius.io/message/").then(announcement => {
             console.log(announcement)
             if (localStorage.getItem("last-announcement") !== announcement.messageId) {
@@ -219,7 +220,8 @@ export function authenticate(info: AuthInfo) {
         appActions.login(false)
         appActions.setPassword("") //because it's obviously invalid
         console.log("Failed to login.")
-        loginEvents.fail("Invalid password.")
+        console.log(info)
+        loginEvents.fail(info.message)
         console.log(loginEvents.fail)
         //messageActions.message({style: "danger", text: "Invalid password."})
     }
@@ -307,7 +309,6 @@ export function aesHandshake(status: {shook: boolean}) {
         if (config.cachePassword && window.localStorage.getItem(`${host}:password`)) {
             sendCommandToDefault("authenticate", window.localStorage.getItem(`${host}:password`))
         }
-
         
 
         window.localStorage.setItem("last-host", host)
@@ -325,9 +326,9 @@ export function aesHandshake(status: {shook: boolean}) {
             ).then(() => console.log("Screenshare is connected."))
         })
         
-        let password
-        if (password = appStore.getState().auth.password) {
-            sendCommandToDefault("authenticate", password)
+        let password, username
+        if (password = appStore.getState().auth.password && (username = userStore.getState().user)) {
+            sendCommandToDefault("authenticate", [username, password])
         }
     }
 }

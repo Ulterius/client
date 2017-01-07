@@ -6,6 +6,7 @@ import {screenShareApi, screenEvents} from "../api/screen"
 import {helpers} from "../api-layer"
 import {tryUntil, clearFunctions} from "../util"
 import {messageActions} from "../action"
+import {mainConnection} from "../socket"
 
 /*
 export let screenEvents = {
@@ -44,6 +45,8 @@ function sendKeyCombo(...codes: number[]) {
 
 class ScreenShare extends Component<{}, {
     hasFrame?: boolean,
+    displays?: DisplayInfo[],
+    selectedDisplay?: number,
     maximized?: boolean,
     frame?: string,
     screenWidth?: number,
@@ -59,6 +62,10 @@ class ScreenShare extends Component<{}, {
         this.state = {}
     }
     componentDidMount() {
+        mainConnection.sendAsync("getavailablemonitors").then((d: AvailableMonitors) => {
+            this.setState({displays: d.activeDisplays})
+            console.log(d)
+        })
         screenEvents.frame.attach((tile: ScreenTile) => {
             if (this.canvasCtx) {
                 const {x, y, top, bottom, left, right, image} = tile
@@ -91,8 +98,8 @@ class ScreenShare extends Component<{}, {
             console.log(data)
             console.log(data.screenBounds)
             this.setState({
-                screenWidth: data.screenBounds.right,
-                screenHeight: data.screenBounds.bottom
+                screenWidth: data.screenBounds.width,
+                screenHeight: data.screenBounds.height
             })
         })
         screenEvents.start.attach(() => {
@@ -291,6 +298,15 @@ class ScreenShare extends Component<{}, {
         return <button className="text-button" onClick={this.goFullScreen}>
                 <span className="glyphicon glyphicon-fullscreen"></span>
                 </button>
+    }
+    monitorSelect() {
+        return <select onChange={(e) => {
+            screenShareApi.setMonitor(Number((e.target as HTMLSelectElement).value))
+        }}>
+            {this.state.displays.map((display, i) => (
+                <option key={display.DeviceName} value={String(i)}>Display {i}</option>
+            ))}
+        </select>
     }
     connected() {
         if (this.state.screenWidth) {

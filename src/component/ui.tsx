@@ -246,9 +246,10 @@ export class Gauge extends Component<GaugeProps, {}> {
 
 export function Center(props: React.HTMLAttributes & {noHeight?: boolean}) {
     //what the fuck is wrong with me again?
-    return <div {...props} className={classNames({
-                "center-parent": !props.noHeight, 
-                "center-parent-no-height": props.noHeight
+    const {noHeight, ...otherProps} = props
+    return <div {...otherProps} className={classNames({
+                "center-parent": !noHeight, 
+                "center-parent-no-height": noHeight
             }, props.className)}>
         <div className="center-child">
             {props.children}

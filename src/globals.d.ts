@@ -95,7 +95,9 @@ declare interface DisplayResolution {
     Height: number,
     BitsPerPixel: number,
     Frequency: number | number[],
-    Orientation: string
+    Orientation: string,
+    X?: number,
+    Y?: number
 }
 
 declare interface DisplayInfo {
@@ -775,4 +777,14 @@ declare interface Announcement {
     messageId: string,
     message: string,
     date: number
+}
+
+declare interface AvailableMonitors {
+    activeDisplays: DisplayInfo[],
+    selectedDisplay: number
+}
+
+declare interface ChangedDisplay {
+    selectedDisplay: number,
+    resolutionInformation: DisplayResolution
 }

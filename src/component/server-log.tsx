@@ -15,6 +15,8 @@ export function ServerLogPage() {
 
 interface ServerLogState {
     log?: ServerLogInfo,
+    cpu?: CpuInfo,
+    os?: OSInfo,
     expanded?: boolean
 }
 
@@ -23,6 +25,12 @@ class ServerLog extends Component<{}, ServerLogState> {
         connection.sendAsync("getlogs").then((results) => {
             console.log("Got logs", results)
             this.setState({log: results})
+        })
+        connection.sendAsync("requestcpuinformation").then(results => {
+            this.setState({cpu: results})
+        })
+        connection.sendAsync("requestosinformation").then(results => {
+            this.setState({os: results})
         })
     }
     constructor(props, context) {
@@ -33,10 +41,12 @@ class ServerLog extends Component<{}, ServerLogState> {
         this.setState({expanded: !this.state.expanded})
     }
     render() {
-        if (!this.state.log) {
+        if (!this.state.log || !this.state.os || !this.state.cpu) {
             return <div>Retrieving logs...</div>
         }
-        const {expanded} = this.state
+        const {expanded, os, cpu} = this.state
+        const {maxProcessRam, maxProcessCount, serialNumber, ...includedOs} = os
+        const {l2Cache, l3Cache, ...includedCpu} = cpu
         const {serverLog, exceptions} = this.state.log
         let log = serverLog.split("\r\n").map(line => {
             return <p className="server-log-line">{line}</p>
@@ -50,7 +60,13 @@ class ServerLog extends Component<{}, ServerLogState> {
             </Panel>
             {exceptions.map((exception, i) => {
                 const [title, body] = [
-                    encodeURIComponent("Server exception: " + exception.Type), encodeURIComponent(exception.Json)
+                    encodeURIComponent("Server exception: " + exception.Type), 
+                    encodeURIComponent(
+                        "***Describe what you were doing when the exception occured***\n" + 
+                        "OS: " + JSON.stringify(includedOs, null, 2) + "\n" +
+                        "CPU: " + JSON.stringify(includedCpu, null, 2) + "\n" +
+                        "Exception: " + exception.Json
+                    )
                 ]
                 return <Panel key={i} className="server-log-panel">
                     <div className="double-header">
