@@ -759,7 +759,8 @@ declare interface FrameData {
         x: number,
         y: number,
         height: number,
-        isEmpty: boolean,
+        width: number,
+        isEmpty: boolean
     },
     frameData: number[]
 }

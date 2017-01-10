@@ -306,8 +306,8 @@ export function aesHandshake(status: {shook: boolean}) {
         }
         */
         let {host, port} = appStore.getState().connection
-        if (config.cachePassword && window.localStorage.getItem(`${host}:password`)) {
-            sendCommandToDefault("authenticate", window.localStorage.getItem(`${host}:password`))
+        if (config.cachePassword && !!config.defaultUser && window.localStorage.getItem(`${host}:password`)) {
+            sendCommandToDefault("authenticate", [config.defaultUser, window.localStorage.getItem(`${host}:password`)])
         }
         
 
@@ -326,8 +326,8 @@ export function aesHandshake(status: {shook: boolean}) {
             ).then(() => console.log("Screenshare is connected."))
         })
         
-        let password, username
-        if (password = appStore.getState().auth.password && (username = userStore.getState().user)) {
+        let [password, username] = [appStore.getState().auth.password, userStore.getState().user.username]
+        if (!!password && !!username) {
             sendCommandToDefault("authenticate", [username, password])
         }
     }

@@ -70,7 +70,7 @@
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.0",
     "ts-loader": "^0.7.2",
-    "typescript": "^2.0.7",
+    "typescript": "^2.1.4",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.14.1",
     "webpack-merge": "^0.14.1",

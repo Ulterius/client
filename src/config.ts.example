@@ -1,10 +1,18 @@
-let productionSettings = {
+interface BuildSettings {
+    defaultUser?: string,
+    cachePassword: boolean,
+    reportErrors: boolean,
+    autoConnect: boolean | {port: string, host: string},
+}
+
+let productionSettings: BuildSettings = {
     cachePassword: false,
     autoConnect: false,
     reportErrors: true
 }
 
-let devSettings = {
+let devSettings: BuildSettings = {
+    defaultUser: "Frob",
     cachePassword: true,
     reportErrors: false,
     autoConnect: {
