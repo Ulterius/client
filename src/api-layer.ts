@@ -326,7 +326,10 @@ export function aesHandshake(status: {shook: boolean}) {
             ).then(() => console.log("Screenshare is connected."))
         })
         
-        let [password, username] = [appStore.getState().auth.password, userStore.getState().user.username]
+        let [password, username] = [
+            appStore.getState().auth.password, 
+            (!!userStore.getState().user && userStore.getState().user.username)
+        ]
         if (!!password && !!username) {
             sendCommandToDefault("authenticate", [username, password])
         }
