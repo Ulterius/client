@@ -485,8 +485,8 @@ const panels = {
                 <div className="gauge-box">
                     <Gauge
                         title="Temperature"
-                        label="° C"
-                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)}
+                        label={stats.cpuTemps == null ? "" : "° C"}
+                        value={stats.cpuTemps == null ? "N/A" : stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)}
                         min={0} max={100}
                     />
                 </div>
