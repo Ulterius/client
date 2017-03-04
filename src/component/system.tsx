@@ -86,7 +86,7 @@ export class Stats extends React.Component<{},{ stats?: SystemInfo, statStack?: 
     onChange = (stats) => {
         this.setState(stats)
     }
-    
+
     render() {
         if (!(this.state.stats && this.state.stats.cpuUsage)) {
             return <p>Loading stats...</p>
@@ -186,7 +186,7 @@ function SystemPanel(props: SystemPanelProps) {
             {image}
         </HeaderCenter>
         {emptyBody ? [
-            <Flex />, 
+            <Flex />,
             <FixedCenter>
                 {children}
             </FixedCenter>
@@ -324,9 +324,9 @@ class Popout extends Component<PopoutProps, PopoutState> {
                 popout.clientWidth, popout.clientHeight
             ]
             const [parentTop, parentLeft, parentWidth, parentHeight] = [
-                parent.offsetTop, 
-                parent.offsetLeft, 
-                parent.offsetWidth, 
+                parent.offsetTop,
+                parent.offsetLeft,
+                parent.offsetWidth,
                 parent.offsetHeight
             ]
             if (parentTop + popoutHeight > documentHeight) {
@@ -383,9 +383,9 @@ class Popout extends Component<PopoutProps, PopoutState> {
     arrow() {
         const {open} = this.state
         const {label} = this.props
-        return <div 
-            onClick={this.toggle} 
-            className="popout-arrow" 
+        return <div
+            onClick={this.toggle}
+            className="popout-arrow"
             ref={ref => this.arrowElement = ref}
         >
             {(!!label && label + " ")}{glyphicon(open ? "chevron-up" : "chevron-down")}
@@ -406,10 +406,10 @@ function isTrue(condition: boolean, label: string) {
 
 const panels = {
     OS(os: OSInfo) {
-        return <SystemPanel emptyBody 
-            flexGrow={1} 
-            style={{width: "50%"}} 
-            title="operating system" 
+        return <SystemPanel emptyBody
+            flexGrow={1}
+            style={{width: "50%"}}
+            title="operating system"
             image={
                 <img src={require("icon/pc.svg")} width="62" height="49" />
             }>
@@ -421,10 +421,10 @@ const panels = {
             </SystemPanel>
     },
     motherboard(stats: SystemInfo) {
-        return <SystemPanel emptyBody 
-            flexGrow={1} 
-            style={{width: "50%"}} 
-            title="motherboard" 
+        return <SystemPanel emptyBody
+            flexGrow={1}
+            style={{width: "50%"}}
+            title="motherboard"
             image={
             <img src={require("icon/motherboard.svg")} width="45" height="40" />
         }>
@@ -483,10 +483,10 @@ const panels = {
             </FixedCenter>
             <Flex>
                 <div className="gauge-box">
-                    <Gauge 
-                        title="Temperature" 
-                        label="° C" 
-                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)} 
+                    <Gauge
+                        title="Temperature"
+                        label="° C"
+                        value={stats.cpuTemps[stats.cpuTemps.length-1].toFixed(0)}
                         min={0} max={100}
                     />
                 </div>
@@ -534,11 +534,11 @@ const panels = {
                             {GpuAvailability[info.Availability]}
                         </span>
                         <div className="gauge-box">
-                            <Gauge 
+                            <Gauge
                                 title="Temperature"
-                                label={temp != -1 ? "° C" : ""} 
-                                value={temp != -1 ? temp.toFixed(0) : "N/A"} 
-                                min={0} max={100} 
+                                label={temp != -1 ? "° C" : ""}
+                                value={temp != -1 ? temp.toFixed(0) : "N/A"}
+                                min={0} max={100}
                             />
                         </div>
                     </FixedCenter>
@@ -555,9 +555,9 @@ const panels = {
             <FlexFixed>
                 {displays.map(display => {
                     const {
-                        FriendlyName, 
-                        CurrentResolution, 
-                        DeviceName, 
+                        FriendlyName,
+                        CurrentResolution,
+                        DeviceName,
                         Primary,
                         Attached,
                         Removable,
@@ -588,7 +588,7 @@ const panels = {
                             as {DeviceName} <br />
                             {isTrue(Attached, "Attached")}, &nbsp;
                             {isTrue(Removable, "Removable")}, &nbsp;
-                            {Primary ? "Primary" : "Secondary"}, &nbsp; 
+                            {Primary ? "Primary" : "Secondary"}, &nbsp;
                             {Remote ? "Remote" : "Local"}
                             <br />
                             <strong>Supported Resolutions:</strong> <br />
@@ -625,18 +625,18 @@ const panels = {
                         <div key={drive.RootDirectory} className="graph-item">
                             <div className="graph-label">
                                 {drive.VolumeLabel.length > 0 ? drive.VolumeLabel : "No label"},&nbsp;
-                                {drive.RootDirectory} <br /> 
+                                {drive.RootDirectory} <br />
                                 <Faded>{bytesToSize(drive.TotalSize)}</Faded>
                             </div>
                             <div className="graph-bar">
                                 <Bar
                                     value={100 - ((drive.FreeSpace/drive.TotalSize)*100)}
-                                    style={{width: "100%"}} 
+                                    style={{width: "100%"}}
                                     color={true}
                                 />
                                 <Faded>{bytesToSize(drive.FreeSpace)} Free</Faded>
                             </div>
-                            
+
                         </div>
                         <div className="drive-popout-row">
                             <PopoutRow>
@@ -714,7 +714,7 @@ export class SystemPage extends React.Component<{}, {
         if (!(os && cpu && network && gpu && stats)) {
             let percent = ([os, cpu, network, gpu, stats]
                 .map(e => (e ? 1 : 0)) as number[]).reduce((a, b) => a+b) * 20
-                
+
             return <LoadingScreen percentage={percent}>
                 Loading system information <br />
                 {_.map(_.omit(this.state, "statStack") as any, (v, k) => {
