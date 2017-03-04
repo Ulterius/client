@@ -516,7 +516,7 @@ const panels = {
         </SystemPanel>
     },
     gpu(gpu: GpusInfo) {
-        return <SystemPanel style={{width: "66%"}} title="video cards" image={
+        return <SystemPanel title="video cards" flexGrow={1} image={
             <img src={require("icon/gpu.svg")} width="54" height="40" />
         }>
             <FlexFixed>
@@ -549,7 +549,7 @@ const panels = {
     },
     display(stats: SystemInfo) {
         const {displays} = stats
-        return <SystemPanel flexGrow={1} title="displays" style={{width: "66%"}} image={
+        return <SystemPanel flexGrow={1} title="displays" image={
             <img src="" />
         }>
             <FlexFixed>
@@ -740,11 +740,15 @@ export class SystemPage extends React.Component<{}, {
                         {panels.cpu(cpu, stats)}
                     </FlexRow>
                     <FlexRow>
-                        {panels.gpu(gpu)}
+                        <FlexCol style={{width: "66%"}}>
+                            <FlexRow>
+                                {panels.gpu(gpu)}
+                            </FlexRow>
+                            <FlexRow>
+                                {panels.display(stats)}
+                            </FlexRow>
+                        </FlexCol>
                         {panels.drive(stats)}
-                    </FlexRow>
-                    <FlexRow>
-                        {panels.display(stats)}
                     </FlexRow>
                 </FlexCol>
             </div>
