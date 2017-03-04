@@ -553,6 +553,7 @@ const panels = {
             <img src="" />
         }>
             <FlexFixed>
+                {!displays.length ? <p>No displays?</p> : ''}
                 {displays.map(display => {
                     const {
                         FriendlyName,
