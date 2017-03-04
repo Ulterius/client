@@ -332,22 +332,44 @@
 	display: flex;
 	align-items: center;
 	z-index: 3;
-	.file-bar {
-		@extend .bare-input-button;
-		width: 50%;
-		flex: none;
-		input[type="text"] {
-			font-family: ProximaNova;
+	.search-file-bar-cont {
+		display: flex;
+		justify-content: space-between;
+		margin-left: 10px;
+		.file-bar {
+			width: 52%;
+		}
+		.search-bar {
+			width: 45%;
+		}
+		.file-bar, .search-bar {
+			@extend .bare-input-button;
+			.input-group {
+				border: $solid-line !important;
+				box-shadow: $hole-shadow !important;
+			}
+			flex: none;
+			input[type="text"] {
+				font-family: ProximaNova;
+			}
 		}
 	}
-	.search-bar {
-		@extend .bare-input-button;
-		.input-group {
-			border: $solid-line !important;
-			box-shadow: $hole-shadow !important;
-		}
-		input[type="text"] {
-			font-family: ProximaNova;
+}
+
+.fileList {
+	thead {
+		position: sticky;
+    top: 118px;
+    background-color: rgb(255, 255, 255);
+		box-shadow: 0px 1px rgb(236, 237, 242);
+		z-index: 15;
+	}
+	tbody {
+		tr {
+			&:hover {
+				background-color: rgba(100, 100, 100, 0.1);
+			}
+			transition: background-color 0.075s ease-in-out;
 		}
 	}
 }
@@ -437,7 +459,7 @@
 	@extend .toolbar-button;
 	background: none;
 	margin-right: 0;
-	padding-right: 10px;
+	padding-right: 15px;
 	border-color: rgba(0, 0, 0, 0);
 	&:hover {
 		background: none;
