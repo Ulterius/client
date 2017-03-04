@@ -76,7 +76,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
         if (this.box) {
             this.box.setState({customized: false})
         }
-        
+
         let v = state.downloads.complete
         if (v) {
             if (this.lastComplete != v.path) {
@@ -100,16 +100,17 @@ export class FileList extends React.Component<{}, FileSystemState & {
         }
     }
     refresh = (path: string) => {
+        if (path == '') return // reloading on 'root' causes error?
         fsApi.reloadFileTree(path)
         //sendCommandAsync("createFileTree", path, fileSystemActions.reloadFileTree)
     }
     handleUpload = (e) => {
         let reader = new FileReader()
-        
+
         reader.onload = ee => {
             messageActions.message({style: "success", text: "File upload started."})
             fsApi.uploadFile(
-                this.state.tree.RootFolder.Name + "\\" + readerAny.name,
+                this.state.Folder.Name + "\\" + readerAny.name,
                 (ee.target as any).result as ArrayBuffer
             )
             /*
@@ -136,10 +137,8 @@ export class FileList extends React.Component<{}, FileSystemState & {
             tree.RootFolder.ChildFolders.map(folder => {
                 return <tr key={folder.Name}>
                     <td width="16"><Glyphicon glyph="folder-close"/></td>
-                    <td>
-                        <span
-                        style={{cursor: "pointer"}}
-                        onClick={() => this.openFolder(folder.Name)}>
+                    <td style={{cursor: "pointer"}} onClick={() => this.openFolder(folder.Name)}>
+                        <span>
                             {lastPathSegment(folder.Name)}
                         </span>
                     </td>
@@ -202,7 +201,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
         })
     }
     outerTable() {
-        return <Table>
+        return <Table className="fileList">
             <thead>
                 <tr>
                     <th></th>
@@ -237,34 +236,36 @@ export class FileList extends React.Component<{}, FileSystemState & {
                 <div className="toolbar-button-bare" onClick={() => this.upload.click()}>
                     <Glyphicon glyph="export" />
                 </div>
-                <div className="toolbar-button-bare" onClick={() => 
+                <div className="toolbar-button-bare" onClick={() =>
                     this.refresh(this.state.tree.RootFolder.Name)
                 }>
                     <Glyphicon glyph="refresh" />
                 </div>
-                <div className="file-bar">
-                    <EntryBox 
-                        ref={box => this.box = box}
-                        onConfirmation={this.openFolder}
-                        defaultValue={tree.RootFolder.Name}
-                        buttonText="go" 
-                    />
-                </div>
-                <div className="search-bar">
-                    <EntryBox onConfirmation={(text) => {
-                        if (text == "") {
+                <div className="search-file-bar-cont">
+                    <div className="file-bar">
+                        <EntryBox
+                            ref={box => this.box = box}
+                            onConfirmation={this.openFolder}
+                            defaultValue={tree.RootFolder.Name}
+                            buttonText="go"
+                        />
+                    </div>
+                    <div className="search-bar">
+                        <EntryBox onConfirmation={(text) => {
+                            if (text == "") {
+                                fileSystemActions.clearSearch()
+                                this.setState({searching: false})
+                            }
+                            else {
+                                fsApi.search(text)
+                                this.setState({searching: true})
+                            }
+                        }}
+                        onEscape={() => {
                             fileSystemActions.clearSearch()
                             this.setState({searching: false})
-                        }
-                        else {
-                            fsApi.search(text)
-                            this.setState({searching: true})
-                        }
-                    }}
-                    onEscape={() => {
-                        fileSystemActions.clearSearch()
-                        this.setState({searching: false})
-                    }} placeholder="Search..." glyph="search" />
+                        }} placeholder="Search..." glyph="search" />
+                    </div>
                 </div>
             </div>
             <div className="row">
@@ -274,7 +275,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
                         {this.state.searchResult ? <Button bsStyle="link" onClick={() => {
                         this.setState({searchResultCount: this.state.searchResultCount + 200})
                     }}>Load more...</Button> : null}
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>
