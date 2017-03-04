@@ -19,7 +19,7 @@ $sidebar-color: rgba(90%, 90%, 90%, 100%);
 	}
 
 	.user-widget {
-		margin-top: 35px;
+		margin-top: 85px;
 
 		img {
 			width: 50px;
@@ -34,6 +34,8 @@ $sidebar-color: rgba(90%, 90%, 90%, 100%);
 		background-color: $sidebar-header-bg;
 		padding: 15px 15px 13px 15px;
 		font-size: 17px;
+		position: fixed;
+		width: 200px;
 
 		img {
 			vertical-align: top;
