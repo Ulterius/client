@@ -329,7 +329,7 @@ class Popout extends Component<PopoutProps, PopoutState> {
                 parent.offsetWidth,
                 parent.offsetHeight
             ]
-            if (parentTop + popoutHeight > documentHeight) {
+            if ((parentTop + popoutHeight > documentHeight) && popoutHeight < parentTop) {
                 $popout.css({
                     top: parentTop - popoutHeight,
                 })
