@@ -110,7 +110,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
         reader.onload = ee => {
             messageActions.message({style: "success", text: "File upload started."})
             fsApi.uploadFile(
-                this.state.Folder.Name + "\\" + readerAny.name,
+                this.state.tree.RootFolder.Name + "\\" + readerAny.name,
                 (ee.target as any).result as ArrayBuffer
             )
             /*
