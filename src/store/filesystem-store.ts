@@ -109,14 +109,14 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
         this.downloads.complete = data
     }
     handleDownloadProgress(data: FileTransfer.Progress) {
-        
+
         /*
         let download = this.downloads[data.path]
         if (!download) {
             console.log("Got data for a file that was never started!")
             return false
         }
-        
+
         if (isLoaded(data)) {
             download.data = data.data
             download.downloaded = data.total
@@ -140,9 +140,8 @@ class FileSystemStore extends AbstractStoreModel<FileSystemState> {
         }
     }
     handleReload(tree: FileSystemInfo.FileTree) {
-        this.tree = tree
-        console.log("refreshed")
-        console.log(tree)
+        this.tree = tree[0] // tree is an array ? code expects object
+        console.log("refreshed", tree)
         //don't do anything to the history, right
     }
     handleUpdateFileTree(tree: FileSystemInfo.FileTree) {
