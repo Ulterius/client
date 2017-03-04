@@ -134,6 +134,7 @@ export class FileList extends React.Component<{}, FileSystemState & {
     getFileList() {
         let {tree} = this.state
         return [
+            (!tree.RootFolder.ChildFolders.length && !tree.RootFolder.Files.length ? <td colSpan={3}>Directory is empty</td> : ''),
             tree.RootFolder.ChildFolders.map(folder => {
                 return <tr key={folder.Name}>
                     <td width="16"><Glyphicon glyph="folder-close"/></td>

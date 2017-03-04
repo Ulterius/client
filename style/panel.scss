@@ -365,6 +365,10 @@
 		z-index: 15;
 	}
 	tbody {
+		td[colspan='3'] {
+			padding-top: 3px;
+			text-align: center;
+		}
 		tr {
 			&:hover {
 				background-color: rgba(100, 100, 100, 0.1);
