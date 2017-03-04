@@ -137,7 +137,7 @@
 
 	.stat-container {
 		.stat-item-head {
-			opacity: 0.3;
+			opacity: 0.5;
 			text-transform: uppercase;
 			font: {
 				family: ProximaNova;
@@ -169,7 +169,7 @@
 	.graph-item {
 		display: flex;
 		justify-content: space-between;
-		
+
 		padding: 20px 20px 10px 20px;
 
 		.graph-label {
@@ -281,7 +281,7 @@
 }
 
 .stat-item-head-text {
-	opacity: 0.3;
+	opacity: 0.5;
 	text-transform: uppercase;
 	font: {
 		family: ProximaNova;
