@@ -89,7 +89,7 @@ export class LoginScreen extends React.Component<{
             width: 50, height: 50,
             filter: `brightness(${this.usernameChanged() ? "50%" : "100%"})`
         }
-        console.log(this.usernameChanged())
+        
         return <div className="login-panel">
             <UlteriusBanner 
                 label="login to ulterius" 
